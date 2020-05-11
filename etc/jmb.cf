@@ -37,7 +37,7 @@ JMB_MAIL_REMINDER_DATA="${JMB_DATA}/reminder"
 JMB_NAME="Jitsi Meet Booking"
 
 # Domaine de messagerie
-JMB_MAIL_DOMAIN="${SERVER_NAME#.*}"
+JMB_MAIL_DOMAIN="${SERVER_NAME#*.}"
 
 # Scheme du serveur HTTP http ou https
 # ... ça existe encore "HTTP" sans "S" ? .. ;)
