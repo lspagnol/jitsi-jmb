@@ -2,7 +2,7 @@
 
 ########################################################################
 # GCI (booking.cgi): enregistrement d'une réunion
-# -> modulle commun appelé par register_edit ou register_new
+# -> module commun appelé par register_edit ou register_new
 ########################################################################
 
 # Récupérer le TSZ du formulaire
