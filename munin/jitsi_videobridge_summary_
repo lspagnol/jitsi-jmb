@@ -1,0 +1,126 @@
+#!/bin/bash
+
+########################################################################
+# AUTHOR laurent.spagnol@univ-reims.fr
+# LICENCE GPLv2
+#
+# INSTALLATION:
+#
+# This plugin needs nc
+#
+#   apt -y install nc
+#
+#   wget -O jitsi_videobridge_summary_ https://raw.githubusercontent.com/lspagnol/misc-scripts/master/jitsi_videobridge_summary_
+#   chmod +x jitsi_videobridge_summary_
+#   mkdir /usr/local/share/munin
+#   cp jitsi_videobridge_summary_ /usr/local/share/munin
+#   ln -s /usr/local/share/munin/jitsi_videobridge_summary_ /etc/munin/plugins/jitsi_videobridge_summary_network
+#   ln -s /usr/local/share/munin/jitsi_videobridge_summary_ /etc/munin/plugins/jitsi_videobridge_summary_conferences
+#   ln -s /usr/local/share/munin/jitsi_videobridge_summary_ /etc/munin/plugins/jitsi_videobridge_summary_videostreams
+#   echo -e "[jitsi_videobridge_summary_system]\nenv.videobridges videobridge_host1 videobridge_host2" > /etc/munin/plugin-conf.d/jitsi-videobridge-summary
+#
+#   Edit /etc/munin/plugin-conf.d/jitsi-videobridge-summary and set videobriges hostnames to "env.videobridges"
+#
+#   service munin-node restart
+
+########################################################################
+
+. $MUNIN_LIBDIR/plugins/plugin.sh
+
+########################################################################
+
+if [ "$1" = "autoconf" ] ; then
+        echo yes
+        exit 0
+fi
+
+metrics=$(echo $(basename ${0}))
+metrics=${metrics##*_}
+
+case ${metrics} in
+	conferences)
+		stats="conferences participants videochannels endpoints_sending_video endpoints_sending_audio inactive_endpoints inactive_conferences"
+	;;
+	videostreams)
+		stats="videostreams"
+	;;
+	network)
+		stats="bit_rate_download bit_rate_upload"
+	;;
+esac
+
+########################################################################
+
+if [ "${1}" = "config" ] ; then
+
+cat<<EOT
+graph_category jitsi-videobridge
+EOT
+
+	case ${metrics} in
+
+		conferences)
+cat<<EOT
+graph_title Summary of conferences
+graph_args --base 1000 -l 0
+graph_vlabel number
+graph_order ${stats}
+participants.label participants
+endpoints_sending_audio.label endpoints_sending_audio
+endpoints_sending_video.label endpoints_sending_video
+conferences.label conferences
+inactive_endpoints.label inactive_endpoints
+inactive_conferences.label inactive_conferences
+EOT
+		;;
+
+		videostreams)
+cat<<EOT
+graph_title Summary of videostreams
+graph_args --base 1000 -l 0
+graph_vlabel number
+videostreams.label videostreams
+EOT
+		;;
+
+		network)
+cat<<EOT
+graph_title Summary of network
+graph_args --base 1000 -l 0
+graph_vlabel bits in (-) / out (+) per second
+graph_order ${stats}
+bit_rate_download.graph no
+bit_rate_download.min 0
+bit_rate_download.label received
+bit_rate_upload.negative bit_rate_download
+bit_rate_upload.min 0
+bit_rate_upload.label bps
+EOT
+		;;
+
+	esac
+
+	exit 0
+
+fi
+
+########################################################################
+
+[ -f /tmp/jitsi_videobridge_${metrics}.tmp ] && rm /tmp/jitsi_videobridge_${metrics}.tmp
+
+for host in ${videobridges} ; do
+
+	echo -e "fetch jitsi_videobridge_${metrics}\nquit" |nc ${host} 4949 |egrep "${stats// /|}" >> /tmp/jitsi_videobridge_${metrics}.tmp
+
+	
+done
+
+for stat in ${stats} ; do
+	r1=$(grep "^${stat}.value " /tmp/jitsi_videobridge_${metrics}.tmp |awk '{print $2}')
+	r2=$(echo ${r1} |sed 's/ /+/g')
+	echo "${stat}.value $(( ${r2} ))"
+done
+
+########################################################################
+
+exit 0

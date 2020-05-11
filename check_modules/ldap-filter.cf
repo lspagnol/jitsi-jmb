@@ -1,0 +1,4 @@
+# Filtre LDAP pour le module de vérification "ldap-filter"
+
+#LDAP_FILTER="eduPersonAffiliation=student"
+LDAP_FILTER="|(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"

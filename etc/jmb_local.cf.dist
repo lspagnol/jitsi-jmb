@@ -1,0 +1,56 @@
+########################################################################
+# Fichier de configuration local
+# Il est lu après le fichier pricipal (jmb.cf)
+########################################################################
+
+# Nom du service, il sera affiché dans les onglets du navigateur
+#JMB_NAME="Jitsi Meet Booking"
+
+# Domaine de messagerie
+# Par défaut, calculé à partir du hostname du serveur. Si le FQDN du
+# serveur ne correspond pas au domaine de messagerie, vous pouvez le
+# modifier ici
+#JMB_MAIL_DOMAIN="mondomaine.fr"
+
+# Rappels par mail (minutes)
+#JMB_MAIL_REMINDER="60 1440 10080"
+
+# Durée des réunions par défaut (secondes)
+#JMB_DEFAULT_DURATION=7200
+
+# Commande de génération des noms de réunion
+#JMB_GEN_NAME="pwgen -A -0 12 1"
+
+# Commande de requête LDAP
+#JMB_LDAPSEARCH="/usr/bin/ldapsearch -x -LLL -o ldif-wrap=no -h ssds-ldap -b ou=people,dc=univ-reims,dc=fr"
+
+# Durée d'attente avant redirection du navigateur (secondes)
+#JMB_SLEEP_REDIRECT="10"
+
+# URL de redirection par défaut
+#JMB_DEFAULT_URL_REDIRECT="?list"
+
+# Modules de vérification à exécuter lors des appels de Jicofo
+#JMB_CHECK_MODULES="ldap-filter ldap-self booking"
+
+# Objet par défaut des réunions
+#JMB_DEFAULT_OBJECT="R&eacute;union sans objet"
+
+# Durée par défaut des réunions (minutes)
+#JMB_DEFAULT_MEETING_DURATION="60"
+
+# Durée minimale des réunions (minutes)
+#JMB_MIN_MEETING_DURATION="30"
+
+# Durée maximum des réunions (minutes)
+#JMB_MAX_MEETING_DURATION="480"
+
+# Incrément durée réunion (minutes)
+#JMB_STEP_MEETING_DURATION="30"
+
+# Formulaire "liste des réunions: mettre en évidence les réunions N
+# secondes avant leur date de début.
+#JMB_LIST_HIGHLIGHT_OWNER="900"
+#JMB_LIST_HIGHLIGHT_GUEST="300"
+
+JMB_DEBUG=${JMB_CGI_TMP}/debug

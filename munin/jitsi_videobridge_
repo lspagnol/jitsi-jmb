@@ -1,0 +1,178 @@
+#!/bin/bash
+
+########################################################################
+# AUTHOR laurent.spagnol@univ-reims.fr
+# LICENCE GPLv2
+# Adapted from https://gitlab.gwdg.de/bwegman1/Munin-Plugins/-/blob/master/plugins/jitsi-videobridge
+#
+# INSTALLATION:
+#
+# This plugin needs jq, bc, curl or wget
+# It also needs rest api of videobridge
+# /etc/jitsi/videobridge/config -> JVB_OPTS="--apis=rest, "
+#
+#   apt -y install jq bc
+#
+#   apt -y install curl
+#
+#   Curl is removed when shibboleth is installed on Debian or Ubuntu, so install wget
+#   apt -y install wget
+#
+#   wget -O jitsi_videobridge_ https://raw.githubusercontent.com/lspagnol/misc-scripts/master/jitsi_videobridge_
+#   chmod +x jitsi_videobridge_
+#   mkdir /usr/local/share/munin
+#   cp jitsi_videobridge_ /usr/local/share/munin
+#   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_network
+#   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_conferences
+#   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_videostreams
+#   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_system
+#   echo -e "[jitsi_videobridge_system]\nuser root" > /etc/munin/plugin-conf.d/jitsi-videobridge
+#   service munin-node restart
+#
+########################################################################
+
+. $MUNIN_LIBDIR/plugins/plugin.sh
+
+########################################################################
+
+function get_jitsi_stats {
+# Try with curl
+if [ -f /usr/bin/curl ] ; then
+	jitsi_stats=$(curl -s -f -m 3 http://localhost:8080/colibri/stats)
+	[ -z "${jitsi_stats}" ] && exit
+else
+	if [ -f /usr/bin/wget ] ; then
+		wget -T2 -t1 -q -O /tmp/jitsi-videobridge.stats http://localhost:8080/colibri/stats
+		if [ $? -eq 0 ] ; then
+			jitsi_stats=$(cat /tmp/jitsi-videobridge.stats 2>/dev/null)
+			[ -z "${jitsi_stats}" ] && exit
+		else
+			exit 1
+		fi
+	fi
+fi
+}
+
+########################################################################
+
+if [ "$1" = "autoconf" ] ; then
+        echo yes
+        exit 0
+fi
+
+########################################################################
+
+metrics=$(echo $(basename ${0}))
+metrics=${metrics##*_}
+
+case ${metrics} in
+	conferences)
+		stats="conferences participants videochannels endpoints_sending_video endpoints_sending_audio inactive_endpoints inactive_conferences"
+	;;
+	videostreams)
+		stats="videostreams"
+	;;
+	network)
+		stats="bit_rate_download bit_rate_upload"
+	;;
+esac
+
+########################################################################
+
+if [ "${1}" = "config" ] ; then
+
+cat<<EOT
+graph_category jitsi-videobridge
+EOT
+
+	case ${metrics} in
+
+		conferences)
+cat<<EOT
+graph_title Conferences
+graph_args --base 1000 -l 0
+graph_vlabel number
+graph_order ${stats}
+EOT
+		for stat in ${stats} ; do
+			echo "${stat}.label ${stat}"
+		done
+		;;
+
+		videostreams)
+cat<<EOT
+graph_title Videostreams
+graph_args --base 1000 -l 0
+graph_vlabel number
+videostreams.label videostreams
+EOT
+		;;
+
+		network)
+cat<<EOT
+graph_title Network
+graph_args --base 1000 -l 0
+graph_vlabel bits in (-) / out (+) per second
+graph_order ${stats}
+bit_rate_download.graph no
+bit_rate_download.min 0
+bit_rate_download.label received
+bit_rate_upload.negative bit_rate_download
+bit_rate_upload.min 0
+bit_rate_upload.label bps
+EOT
+		;;
+
+		system)
+cat<<EOT
+graph_title System
+graph_args --upper-limit 100 -l 0
+graph_vlabel %
+graph_scale no
+cpu.label cpu
+mem.label mem
+EOT
+		;;
+
+	esac
+
+	exit 0
+
+fi
+
+########################################################################
+
+case ${metrics} in
+
+	conferences|videostreams|network)
+	
+		get_jitsi_stats
+		
+		for stat in ${stats} ; do
+			val=$(echo ${jitsi_stats} | jq ".${stat}")
+		    val=${val:-0}
+		    [ ${metrics} = "network" ] && val=$(( ${val} * 1024 ))
+		    echo "${stat}.value ${val}"
+		done
+
+	;;
+
+	system)
+
+		pid=$(cat /var/run/jitsi-videobridge/jitsi-videobridge.pid)
+		val=$(top -b -n 2 -d 1 -p $pid | tail -1 | awk '{print $9" "$10}' |sed 's/,/./g')
+		val=(${val})
+		cpu=${val[0]}
+		mem=${val[1]}
+		ncpu=$(cat /proc/cpuinfo |grep -c '^processor')
+		cpu=$(echo "scale=1 ; ${cpu}/${ncpu}" |bc |sed 's/^\./0./g')
+		echo "cpu.value ${cpu}"
+		echo "mem.value ${mem}"
+
+	;;
+
+esac
+
+########################################################################
+
+exit 0

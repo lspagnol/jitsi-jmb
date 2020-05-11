@@ -1,0 +1,139 @@
+########################################################################
+#                                                                      #
+#                 ** Ne modifiez pas ce fichier **                     #
+#                                                                      #
+#      Pour personnaliser les paramètres, utilisez "jmb_local.cf"      #
+#                                                                      #
+########################################################################
+
+########################################################################
+# Ne modifiez pas les répertoires !!!
+########################################################################
+
+# Répertoire d'installation
+JMB_PATH="/opt/jitsi-jmb"
+
+# Stockage des données
+JMB_DATA="/var/www/jitsi-jmb"
+
+# Stockage des données temporaires des CGIs
+JMB_CGI_TMP="${JMB_DATA}/tmp"
+
+# Stockage des données de réservation
+JMB_BOOKING_DATA=${JMB_DATA}/booking
+
+# Destination d'archivage des données de réservation
+JMB_BOOKING_ARCHIVE=${JMB_DATA}/booking_archive
+
+# Stockage des reminders
+JMB_MAIL_REMINDER_DATA="${JMB_DATA}/reminder"
+
+########################################################################
+# A partir d'ici, vous pouvez tout personnaliser en recopiant les lignes
+# à modifier dans "jmb_local.cf"
+########################################################################
+
+# Nom du service, il sera affiché dans les onglets du navigateur
+JMB_NAME="Jitsi Meet Booking"
+
+# Domaine de messagerie
+JMB_MAIL_DOMAIN="${SERVER_NAME#.*}"
+
+# Scheme du serveur HTTP http ou https
+# ... ça existe encore "HTTP" sans "S" ? .. ;)
+JMB_SCHEME=https
+
+# Commande de génération des noms de réunion
+JMB_GEN_NAME="pwgen -A -0 12 1"
+
+# Commande de requête LDAP
+JMB_LDAPSEARCH="/usr/bin/ldapsearch -x -LLL -o ldif-wrap=no -h ssds-ldap -b ou=people,dc=univ-reims,dc=fr"
+
+# Durée d'attente avant redirection du navigateur (secondes)
+JMB_SLEEP_REDIRECT="10"
+
+# URL de redirection par défaut
+JMB_DEFAULT_URL_REDIRECT="?list"
+
+# Modules de vérification à exécuter lors des appels de Jicofo
+#JMB_CHECK_MODULES="ldap-filter ldap-self booking"
+JMB_CHECK_MODULES="ldap-filter private-room booking"
+
+# Durée des réunions par défaut (secondes)
+JMB_DEFAULT_DURATION=7200
+
+# Rappels par mail (minutes)
+JMB_MAIL_REMINDER="60 1440 10080"
+
+########################################################################
+# Mails
+########################################################################
+
+# Adresse mail d'expéditeur pour les notifications
+JMB_MAIL_FROM_NOTIFICATION="Jitsi Meet <noreply@univ-reims.fr>"
+
+# Réservation visioconférence
+JMB_SUBJECT_NEW_OWNER="=?UTF-8?B?UsOpc2VydmF0aW9uIHZpc29jb25mw6lyZW5jZQ==?="
+
+# Invitation visioconférence
+JMB_SUBJECT_NEW_GUEST="=?UTF-8?B?SW52aXRhdGlvbiB2aXNpb2NvbmbDqXJlbmNl?="
+
+# Réservation visioconférence (mise à jour)
+JMB_SUBJECT_EDIT_OWNER="=?UTF-8?B?UsOpc2VydmF0aW9uIHZpc2lvY29uZsOpcmVuY2UgKG1pc2Ugw6Agam91cik=?="
+
+# Invitation visioconférence (mise à jour)
+JMB_SUBJECT_EDIT_GUEST="=?UTF-8?B?SW52aXRhdGlvbiB2aXNpb2NvbmbDqXJlbmNlIChtaXNlIMOgIGpvdXIp?="
+
+# Réservation visioconférence annulée
+JMB_SUBJECT_DEL_OWNER="=?UTF-8?B?UsOpc2VydmF0aW9uIHZpc2lvY29uZsOpcmVuY2UgYW5udWzDqWU=?="
+
+# Invitation visioconférence annulée
+JMB_SUBJECT_DEL_GUEST="=?UTF-8?B?SW52aXRhdGlvbiB2aXNpb2NvbmbDqXJlbmNlIGFubnVsw6ll?="
+
+# Rappel: vous organisez une visioconférence
+JMB_SUBJECT_MAIL_REMINDER_OWNER="=?UTF-8?B?UmFwcGVsOiB2b3VzIG9yZ2FuaXNleiB1bmUgdmlzaW9jb25mw6lyZW5jZQ==?="
+
+# Rappel: vous participez à une visioconférence
+JMB_SUBJECT_MAIL_REMINDER_GUEST="=?UTF-8?B?UmFwcGVsOiB2b3VzIHBhcnRpY2lwZXogw6AgdW5lIHZpc2lvY29uZsOpcmVuY2U=?="
+
+# Templates contenu mails
+JMB_MAIL_NEW_GUEST=${JMB_PATH}/inc/mail_new_guest.sh
+JMB_MAIL_NEW_OWNER=${JMB_PATH}/inc/mail_new_owner.sh
+JMB_MAIL_EDIT_GUEST=${JMB_PATH}/inc/mail_edit_guest.sh
+JMB_MAIL_EDIT_OWNER=${JMB_PATH}/inc/mail_edit_owner.sh
+JMB_MAIL_DEL_GUEST=${JMB_PATH}/inc/mail_del_guest.sh
+JMB_MAIL_DEL_OWNER=${JMB_PATH}/inc/mail_del_owner.sh
+JMB_MAIL_REMINDER_OWNER=${JMB_PATH}/inc/mail_reminder_owner.sh
+JMB_MAIL_REMINDER_GUEST=${JMB_PATH}/inc/mail_reminder_guest.sh
+
+########################################################################
+# Paramètres de réservation
+########################################################################
+
+# Objet par défaut des réunions
+JMB_DEFAULT_OBJECT="R&eacute;union sans objet"
+
+# Durée par défaut des réunions (minutes)
+JMB_DEFAULT_MEETING_DURATION="60"
+
+# Durée minimale des réunions (minutes)
+JMB_MIN_MEETING_DURATION="30"
+
+# Durée maximum des réunions (minutes)
+JMB_MAX_MEETING_DURATION="480"
+
+# Incrément durée réunion (minutes)
+JMB_STEP_MEETING_DURATION="30"
+
+# Formulaire "liste des réunions: mettre en évidence les réunions N
+# secondes avant leur date de début.
+JMB_LIST_HIGHLIGHT_OWNER="900"
+JMB_LIST_HIGHLIGHT_GUEST="300"
+
+########################################################################
+
+# Charger le fichier de configuration personnalisé
+if [ -f ${JMB_PATH}/etc/jmb_local.cf ] ; then
+	source ${JMB_PATH}/etc/jmb_local.cf
+fi
+

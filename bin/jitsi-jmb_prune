@@ -1,0 +1,23 @@
+#!/bin/bash
+
+########################################################################
+# Archivage des réservation expirées
+########################################################################
+
+# Timestamp
+now=$(date +%s)
+
+########################################################################
+
+# Charger la configuration
+JMB_PATH=/opt/jitsi-jmb
+source ${JMB_PATH}/etc/jmb.cf
+
+########################################################################
+
+for f in $(ls -1 ${JMB_BOOKING_DATA}/ 2>/dev/null |sort -nr) ; do
+	source ${JMB_BOOKING_DATA}/${f}
+	if [ ${now} -gt ${end} ] ; then
+		mv ${JMB_BOOKING_DATA}/${f} ${JMB_BOOKING_ARCHIVE}/
+	fi
+done

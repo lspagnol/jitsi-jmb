@@ -1,0 +1,50 @@
+#!/bin/bash
+
+########################################################################
+# Archivage des réservation expirées
+########################################################################
+
+# Timestamp
+now=$(date +%s)
+
+########################################################################
+
+# Charger la configuration
+JMB_PATH=/opt/jitsi-jmb
+source ${JMB_PATH}/etc/jmb.cf
+
+########################################################################
+
+for f in $(ls -1 ${JMB_MAIL_REMINDER_DATA}/ 2>/dev/null) ; do
+
+	source ${JMB_MAIL_REMINDER_DATA}/${f}
+
+	if [ ${now} -ge ${reminder} ] ; then
+
+		# Rappel à l'organisateur
+		source ${JMB_MAIL_REMINDER_OWNER} |mail\
+		 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+		 -a "Content-Transfer-Encoding: 8bit"\
+		 -a "Content-Language: fr"\
+		 -a "from: ${JMB_MAIL_FROM_NOTIFICATION}"\
+		 -a "subject: ${JMB_SUBJECT_MAIL_REMINDER_OWNER}"\
+		 ${mail_owner}
+
+		# Rappel aux invités
+		for guest in ${guests} ; do
+			# Mail de notification
+			source ${JMB_MAIL_REMINDER_GUEST} |mail\
+			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+			 -a "Content-Transfer-Encoding: 8bit"\
+			 -a "Content-Language: fr"\
+			 -a "from: ${mail_owner}"\
+			 -a "subject: ${JMB_SUBJECT_MAIL_REMINDER_GUEST}"\
+			 ${guest}
+		done
+
+		# Suppression du reminder
+		rm ${JMB_MAIL_REMINDER_DATA}/${f}
+
+	fi
+
+done

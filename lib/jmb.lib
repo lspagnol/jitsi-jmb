@@ -1,0 +1,197 @@
+#!/bin/bash
+
+###################################################################
+# Réponses HTTP
+
+# Réponse HTTP "OK", pas de paramètre
+# Envoyer le contenu de ${JMB_CGI_TMP}/http_${tsn}.message
+function http_200 {
+
+echo "Status: 200 OK" > ${JMB_CGI_TMP}/http_${tsn}.header
+echo "Content-Type: text/html" >> ${JMB_CGI_TMP}/http_${tsn}.header
+
+http_send
+
+}
+
+# Réponse HTTP "Forbidden" retourne les arguments en HTML
+# Envoyer le contenu de ${JMB_CGI_TMP}/http_${tsn}.header
+function http_403 {
+
+echo "Status: 403 Forbidden" > ${JMB_CGI_TMP}/http_${tsn}.header
+echo "Content-Type: text/html" >> ${JMB_CGI_TMP}/http_${tsn}.header
+
+local message=$(utf8_to_html "${@}")
+local url_redirect="?list"
+source ${JMB_PATH}/inc/form_http_403.sh > ${JMB_CGI_TMP}/http_${tsn}.message
+
+http_send
+
+}
+
+# Réponse HTTP JSON "OK" , pas de paramètre
+function http_200_json {
+
+echo "Status: 200 OK" > ${JMB_CGI_TMP}/http_${tsn}.header
+echo "Content-Type: application/json; charset=utf-8" >> ${JMB_CGI_TMP}/http_${tsn}.header
+
+message_200_json
+
+http_send
+
+}
+
+# Réponse HTTP JSON "Forbidden", paramètre: message d'erreur
+function http_403_json {
+
+echo "Status: 403 Forbidden" > ${JMB_CGI_TMP}/http_${tsn}.header
+echo "Content-Type: application/json; charset=utf-8" >> ${JMB_CGI_TMP}/http_${tsn}.header
+
+message_403_json "${@}"
+
+http_send
+
+}
+
+# Envoyer le contenu des fichiers temporaires au serveur Web
+function http_send {
+
+length=$(cat ${JMB_CGI_TMP}/http_${tsn}.message |wc -c)
+echo "Content-Length: ${length}" >> ${JMB_CGI_TMP}/http_${tsn}.header
+echo >> ${JMB_CGI_TMP}/http_${tsn}.header
+
+cat ${JMB_CGI_TMP}/http_${tsn}.header >${JMB_CGI_TMP}/http_${tsn}.response
+cat ${JMB_CGI_TMP}/http_${tsn}.message >> ${JMB_CGI_TMP}/http_${tsn}.response
+cat ${JMB_CGI_TMP}/http_${tsn}.response
+
+rm ${JMB_CGI_TMP}/http_${tsn}.header
+rm ${JMB_CGI_TMP}/http_${tsn}.message
+rm ${JMB_CGI_TMP}/http_${tsn}.response
+
+exit 0
+
+}
+
+###################################################################
+# Contenus JSON pour Jicofo
+
+function message_200_json {
+cat<<EOT > ${JMB_CGI_TMP}/http_${tsn}.message
+{
+ "name": "${name}",
+ "mail_owner": "${mail_owner}",
+ "start_time": "${start_time}",
+ "duration": ${duration}
+}
+EOT
+}
+
+function message_403_json {
+cat<<EOT > ${JMB_CGI_TMP}/http_${tsn}.message
+{
+  "message": "${@}"
+}
+EOT
+}
+
+###################################################################
+# Divers
+
+# Décodage des données POST
+function postdecode {
+
+if [ "${REQUEST_METHOD}" = "POST" ]; then
+
+        read post_data
+
+	# Séparer les champs
+	post_data="${post_data//&/ }"
+
+	# "@" des adresses mail
+	post_data="${post_data//%40/@}"
+
+	# Séparateur ":" des heures
+	post_data="${post_data//%3A/:}"
+
+	# Timezone
+	post_data="${post_data//%2B/Z+}"
+
+	# On évalue la chaine pour l'affecter aux variables
+	eval $(echo "${post_data}")
+
+	# Mise en forme liste mails invités
+	if [ ! -z "${conf_guests}" ] ; then
+		conf_guests=${conf_guests//%0D%0A/ }
+		conf_guests=${conf_guests//+/ }
+		conf_guests=${conf_guests//  /}
+	fi
+
+	if [ ! -z "${old_conf_guests}" ] ; then
+		old_conf_guests=${old_conf_guests//%0D%0A/ }
+		old_conf_guests=${old_conf_guests//+/ }
+		old_conf_guests=${old_conf_guests//  /}
+	fi
+
+	# Décodage de l'objet de la réunion
+	if [ ! -z "${conf_object}" ] ; then
+		object=$(urldecode "${conf_object}")
+	fi
+
+	# * Variables envoyées par Jicofo:
+	# name (nom de la conférence)
+	# mail_owner (récupéré à partir des attributs Shibb)
+	# start_time (au format 2020-05-05T12:16:57.518Z+02)
+	# duration (toujours -1)
+
+	# * Variables envoyés par le formulaire form_new.sh
+	# conf_name (nom de la conférence, généré aléatoirement, hidden)
+	# conf_date (date au format YYYY-MM-JJ)
+	# conf_time (heure au format HH:MM)
+	# conf_duration (durée en minutes)
+	# conf_guests (liste des adresses mail invitées)
+	# conf_object (Objet de la réunion)
+
+fi
+}
+
+function urldecode {
+
+local u="${1//+/ }"
+printf '%b' "${u//%/\\x}" |iconv -f iso-8859-1 -t UTF-8
+
+}
+
+function urlencode {
+
+old_lc_collate=$LC_COLLATE
+LC_COLLATE=C
+    
+local length="${#1}"
+for (( i = 0; i < length; i++ )); do
+	local c="${1:i:1}"
+	case $c in
+		[a-zA-Z0-9.~_-]) printf "$c" ;;
+		*) printf '%%%02X' "'$c" ;;
+	esac
+done
+    
+LC_COLLATE=$old_lc_collate
+
+}
+
+function utf8_to_html {
+# Convertir la chaine passée en argument (utf8)
+# -> HTML
+
+echo "${@}" |recode UTF-8..HTML_1.1
+
+}
+
+function utf8_to_base64mail {
+# Convertir la chaine passée en argument (utf8)
+# -> base 64 pour le sujet du mail
+
+local b64="$(echo -n "${@}" |recode UTF-8../Base64)"
+echo "=?UTF-8?B?${b64}?="
+
+}
