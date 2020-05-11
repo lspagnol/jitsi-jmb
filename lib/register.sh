@@ -60,11 +60,6 @@ if [ ! -z "${JMB_MAIL_REMINDER}" ] ; then
 			cat<<EOT > ${JMB_MAIL_REMINDER_DATA}/${tsn}.${r}
 reminder=${reminder}
 booking_tsn=${tsn}
-conf_name=${conf_name}
-object='${object}'
-mail_owner=${HTTP_MAIL}
-guests='${conf_guests}'
-JMB_SCHEME=${JMB_SCHEME}
 SERVER_NAME=${SERVER_NAME}
 JMB_MAIL_DOMAIN=${JMB_MAIL_DOMAIN}
 EOT

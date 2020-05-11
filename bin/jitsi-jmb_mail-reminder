@@ -21,6 +21,9 @@ for f in $(ls -1 ${JMB_MAIL_REMINDER_DATA}/ 2>/dev/null) ; do
 
 	if [ ${now} -ge ${reminder} ] ; then
 
+		# Lire les données de la réunion
+		source ${JMB_BOOKING_DATA}/${booking_tsn}
+
 		# Rappel à l'organisateur
 		source ${JMB_MAIL_REMINDER_OWNER} |mail\
 		 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
