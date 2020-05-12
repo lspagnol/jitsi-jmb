@@ -3,9 +3,11 @@
 ## Mots clé:
 
 * Planification
-* Réservation, booking
-* Modération, modérateur, moderator
-* Rappel par mail, reminder
+* Réservation
+* Modération, modérateur
+* Rappels par mail (début des réunions)
+* Rappels via XMPP (fin des réunions)
+* Booking, moderator, reminder
 
 ## Présentation:
 
