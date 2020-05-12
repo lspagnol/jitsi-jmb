@@ -43,5 +43,8 @@ chmod +x install.sh
 * https://github.com/jitsi/jicofo/blob/master/doc/reservation.md
 * https://github.com/jitsi/jitsi-videobridge/blob/master/doc/rest.md
 * https://github.com/jitsi/jitsi-videobridge/blob/master/doc/rest-colibri.md
+
+* https://github.com/jitsi/jitsi-meet/blob/master/doc/turn.md
+* https://community.jitsi.org/t/non-standard-characters-in-conference-room-name-request-result-in-404-error/18199/2
+
 * https://doc.ubuntu-fr.org/prosody
-# jitsi-jmb

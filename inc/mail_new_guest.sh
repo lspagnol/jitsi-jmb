@@ -1,3 +1,6 @@
+########################################################################
+# Template notification mail: création d'une réunion -> invités
+########################################################################
 
 cat<<EOT
 Bonjour,
@@ -13,5 +16,5 @@ Adresse...: ${JMB_SCHEME}://${SERVER_NAME}/${conf_name}
 Merci de confirmer votre présence.
 EOT
 
-source ${JMB_PATH}/inc/mail_footer.sh
+source ${JMB_PATH}/inc/mail_best_practices.sh
 source ${JMB_PATH}/inc/mail_footer_guest.sh
