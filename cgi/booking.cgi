@@ -42,12 +42,12 @@ case ${QUERY} in
 		source ${JMB_PATH}/lib/new.sh
 	;;
 
-	register_new)
-		source ${JMB_PATH}/lib/register_new.sh
-	;;
-
 	edit)
 		source ${JMB_PATH}/lib/edit.sh
+	;;
+
+	register_new)
+		source ${JMB_PATH}/lib/register_new.sh
 	;;
 
 	register_edit)

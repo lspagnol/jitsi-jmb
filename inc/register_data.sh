@@ -18,7 +18,7 @@ if [ -z "${conf_name}" ] ; then
 	# Aucune donnée du formulaire -> appel direct de l'URL ?
 	url_redirect="${JMB_DEFAULT_URL_REDIRECT}"
 	# Envoyer le contenu HTML de la réservation vide
-	source ${JMB_PATH}/inc/form_register_error.sh >> ${out}
+	source ${JMB_PATH}/inc/page_register_error.sh >> ${out}
 	http_200
 fi
 

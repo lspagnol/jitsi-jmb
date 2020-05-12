@@ -13,5 +13,5 @@ source ${JMB_PATH}/inc/mail_register.sh
 ########################################################################
 
 # Envoyer le contenu HTML de la réservation
-source ${JMB_PATH}/inc/form_register_new.sh >> ${out}
+source ${JMB_PATH}/inc/page_register_new.sh >> ${out}
 http_200

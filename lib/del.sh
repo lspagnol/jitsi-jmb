@@ -50,6 +50,6 @@ for guest in ${conf_guests} ; do
 done
 
 # Afficher la page Web de confirmation de la suppression
-source ${JMB_PATH}/inc/form_register_del.sh >> ${out}
+source ${JMB_PATH}/inc/page_register_del.sh >> ${out}
 
 http_200

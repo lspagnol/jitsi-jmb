@@ -27,7 +27,7 @@ echo "Content-Type: text/html" >> ${JMB_CGI_TMP}/http_${tsn}.header
 
 local message=$(utf8_to_html "${@}")
 local url_redirect="?list"
-source ${JMB_PATH}/inc/form_http_403.sh > ${JMB_CGI_TMP}/http_${tsn}.message
+source ${JMB_PATH}/inc/page_http_403.sh > ${JMB_CGI_TMP}/http_${tsn}.message
 
 http_send
 
