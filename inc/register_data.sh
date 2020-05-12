@@ -37,13 +37,15 @@ fi
 
 ########################################################################
 
+end=$(( ${begin} + ${duration} ))
+
 # Enregistrement des données du formulaire
 cat<<EOT > ${JMB_BOOKING_DATA}/${tsn}
 name=${conf_name}
 mail_owner=${HTTP_MAIL}
 begin=${begin}
 duration=${duration}
-end=$(( ${begin} + ${duration} ))
+end=${end}
 object='${object}'
 guests='${conf_guests}'
 EOT
@@ -61,5 +63,19 @@ SERVER_NAME=${SERVER_NAME}
 JMB_MAIL_DOMAIN=${JMB_MAIL_DOMAIN}
 EOT
 		fi
+	done
+fi
+
+# Enregistrement des rappels par XMPP
+if [ ! -z "${JMB_XMPP_REMINDER_DATA}" ] ; then
+	rm ${JMB_XMPP_REMINDER_DATA}/${tsn}.* 2>/dev/null
+	for r in ${JMB_XMPP_REMINDER} ; do
+		reminder=$(( ${end} - ( ${r} * 60 ) ))
+		cat<<EOT > ${JMB_XMPP_REMINDER_DATA}/${tsn}.${r}
+reminder=${reminder}
+booking_tsn=${tsn}
+grace=${r}
+SERVER_NAME=${SERVER_NAME}
+EOT
 	done
 fi

@@ -94,7 +94,8 @@ for f in $(ls -1 ${JMB_BOOKING_DATA}/ 2>/dev/null |sort -nr) ; do
 			[ ! -z "${duration}" ] && form_duration=$(( ${duration} / 60 ))
 			[ ! -z "${mail_owner}" ] && form_mail_owner=${mail_owner}
 
-			if [ "${is_owner}" = "1" ] && [ -z "${onair}" ] ; then
+#			if [ "${is_owner}" = "1" ] && [ -z "${onair}" ] ; then
+			if [ "${is_owner}" = "1" ] ; then
 				form_action="${form_action}<A> </A><A href=/booking.cgi?edit&id=${f}>Editer</A>"
 			fi
 

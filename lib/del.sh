@@ -20,7 +20,9 @@ if [ "${mail_owner}" != "${HTTP_MAIL}" ] ; then
 fi
 
 # Vérification passée, on peut supprimer les données
-[ -f ${JMB_BOOKING_DATA}/${tsn} ] && rm ${JMB_BOOKING_DATA}/${tsn}
+rm ${JMB_BOOKING_DATA}/${tsn}
+rm ${JMB_MAIL_REMINDER_DATA}/${tsn}.* 2>/dev/null
+rm ${JMB_XMPP_REMINDER_DATA}/${tsn}.* 2>/dev/null
 
 tpl_mail_owner="${JMB_PATH}/inc/mail_del_owner.sh"
 tpl_mail_guest="${JMB_PATH}/inc/mail_del_guest.sh"

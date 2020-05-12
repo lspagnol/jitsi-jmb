@@ -18,6 +18,7 @@ Le script d'installation ajoutera les paquets suivants:
 - pwgen
 - ldap-utils 
 - wget
+- sendxmpp
 
 EOT
 
@@ -26,7 +27,7 @@ if [ "${1}" != "-f" ] ; then
 	[ "${r}" = "o" ] || exit
 fi
 
-debs="postfix mailutils recode pwgen ldap-utils wget"
+debs="postfix mailutils recode pwgen ldap-utils wget sendxmpp"
 r=$(dpkg -l | grep ^ii |awk '{print $2}' |egrep "^(${debs// /|})$")
 n1=$(echo ${debs} |wc -w)
 n2=$(echo ${r} |wc -w)
@@ -34,8 +35,7 @@ n2=$(echo ${r} |wc -w)
 if [ ${n1} -ne ${n2} ] ; then
 	apt update
 	apt -y upgrade
-	apt -y install postfix
-	apt -y install mailutils recode pwgen ldap-utils wget
+	apt -y install ${debs}
 fi
 
 # Ne pas modifier ces variables !!!
@@ -56,7 +56,7 @@ chmod +x ${JMB_PATH}/bin/*
 # Création des répertoires utilisés par JMB
 mkdir -p ${JMB_DATA}
 chown root: ${JMB_DATA}
-for d in tmp booking booking_archive reminder ; do
+for d in tmp booking booking_archive mail_reminder xmpp_reminder ; do
 	mkdir -p ${JMB_DATA}/${d}
 	chown www-data: ${JMB_DATA}/${d}
 done
@@ -83,8 +83,11 @@ cat<<EOT>/etc/cron.d/jitsi-jmb
 # Mise à jour de la liste des salons privés
 */5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_private-rooms
 
-# Envoi des rappels par mail
+# Envoi des rappels par mail (début réunions)
 */5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_mail-reminder
+
+# Envoi des notification XMPP (fin réunion)
+*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_xmpp-reminder
 
 #
 EOT

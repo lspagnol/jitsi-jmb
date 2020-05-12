@@ -25,8 +25,11 @@ JMB_BOOKING_DATA=${JMB_DATA}/booking
 # Destination d'archivage des données de réservation
 JMB_BOOKING_ARCHIVE=${JMB_DATA}/booking_archive
 
-# Stockage des reminders
-JMB_MAIL_REMINDER_DATA="${JMB_DATA}/reminder"
+# Stockage des reminders / mail
+JMB_MAIL_REMINDER_DATA="${JMB_DATA}/mail_reminder"
+
+# Stockage des reminders / XMPP
+JMB_XMPP_REMINDER_DATA="${JMB_DATA}/xmpp_reminder"
 
 ########################################################################
 # A partir d'ici, vous pouvez tout personnaliser en recopiant les lignes
@@ -62,8 +65,11 @@ JMB_CHECK_MODULES="ldap-filter private-room booking"
 # Durée des réunions par défaut (secondes)
 JMB_DEFAULT_DURATION=7200
 
-# Rappels par mail (minutes)
-JMB_MAIL_REMINDER="60 1440 10080"
+# Rappels début réunion via mail (minutes)
+JMB_MAIL_REMINDER="10080 1440 60"
+
+# Rappels fin réunion via XMPP (minutes)
+JMB_XMPP_REMINDER="15 5"
 
 ########################################################################
 # Mails
