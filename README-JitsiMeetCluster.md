@@ -207,7 +207,11 @@ service jitsi-videobridge2 restart
 
 ---
 
-* Répétez les étapes du chapitre *Installation du premier JVB* !
+* Répétez les étapes du chapitre *Installation du premier JVB*.
+* N'oubliez pas de changer le nom pour chaque **JVB** dans */etc/jitsi/videobridge/sip-communicator.properties* !
+```
+org.jitsi.videobridge.xmpp.user.shard.MUC_NICKNAME=jvbXX
+```
 
 ### Tests
 
