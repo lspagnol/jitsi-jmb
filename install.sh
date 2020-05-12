@@ -72,6 +72,10 @@ if [ ${?} -ne 0 ] ; then
 	echo "org.jitsi.impl.reservation.rest.BASE_URL=http://localhost" >> /etc/jitsi/jicofo/sip-communicator.properties
 fi
 
+# Configuration de sendxmpp
+echo "username: anonymous" > /root/.sendxmpprc
+chmod 600 /root/.sendxmpprc
+
 # Planification archivage des réunions expirées
 cat<<EOT>/etc/cron.d/jitsi-jmb
 ################################################################
