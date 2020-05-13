@@ -24,6 +24,8 @@
 #   cp jitsi_videobridge_ /usr/local/share/munin
 #   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_network
 #   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_conferences
+#   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_participants
+#   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_reservations
 #   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_videostreams
 #   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_system
 #   echo -e "[jitsi_videobridge_system]\nuser root" > /etc/munin/plugin-conf.d/jitsi-videobridge
@@ -67,8 +69,11 @@ metrics=${metrics##*_}
 
 case ${metrics} in
 	conferences)
-		stats="conferences participants videochannels endpoints_sending_video endpoints_sending_audio inactive_endpoints inactive_conferences"
+		stats="conferences inactive_conferences"
 	;;
+	participants)
+		stats="participants videochannels endpoints_sending_video endpoints_sending_audio inactive_endpoints"
+
 	videostreams)
 		stats="videostreams"
 	;;
@@ -97,6 +102,27 @@ EOT
 		for stat in ${stats} ; do
 			echo "${stat}.label ${stat}"
 		done
+		;;
+
+		participants)
+cat<<EOT
+graph_title Participants
+graph_args --base 1000 -l 0
+graph_vlabel number
+graph_order ${stats}
+EOT
+		for stat in ${stats} ; do
+			echo "${stat}.label ${stat}"
+		done
+		;;
+
+		reservations)
+cat<<EOT
+graph_title Reservations
+graph_args --base 1000 -l 0
+graph_vlabel number
+planned.label planned_conferences
+EOT
 		;;
 
 		videostreams)
@@ -144,7 +170,7 @@ fi
 
 case ${metrics} in
 
-	conferences|videostreams|network)
+	conferences|participants|videostreams|network)
 	
 		get_jitsi_stats
 		
@@ -154,6 +180,13 @@ case ${metrics} in
 		    [ ${metrics} = "network" ] && val=$(( ${val} * 1024 ))
 		    echo "${stat}.value ${val}"
 		done
+
+	;;
+
+	reservations)
+
+		planned=$(ls -1 /var/www/jitsi-jmb/booking/ 2>/dev/null |wc -l)
+		echo "planned.value ${planned}"
 
 	;;
 
