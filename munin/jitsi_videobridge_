@@ -73,7 +73,7 @@ case ${metrics} in
 	;;
 	participants)
 		stats="participants videochannels endpoints_sending_video endpoints_sending_audio inactive_endpoints"
-
+	;;
 	videostreams)
 		stats="videostreams"
 	;;
