@@ -119,8 +119,8 @@ JMB_MAIL_REMINDER_GUEST=${JMB_PATH}/inc/mail_reminder_guest.sh
 # Objet par défaut des réunions
 JMB_DEFAULT_OBJECT="R&eacute;union sans objet"
 
-# Durée par défaut des réunions (minutes)
-JMB_DEFAULT_MEETING_DURATION="60"
+# Durée par défaut des réunions planifiées (minutes)
+JMB_DEFAULT_MEETING_DURATION="90"
 
 # Durée minimale des réunions (minutes)
 JMB_MIN_MEETING_DURATION="30"

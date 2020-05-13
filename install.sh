@@ -76,6 +76,9 @@ fi
 echo "username: anonymous" > /root/.sendxmpprc
 chmod 600 /root/.sendxmpprc
 
+# Page Logout Shibboleth
+ln -fs /opt/jitsi-jmb/inc/localLogout_fr.html /etc/shibboleth/
+
 # Planification archivage des réunions expirées
 cat<<EOT>/etc/cron.d/jitsi-jmb
 ################################################################
