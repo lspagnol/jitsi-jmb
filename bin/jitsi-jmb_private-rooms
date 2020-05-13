@@ -4,6 +4,13 @@
 # Mise à jour table correspondance uid <-> salle privée
 ########################################################################
 
+# On vérifie si le JMS tourne sur une machine HA (ssds-ha)
+test -x /usr/local/ssds_ha/ha-state
+if [ ${?} -eq 0 ] ; then
+	# On ne continue que si on est sur le noeud actif
+	ha-state -q || exit 0
+fi
+
 # Timestamp
 now=$(date +%s)
 
