@@ -1,0 +1,41 @@
+#!/bin/bash
+
+########################################################################
+# Redémarrage des démons du JMS (uniquement si conferences=0)
+########################################################################
+
+# Charger la configuration
+JMB_PATH=/opt/jitsi-jmb
+source ${JMB_PATH}/etc/jmb.cf
+
+########################################################################
+
+# On vérifie si le JMS tourne sur une machine HA (ssds-ha)
+test -x /usr/local/ssds_ha/ha-state
+if [ ${?} -eq 0 ] ; then
+	# On ne continue que si on est sur le noeud actif
+	/usr/local/ssds_ha/ha-state -q || exit 0
+fi
+
+echo "Restarting Jitsi Meet daemons ..."
+
+if [ -L /etc/munin/plugins/jitsi_videobridge_summary_conferences ] ; then
+	n=$(munin-run jitsi_videobridge_summary_conferences |grep '^conferences.value ' |awk '{print $2}')
+elif [ -L /etc/munin/plugins/jitsi_videobridge_conferences ] ; then
+	n=$(munin-run jitsi_videobridge_conferences |grep '^conferences.value ' |awk '{print $2}')
+fi
+
+n=${n:-unknown}
+
+echo -n "conferences.value=${n} -> " 
+
+if [ "${n}" = "0" ] ; then
+	echo -n "allowed ( "
+	for deamon in ${JMB_DAEMONS} ; do
+		echo -n "${deamon} "
+		service ${deamon} restart
+	done
+	echo ")"
+else
+	echo "not allowed"
+fi
