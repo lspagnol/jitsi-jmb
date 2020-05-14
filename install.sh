@@ -62,6 +62,7 @@ for d in tmp booking booking_archive mail_reminder xmpp_reminder ; do
 done
 
 # Configuration JMB/Apache -> accès aux CGIs
+[ -f /etc/apache2/conf_enabled-enabled/jitsi-jmb.conf ] || ln -fs ${JMB_PATH}/etc/jmb-apache.conf /etc/apache2/conf_enabled-enabled/jitsi-jmb.conf
 [ -f /etc/apache2/sites-enabled/jitsi-jmb.conf ] || ln -fs ${JMB_PATH}/etc/jmb-apache.conf /etc/apache2/sites-enabled/jitsi-jmb.conf
 [ -f /etc/apache2/mods-enabled/cgid.load ] || a2enmod cgid
 cat README-conf-Apache.md
@@ -78,6 +79,9 @@ chmod 600 /root/.sendxmpprc
 
 # Page Logout Shibboleth
 ln -fs /opt/jitsi-jmb/inc/localLogout_fr.html /etc/shibboleth/
+
+# Script de redémarrage du JMS
+ln -fs /opt/jitsi-jmb/bin/jitsi-restart /usr/local/sbin/jitsi-restart
 
 # Planification archivage des réunions expirées
 cat<<EOT>/etc/cron.d/jitsi-jmb
