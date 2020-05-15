@@ -4,6 +4,16 @@
 
 cat<<EOT
 <CENTER>
+EOT
+
+# Afficher le logo si disponible
+if [ -f ${JMB_PATH}/etc/logo.png ] ; then
+	cat<<EOT
+  <IMG src=logo.png>
+EOT
+fi
+
+cat<<EOT
   <H2>Nouvelle r&eacute;union</H2>
   <P>${JMB_SCHEME}://${SERVER_NAME}/${conf_name}</P>
 </CENTER>

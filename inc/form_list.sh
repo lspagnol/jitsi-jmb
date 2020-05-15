@@ -19,6 +19,16 @@ EOT
 
 cat<<EOT
 <CENTER>
+EOT
+
+# Afficher le logo si disponible
+if [ -f ${JMB_PATH}/etc/logo.png ] ; then
+	cat<<EOT
+  <IMG src=logo.png>
+EOT
+fi
+
+cat<<EOT
   <H2>Mes r&eacute;unions</H2>
   <P></P>
 EOT

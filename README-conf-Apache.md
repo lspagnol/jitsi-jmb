@@ -26,6 +26,12 @@ bloc *Shibboleth*.
     Require all granted
   </Location>
 
+  # Logo (si disponible)
+  #Alias /logo.png /opt/jitsi-jmb/etc/logo.png
+  #<Location /logo.png>
+  #  Require all granted
+  #</Location>
+
   # Accès au CGI de l'interface de gestion
   <Location /booking.cgi>
     AuthType shibboleth
