@@ -104,9 +104,39 @@ EOT
 # Décodage des données POST
 function postdecode {
 
+# Variables envoyées par Jicofo:
+# ------------------------------
+# name (nom de la conférence)
+# mail_owner (récupéré à partir des attributs Shibboleth)
+# start_time (au format 2020-05-05T12:16:57.518Z+02)
+# duration (toujours -1)
+
+# Variables envoyés par le formulaire form_new.sh:
+# ------------------------------------------------
+# conf_tsn (timestamp de l'enregistrement en nanosecondes)
+# conf_name (nom de la conférence, généré aléatoirement, hidden)
+# conf_date (date au format YYYY-MM-JJ)
+# conf_time (heure au format HH:MM)
+# conf_duration (durée en minutes)
+# conf_object (objet de la réunion)
+# conf_guests (liste des adresses mail invitées)
+
+# Variables envoyés par le formulaire form_edit.sh:
+# -------------------------------------------------
+# conf_tsn (timestamp de l'enregistrement en nanosecondes)
+# conf_name (nom de la conférence, généré aléatoirement, hidden)
+# conf_date (date au format YYYY-MM-JJ)
+# conf_time (heure au format HH:MM)
+# conf_duration (durée en minutes)
+# conf_object (objet de la réunion)
+# conf_guests (liste des adresses mail invitées)
+# old_conf_date (date d'origine de la conférence)
+# old_conf_time (heure d'origine de la conférence)
+# old_conf_guests (liste d'origine des invités)
+
 if [ "${REQUEST_METHOD}" = "POST" ]; then
 
-        read post_data
+	read post_data
 
 	# Séparer les champs
 	post_data="${post_data//&/ }"
@@ -140,20 +170,6 @@ if [ "${REQUEST_METHOD}" = "POST" ]; then
 	if [ ! -z "${conf_object}" ] ; then
 		object=$(urldecode "${conf_object}")
 	fi
-
-	# * Variables envoyées par Jicofo:
-	# name (nom de la conférence)
-	# mail_owner (récupéré à partir des attributs Shibb)
-	# start_time (au format 2020-05-05T12:16:57.518Z+02)
-	# duration (toujours -1)
-
-	# * Variables envoyés par le formulaire form_new.sh
-	# conf_name (nom de la conférence, généré aléatoirement, hidden)
-	# conf_date (date au format YYYY-MM-JJ)
-	# conf_time (heure au format HH:MM)
-	# conf_duration (durée en minutes)
-	# conf_guests (liste des adresses mail invitées)
-	# conf_object (Objet de la réunion)
 
 fi
 }
