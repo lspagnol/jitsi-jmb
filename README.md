@@ -32,6 +32,7 @@ Le serveur *Jisti Meet* **DOIT** être installé, configuré et fonctionnel avec
 chmod +x install.sh
 . /install.sh
 ```
+* Si vous avez un logo, copiez-le dans */opt/jitsi-jmb/etc/logo.png* et décommentez les lignes correspondantes dans la configuration d'Apache.
 
 ## Divers:
 
