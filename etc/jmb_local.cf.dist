@@ -12,11 +12,17 @@
 # modifier ici
 #JMB_MAIL_DOMAIN="mondomaine.fr"
 
-# Rappels par mail (minutes)
-#JMB_MAIL_REMINDER="60 1440 10080"
+# Rappels début réunion via mail (minutes)
+#JMB_MAIL_REMINDER="10080 1440 60"
 
-# Durée des réunions par défaut (secondes)
+# Rappels fin réunion via XMPP (minutes)
+#JMB_XMPP_REMINDER="15 5"
+
+# Durée par défaut des réunions (secondes)
 #JMB_DEFAULT_DURATION=7200
+
+# Durée par défaut des réunions dans le formulaire (minutes)
+#JMB_DEFAULT_MEETING_DURATION="90"
 
 # Commande de génération des noms de réunion
 #JMB_GEN_NAME="pwgen -A -0 12 1"
@@ -48,8 +54,8 @@
 # Incrément durée réunion (minutes)
 #JMB_STEP_MEETING_DURATION="30"
 
-# Formulaire "liste des réunions: mettre en évidence les réunions N
-# secondes avant leur date de début.
+# Formulaire "liste des réunions: mise en évidence (vert) des réunions N
+# secondes avant leur date de début, celles qui ont démarré sont orange
 #JMB_LIST_HIGHLIGHT_OWNER="900"
 #JMB_LIST_HIGHLIGHT_GUEST="300"
 

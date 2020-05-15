@@ -62,7 +62,7 @@ JMB_DEFAULT_URL_REDIRECT="?list"
 #JMB_CHECK_MODULES="ldap-filter ldap-self booking"
 JMB_CHECK_MODULES="ldap-filter private-room booking"
 
-# Durée des réunions par défaut (secondes)
+# Durée par défaut des réunions (secondes)
 JMB_DEFAULT_DURATION=7200
 
 # Rappels début réunion via mail (minutes)
@@ -116,13 +116,13 @@ JMB_MAIL_REMINDER_OWNER=${JMB_PATH}/inc/mail_reminder_owner.sh
 JMB_MAIL_REMINDER_GUEST=${JMB_PATH}/inc/mail_reminder_guest.sh
 
 ########################################################################
-# Paramètres de réservation
+# Paramètres du formulaire réservation
 ########################################################################
 
 # Objet par défaut des réunions
 JMB_DEFAULT_OBJECT="R&eacute;union sans objet"
 
-# Durée par défaut des réunions planifiées (minutes)
+# Durée par défaut des réunions dans le formulaire (minutes)
 JMB_DEFAULT_MEETING_DURATION="90"
 
 # Durée minimale des réunions (minutes)
@@ -134,8 +134,8 @@ JMB_MAX_MEETING_DURATION="480"
 # Incrément durée réunion (minutes)
 JMB_STEP_MEETING_DURATION="30"
 
-# Formulaire "liste des réunions: mettre en évidence les réunions N
-# secondes avant leur date de début.
+# Formulaire "liste des réunions: mise en évidence (vert) des réunions N
+# secondes avant leur date de début, celles qui ont démarré sont orange
 JMB_LIST_HIGHLIGHT_OWNER="900"
 JMB_LIST_HIGHLIGHT_GUEST="300"
 
