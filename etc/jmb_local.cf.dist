@@ -30,14 +30,19 @@
 # Commande de requête LDAP
 #JMB_LDAPSEARCH="/usr/bin/ldapsearch -x -LLL -o ldif-wrap=no -h ssds-ldap -b ou=people,dc=univ-reims,dc=fr"
 
+# Filtre LDAP: comptes autorisés à créer et éditier les réunions
+#JMB_LDAP_FILTER="eduPersonAffiliation=student"
+#JMB_LDAP_FILTER="|(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
+
+# Modules de vérification à exécuter lors des appels de Jicofo
+#JMB_CHECK_MODULES="ldap-filter ldap-self booking"
+#JMB_CHECK_MODULES="ldap-filter private-room booking"
+
 # Durée d'attente avant redirection du navigateur (secondes)
 #JMB_SLEEP_REDIRECT="10"
 
 # URL de redirection par défaut
 #JMB_DEFAULT_URL_REDIRECT="?list"
-
-# Modules de vérification à exécuter lors des appels de Jicofo
-#JMB_CHECK_MODULES="ldap-filter ldap-self booking"
 
 # Objet par défaut des réunions
 #JMB_DEFAULT_OBJECT="R&eacute;union sans objet"

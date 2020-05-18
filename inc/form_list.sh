@@ -49,7 +49,7 @@ cat<<EOT
     <STYLE>
       table, th, td {
       padding: 10px;
-      border: 1px solid black;
+      border: 2px solid black;
       border-collapse: collapse;
       }
     </STYLE>
