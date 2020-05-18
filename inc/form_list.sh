@@ -36,7 +36,7 @@ cat<<EOT
   <P></P>
 EOT
 
-if [ -f ${JMB_DATA}/private_rooms ] && [ "${isAllowed}" = "1" ] ; then
+if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_allowed}" = "1" ] ; then
 
 	uid=$($JMB_LDAPSEARCH mail=${HTTP_MAIL} uid |grep "^uid: " |awk '{print $2}')
 	self=$(grep "^${uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
