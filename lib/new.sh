@@ -4,6 +4,11 @@
 # GCI (booking.cgi): création d'une réunion
 ########################################################################
 
+isAllowed
+if [ "${is_allowed}" = "0" ] ; then
+	http_403 "Vous n'êtes pas autorisé à créer une réunion"
+fi
+
 # Générer un nom de réunion aléatoire
 conf_name=$(${JMB_GEN_NAME})
 

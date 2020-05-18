@@ -4,6 +4,11 @@
 # GCI (booking.cgi): modification d'une réunion
 ########################################################################
 
+isAllowed
+if [ "${is_allowed}" = "0" ] ; then
+	http_403 "Vous n'êtes pas autorisé à modifier une réunion"
+fi
+
 # Le timestamp est l'ID de réunion
 tsn=${id}
 

@@ -4,6 +4,11 @@
 # GCI (booking.cgi): suppression d'une réunion
 ########################################################################
 
+isAllowed
+if [ "${is_allowed}" = "0" ] ; then
+	http_403 "Vous n'êtes pas autorisé à supprimer une réunion"
+fi
+
 # Le timestamp est l'ID de réunion
 tsn=${conf_tsn}
 

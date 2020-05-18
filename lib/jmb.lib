@@ -203,7 +203,7 @@ function utf8_to_html {
 # Convertir la chaine passée en argument (utf8)
 # -> HTML
 
-echo "${@}" |recode UTF-8..HTML_1.1
+echo "${@}" |recode UTF-8..HTML_4.0
 
 }
 
