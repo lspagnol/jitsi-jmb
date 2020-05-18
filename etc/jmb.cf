@@ -61,7 +61,7 @@ JMB_LDAP_FILTER="|(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(
 JMB_CHECK_MODULES="ldap-filter private-room booking"
 
 # Durée d'attente avant redirection du navigateur (secondes)
-JMB_SLEEP_REDIRECT="10"
+JMB_SLEEP_REDIRECT="5"
 
 # URL de redirection par défaut
 JMB_DEFAULT_URL_REDIRECT="?list"

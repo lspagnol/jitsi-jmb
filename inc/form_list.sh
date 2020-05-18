@@ -17,6 +17,9 @@ EOT
 
 ########################################################################
 
+# Vérifier si l'utilisateur est autorisé à créer/editer une réunion
+isAllowed
+
 cat<<EOT
 <CENTER>
 EOT
@@ -33,7 +36,7 @@ cat<<EOT
   <P></P>
 EOT
 
-if [ -f ${JMB_DATA}/private_rooms ] ; then
+if [ -f ${JMB_DATA}/private_rooms ] && [ "${isAllowed}" = "1" ] ; then
 
 	uid=$($JMB_LDAPSEARCH mail=${HTTP_MAIL} uid |grep "^uid: " |awk '{print $2}')
 	self=$(grep "^${uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
@@ -104,7 +107,7 @@ for f in $(ls -1 ${JMB_BOOKING_DATA}/ 2>/dev/null |sort -nr) ; do
 			[ ! -z "${duration}" ] && form_duration=$(( ${duration} / 60 ))
 			[ ! -z "${mail_owner}" ] && form_mail_owner=${mail_owner}
 
-			if [ "${is_owner}" = "1" ] && [ ${now} -lt ${begin} ] ; then
+			if [ "${is_allowed}" = "1" ] && [ "${is_owner}" = "1" ] && [ ${now} -lt ${begin} ] ; then
 				form_action="${form_action}<A> </A><A href=/booking.cgi?edit&id=${f}>Editer</A>"
 			fi
 
@@ -125,8 +128,16 @@ cat<<EOT
   </TABLE>
   <P></P>
   <FORM method="POST">
+EOT
+
+if [ "${is_allowed}" = "1" ] ; then
+cat<<EOT
     <INPUT type="submit" value="Nouvelle R&eacute;union" onclick="javascript: form.action='?new';"> 
     <P></P>
+EOT
+fi
+
+cat<<EOT
     <INPUT type="submit" value="Rafraichir la liste" onclick="javascript: form.action='?list';"> 
     <P></P>
     <INPUT type="submit" value="Retourner &agrave; la page d'accueil" onclick="javascript: form.action='/';"> 

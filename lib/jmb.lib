@@ -215,3 +215,21 @@ local b64="$(echo -n "${@}" |recode UTF-8../Base64)"
 echo "=?UTF-8?B?${b64}?="
 
 }
+
+function isAllowed {
+# Vérifier si un utilisateur est autorisé à créer / éditer une réunion
+# -> utilise le filtre définit dans JMB_LDAP_FILTER
+
+$JMB_LDAPSEARCH "(&(mail=${HTTP_MAIL})(${JMB_LDAP_FILTER}))" uid |grep -q '^uid: '
+
+if [ ${?} = 0 ] ; then
+
+	is_allowed=1
+
+else
+
+	is_allowed=0
+
+fi
+
+}
