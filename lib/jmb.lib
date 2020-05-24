@@ -156,7 +156,7 @@ if [ "${REQUEST_METHOD}" = "POST" ]; then
 	# Filtrage des données POST pour limiter le risque d'injection
 	# On ne conserve que les caractères et variables autorisés
 	cat\
-	 |tr -d -c '[:alnum:]&=_%.-\\+'\
+	 |tr -d -c '[:alnum:]&=_%.\-\+'\
 	 |sed 's/&/\n/g ; s/%40/@/g ; s/%3A/:/g ; s/%2B/Z+/g'\
 	 |egrep '^(name|mail_owner|start_time|duration|conf_tsn|conf_name|conf_date|conf_time|conf_duration|conf_object|conf_guests|old_conf_date|old_conf_time|old_conf_guests)='\
 	  > ${JMB_CGI_TMP}/post-data.${tsn}
