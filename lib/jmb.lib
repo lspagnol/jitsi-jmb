@@ -101,7 +101,7 @@ EOT
 ########################################################################
 # Divers
 
-# Décodage des données POST
+# Décodage et extraction des données POST
 function postdecode {
 
 # Variables envoyées par Jicofo:
@@ -136,22 +136,34 @@ function postdecode {
 
 if [ "${REQUEST_METHOD}" = "POST" ]; then
 
-	read post_data
+	#read post_data
 
-	# Séparer les champs
-	post_data="${post_data//&/ }"
+	## Séparer les champs
+	#post_data="${post_data//&/ }"
 
-	# "@" des adresses mail
-	post_data="${post_data//%40/@}"
+	## "@" des adresses mail
+	#post_data="${post_data//%40/@}"
 
-	# Séparateur ":" des heures
-	post_data="${post_data//%3A/:}"
+	## Séparateur ":" des heures
+	#post_data="${post_data//%3A/:}"
 
-	# Timezone
-	post_data="${post_data//%2B/Z+}"
+	## Timezone
+	#post_data="${post_data//%2B/Z+}"
 
-	# On évalue la chaine pour l'affecter aux variables
-	eval $(echo "${post_data}")
+	## On évalue la chaine pour l'affecter aux variables
+	#eval $(echo "${post_data}")
+
+	# Filtrage des données POST pour limiter le risque d'injection
+	# On ne conserve que les caractères et variables autorisés
+	cat\
+	 |tr -d -c '[:alnum:]&=_%.-\\+'\
+	 |sed 's/&/\n/g ; s/%40/@/g ; s/%3A/:/g ; s/%2B/Z+/g'\
+	 |egrep '^(name|mail_owner|start_time|duration|conf_tsn|conf_name|conf_date|conf_time|conf_duration|conf_object|conf_guests|old_conf_date|old_conf_time|old_conf_guests)='\
+	  > ${JMB_CGI_TMP}/post-data.${tsn}
+
+	# Evaluation des données POST filtrées
+	test -s ${JMB_CGI_TMP}/post-data.${tsn} && eval $(<${JMB_CGI_TMP}/post-data.${tsn})
+	rm ${JMB_CGI_TMP}/post-data.${tsn}
 
 	# Mise en forme liste mails invités
 	if [ ! -z "${conf_guests}" ] ; then
@@ -172,6 +184,36 @@ if [ "${REQUEST_METHOD}" = "POST" ]; then
 	fi
 
 fi
+
+}
+
+# Décodage et extraction des données GET
+function getdecode {
+
+# Filtrage des données GET pour limiter le risque d'injection
+# On ne conserve que les caractères et variables autorisés
+
+# Variables retournées par la fonction
+# ------------------------------------
+# query
+# id
+
+echo "${QUERY_STRING}"\
+ |tr -d -c '[:alnum:]&=_%.-\\+'\
+ |sed 's/&.*//g'\
+ |egrep '^(|list|new|edit|del|register_new|register_edit)$'\
+  > ${JMB_CGI_TMP}/query.${tsn}
+query=$(<${JMB_CGI_TMP}/query.${tsn})
+rm ${JMB_CGI_TMP}/query.${tsn}
+
+echo "${QUERY_STRING}"\
+ |tr -d -c '[:alnum:]&=_%.-\\+'\
+ |sed "s/^${query}&// ; s/&/\n/g"\
+ |egrep '^(id)='\
+  > ${JMB_CGI_TMP}/params.${tsn}
+test -s ${JMB_CGI_TMP}/params.${tsn} && eval $(<${JMB_CGI_TMP}/params.${tsn})
+rm ${JMB_CGI_TMP}/params.${tsn}
+
 }
 
 function urldecode {

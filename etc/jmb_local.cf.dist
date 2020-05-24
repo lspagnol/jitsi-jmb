@@ -63,5 +63,3 @@
 # secondes avant leur date de début, celles qui ont démarré sont orange
 #JMB_LIST_HIGHLIGHT_OWNER="900"
 #JMB_LIST_HIGHLIGHT_GUEST="300"
-
-JMB_DEBUG=${JMB_CGI_TMP}/debug

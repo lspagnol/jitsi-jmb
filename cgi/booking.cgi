@@ -21,14 +21,20 @@ source ${JMB_PATH}/lib/jmb.lib
 postdecode
 
 # Décodage et extraction des données GET
-QUERY=${QUERY_STRING%%&*}
-PARAMS=${QUERY_STRING#*&}
-PARAMS=${PARAMS//&/ }
-eval $(echo "${PARAMS}")
+getdecode
+
+#QUERY=${QUERY_STRING%%&*}
+#PARAMS=${QUERY_STRING#*&}
+#PARAMS=${PARAMS//&/ }
+#if [ "${PARAMS}" = "${QUERY}" ] ; then
+	#unset PARAMS
+#else
+	#eval $(echo "${PARAMS}")
+#fi
 
 ########################################################################
 
-case ${QUERY} in
+case ${query} in
 
 	list)
 		source ${JMB_PATH}/lib/list.sh

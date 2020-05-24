@@ -150,3 +150,7 @@ if [ -f ${JMB_PATH}/etc/jmb_local.cf ] ; then
 	source ${JMB_PATH}/etc/jmb_local.cf
 fi
 
+########################################################################
+
+# Fichier de sortie pour DEBUG
+JMB_DEBUG=${JMB_CGI_TMP}/debug.${now}
