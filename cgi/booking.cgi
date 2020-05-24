@@ -17,20 +17,9 @@ source ${JMB_PATH}/lib/jmb.lib
 
 ########################################################################
 
-# Décodage et extraction des données POST
+# Décodage et extraction des données POST et GET
 postdecode
-
-# Décodage et extraction des données GET
 getdecode
-
-#QUERY=${QUERY_STRING%%&*}
-#PARAMS=${QUERY_STRING#*&}
-#PARAMS=${PARAMS//&/ }
-#if [ "${PARAMS}" = "${QUERY}" ] ; then
-	#unset PARAMS
-#else
-	#eval $(echo "${PARAMS}")
-#fi
 
 ########################################################################
 
