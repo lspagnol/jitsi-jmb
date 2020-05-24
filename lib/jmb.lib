@@ -154,7 +154,7 @@ if [ "${REQUEST_METHOD}" = "POST" ]; then
 	#eval $(echo "${post_data}")
 
 	# Filtrage des données POST pour limiter le risque d'injection
-	# On ne conserve que les caractères et variables autorisés
+	# On ne conserve que les variables et caractères autorisés
 	cat\
 	 |tr -d -c '[:alnum:]&=_%.\-\+'\
 	 |sed 's/&/\n/g ; s/%40/@/g ; s/%3A/:/g ; s/%2B/Z+/g'\
@@ -191,7 +191,7 @@ fi
 function getdecode {
 
 # Filtrage des données GET pour limiter le risque d'injection
-# On ne conserve que les caractères et variables autorisés
+# On ne conserve que les variables et caractères autorisés
 
 # Variables retournées par la fonction
 # ------------------------------------
