@@ -21,6 +21,9 @@ source ${JMB_PATH}/lib/jmb.lib
 postdecode
 getdecode
 
+# On positionne le cookie de l'interface de gestion
+setcookie=1
+
 ########################################################################
 
 case ${query} in

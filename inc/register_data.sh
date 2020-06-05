@@ -2,7 +2,7 @@
 # Enregistrement des données de réunion
 ########################################################################
 
-# Récupérer le TSZ du formulaire
+# Récupérer le TSN du formulaire
 tsn=${conf_tsn}
 
 ########################################################################

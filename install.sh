@@ -83,6 +83,12 @@ ln -fs /opt/jitsi-jmb/inc/localLogout_fr.html /etc/shibboleth/
 # Script de redémarrage du JMS
 ln -fs /opt/jitsi-jmb/bin/jitsi-restart /usr/local/sbin/jitsi-restart
 
+# Modules Prosody supplémentaires (déconnexion des utilisateurs fantômes)
+# - Remplacer storage = "none" par storage = "memory" dans /etc/prosody/conf.d/FQDN.cfg.lua
+# - ajouter "pinger" à la liste des modules activés dans /etc/prosody/prosody.cfg.lua
+chown -R root: lua
+cp lua/* /usr/lib/prosody/modules/
+
 # Planification archivage des réunions expirées
 cat<<EOT>/etc/cron.d/jitsi-jmb
 ################################################################

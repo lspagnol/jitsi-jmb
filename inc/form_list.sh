@@ -137,10 +137,25 @@ cat<<EOT
 EOT
 fi
 
+#cat<<EOT
+    #<INPUT type="submit" value="Rafraichir la liste" onclick="javascript: form.action='?list';"> 
+    #<P></P>
+    #<INPUT type="submit" value="Retourner &agrave; la page d'accueil" onclick="javascript: form.action='/';"> 
+  #</FORM>
+#</CENTER>
+#EOT
+
 cat<<EOT
     <INPUT type="submit" value="Rafraichir la liste" onclick="javascript: form.action='?list';"> 
-    <P></P>
-    <INPUT type="submit" value="Retourner &agrave; la page d'accueil" onclick="javascript: form.action='/';"> 
   </FORM>
+  <BR>
+  <BR>
+  <A>
+  <I><B>Jitsi Meet</B> est une solution de visioconf&eacute;rence 100%<BR>
+  Open Source, s&eacute;curis&eacute;e, h&eacute;berg&eacute;e sur nos serveurs.<BR>
+  </I><BR>
+  Pour un fonctionnement optimal, nous recommandons l'utilisation<BR>
+  du navigateur Chrome/Chromium et d'un micro-casque.
+  </A>
 </CENTER>
 EOT

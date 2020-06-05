@@ -39,10 +39,14 @@
 #JMB_CHECK_MODULES="ldap-filter private-room booking"
 
 # Durée d'attente avant redirection du navigateur (secondes)
-#JMB_SLEEP_REDIRECT="10"
+#JMB_SLEEP_REDIRECT="5"
 
 # URL de redirection par défaut
 #JMB_DEFAULT_URL_REDIRECT="?list"
+
+# URL de redirection en fin de conférence pour les utilisateurs qui ne
+# sont pas passé par l'interface de réservation
+#JMB_REDIRECT_CLOSE="https://jitsi.org/"
 
 # Objet par défaut des réunions
 #JMB_DEFAULT_OBJECT="R&eacute;union sans objet"

@@ -21,16 +21,25 @@ bloc *Shibboleth*.
 ```
   # Afficher le lien "Planifiez vos réunions" en haut de la page
   # d'accueil de Jitsi Meet
-  Alias /body.html /opt/jitsi-jmb/inc/body.html
-  <Location /body.html>
+  #Alias /body.html /opt/jitsi-jmb/inc/body.html
+  #<Location /body.html>
+  #  Require all granted
+  #</Location>
+
+  # Logo (si disponible)
+  Alias /logo.png /opt/jitsi-jmb/etc/logo.png
+  <Location /logo.png>
     Require all granted
   </Location>
 
-  # Logo (si disponible)
-  #Alias /logo.png /opt/jitsi-jmb/etc/logo.png
-  #<Location /logo.png>
-  #  Require all granted
-  #</Location>
+  # Neutraliser la page d'accueil de Jitsi Meet
+  RewriteRule ^(/|)$ /booking.cgi [R=302,L]
+
+  # Redirection fin de conférence
+  <Location /static/close2.html>
+    ProxyPass           http://localhost:80/close.cgi
+    ProxyPassReverse    http://localhost:80/close.cgi
+  </Location>
 
   # Accès au CGI de l'interface de gestion
   <Location /booking.cgi>
