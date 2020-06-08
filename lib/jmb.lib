@@ -12,10 +12,10 @@
 function http_200 {
 
 echo "Status: 200 OK" > ${JMB_CGI_TMP}/http_${tsn}.header
-echo "Content-Type: text/html" >> ${JMB_CGI_TMP}/http_${tsn}.header
-if [ "setcookie" = "1" ] ; then
+if [ "${setcookie}" = "1" ] ; then
 	echo "Set-Cookie: viajmb=1" >> ${JMB_CGI_TMP}/http_${tsn}.header
 fi
+echo "Content-Type: text/html" >> ${JMB_CGI_TMP}/http_${tsn}.header
 
 http_send
 
