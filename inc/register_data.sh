@@ -25,6 +25,10 @@ fi
 # Calcul timestam début
 begin=$(date -d "${conf_date} ${conf_time}" +%s)
 
+if [ ${begin} -lt ${now} ] ; then
+	http_403 "La date de la réunion est antérieure à la date actuelle"
+fi
+
 # Calul durée
 duration=$(( ${conf_duration} * 60 ))
 
