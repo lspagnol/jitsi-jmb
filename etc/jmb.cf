@@ -90,7 +90,7 @@ JMB_DAEMONS="jicofo prosody"
 JMB_MAIL_FROM_NOTIFICATION="Jitsi Meet <noreply@univ-reims.fr>"
 
 # Réservation visioconférence
-JMB_SUBJECT_NEW_OWNER="=?UTF-8?B?UsOpc2VydmF0aW9uIHZpc29jb25mw6lyZW5jZQ==?="
+JMB_SUBJECT_NEW_OWNER="=?UTF-8?B?UsOpc2VydmF0aW9uIHZpc2lvY29uZsOpcmVuY2U=?="
 
 # Invitation visioconférence
 JMB_SUBJECT_NEW_GUEST="=?UTF-8?B?SW52aXRhdGlvbiB2aXNpb2NvbmbDqXJlbmNl?="
