@@ -186,7 +186,7 @@ function getdecode {
 # id
 
 echo "${QUERY_STRING}"\
- |tr -d -c '[:alnum:]&=_%.-\\+'\
+ |tr -d -c '[:alnum:]&=_%.\-\+'\
  |sed 's/&.*//g'\
  |egrep '^(|list|new|edit|del|register_new|register_edit)$'\
   > ${JMB_CGI_TMP}/query.${tsn}
@@ -194,7 +194,7 @@ query=$(<${JMB_CGI_TMP}/query.${tsn})
 rm ${JMB_CGI_TMP}/query.${tsn}
 
 echo "${QUERY_STRING}"\
- |tr -d -c '[:alnum:]&=_%.-\\+'\
+ |tr -d -c '[:alnum:]&=_%.\-\+'\
  |sed "s/^${query}&// ; s/&/\n/g"\
  |egrep '^(id)='\
   > ${JMB_CGI_TMP}/params.${tsn}
