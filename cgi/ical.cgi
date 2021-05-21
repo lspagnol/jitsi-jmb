@@ -32,14 +32,13 @@ SUMMARY:${object}
 DTSTART;TZID=Europe/Paris:${dtstart}
 DTEND;TZID=Europe/Paris:${dtend}
 LOCATION:${JMB_SCHEME}://${SERVER_NAME}/${name}
-
 EOT
 
 for reminder in ${JMB_MAIL_REMINDER} ; do
 cat <<EOT
 BEGIN:VALARM
 ACTION:DISPLAY
-TRIGGER;VALUE=DURATION:-PT${reminder}M
+TRIGGER:-P${reminder}M
 DESCRIPTION:${object}
 END:VALARM
 EOT
