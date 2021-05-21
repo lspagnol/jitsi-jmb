@@ -41,6 +41,13 @@ bloc *Shibboleth*.
     ProxyPassReverse    http://localhost:80/close.cgi
   </Location>
 
+  # Accès au CGI du flux iCal
+  <Location /ical.cgi>
+    Require all granted
+    ProxyPass           http://localhost:80/ical.cgi
+    ProxyPassReverse    http://localhost:80/ical.cgi
+  </Location>
+
   # Accès au CGI de l'interface de gestion
   <Location /booking.cgi>
     AuthType shibboleth

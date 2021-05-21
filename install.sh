@@ -56,7 +56,7 @@ chmod +x ${JMB_PATH}/bin/*
 # Création des répertoires utilisés par JMB
 mkdir -p ${JMB_DATA}
 chown root: ${JMB_DATA}
-for d in tmp booking booking_archive mail_reminder xmpp_reminder ; do
+for d in tmp booking booking_archive mail_reminder xmpp_reminder ical ical/by-user ical/by-hash ; do
 	mkdir -p ${JMB_DATA}/${d}
 	chown www-data: ${JMB_DATA}/${d}
 done

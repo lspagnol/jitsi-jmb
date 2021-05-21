@@ -20,6 +20,18 @@ EOT
 # Vérifier si l'utilisateur est autorisé à créer/editer une réunion
 isAllowed
 
+# Identifiant utilisateur
+uid=$($JMB_LDAPSEARCH mail=${HTTP_MAIL} uid |grep "^uid: " |awk '{print $2}')
+
+# Flux iCal
+if [ -f ${JMB_ICAL_DATA}/by-user/${uid} ] ; then
+	ical_hash=$(<${JMB_ICAL_DATA}/by-user/${uid})
+else
+	ical_hash=$(pwgen 16 1)
+	echo "${ical_hash}" > ${JMB_ICAL_DATA}/by-user/${uid}
+	echo "${uid}" > ${JMB_ICAL_DATA}/by-hash/${ical_hash}
+fi
+
 cat<<EOT
 <CENTER>
 EOT
@@ -38,7 +50,6 @@ EOT
 
 if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_allowed}" = "1" ] ; then
 
-	uid=$($JMB_LDAPSEARCH mail=${HTTP_MAIL} uid |grep "^uid: " |awk '{print $2}')
 	self=$(grep "^${uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
 	cat<<EOT
 <A><I>Ma r&eacute;union priv&eacute;e, disponible &agrave; tout moment: </I></A><BR>
@@ -47,6 +58,7 @@ if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_allowed}" = "1" ] ; then
 EOT
 
 fi
+
 cat<<EOT
   <TABLE>
     <STYLE>
@@ -127,6 +139,15 @@ done
 cat<<EOT
   </TABLE>
   <P></P>
+EOT
+
+cat<<EOT
+  <A><I>Mon flux iCal (synchronisation d'agenda): </I></A><BR>
+  <A href=/ical.cgi?${ical_hash}>${JMB_SCHEME}://${SERVER_NAME}/ical.cgi?${ical_hash}</A>
+  <P></P>
+EOT
+
+cat<<EOT
   <FORM method="POST">
 EOT
 
@@ -136,14 +157,6 @@ cat<<EOT
     <P></P>
 EOT
 fi
-
-#cat<<EOT
-    #<INPUT type="submit" value="Rafraichir la liste" onclick="javascript: form.action='?list';"> 
-    #<P></P>
-    #<INPUT type="submit" value="Retourner &agrave; la page d'accueil" onclick="javascript: form.action='/';"> 
-  #</FORM>
-#</CENTER>
-#EOT
 
 cat<<EOT
     <INPUT type="submit" value="Rafraichir la liste" onclick="javascript: form.action='?list';"> 

@@ -31,6 +31,9 @@ JMB_MAIL_REMINDER_DATA="${JMB_DATA}/mail_reminder"
 # Stockage des reminders / XMPP
 JMB_XMPP_REMINDER_DATA="${JMB_DATA}/xmpp_reminder"
 
+# Stockage des données iCal
+JMB_ICAL_DATA="${JMB_DATA}/ical"
+
 ########################################################################
 # A partir d'ici, vous pouvez tout personnaliser en recopiant les lignes
 # à modifier dans "jmb_local.cf"
@@ -74,7 +77,7 @@ JMB_REDIRECT_CLOSE="https://jitsi.org/"
 JMB_DEFAULT_DURATION=7200
 
 # Rappels début réunion via mail (minutes)
-JMB_MAIL_REMINDER="10080 1440 60"
+JMB_MAIL_REMINDER="10080 1440 60 10"
 
 # Rappels fin réunion via XMPP (minutes)
 JMB_XMPP_REMINDER="15 5"
@@ -122,6 +125,15 @@ JMB_MAIL_DEL_GUEST=${JMB_PATH}/inc/mail_del_guest.sh
 JMB_MAIL_DEL_OWNER=${JMB_PATH}/inc/mail_del_owner.sh
 JMB_MAIL_REMINDER_OWNER=${JMB_PATH}/inc/mail_reminder_owner.sh
 JMB_MAIL_REMINDER_GUEST=${JMB_PATH}/inc/mail_reminder_guest.sh
+
+########################################################################
+# iCal
+########################################################################
+
+JMB_ICAL_NAME="Visio / Rendez-vous"
+JMB_ICAL_DESC="Visio Rendez-vous (https://rendez-vous.univ-reims.fr)"
+JMB_ICAL_TZID="Europe/Paris"
+JMB_ICAL_REFRESH="PT4H"
 
 ########################################################################
 # Paramètres du formulaire réservation
