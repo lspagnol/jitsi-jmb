@@ -7,6 +7,7 @@
 * Modération, modérateur
 * Rappels par mail (début des réunions)
 * Rappels via XMPP (fin des réunions)
+* Flux iCal
 * Booking, moderator, reminder
 
 ## Présentation:
