@@ -29,26 +29,27 @@ UID:${f}
 ORGANIZER:MAILTO:${mail_owner}
 STATUS:CONFIRMED
 SUMMARY:${object}
+LOCATION:${JMB_SCHEME}://${SERVER_NAME}/${name}
 DTSTART;TZID=Europe/Paris:${dtstart}
 DTEND;TZID=Europe/Paris:${dtend}
-LOCATION:${JMB_SCHEME}://${SERVER_NAME}/${name}
 EOT
 
 for reminder in ${JMB_MAIL_REMINDER} ; do
+	if [ $(( ${begin} + ( ${reminder} * 60 )) ) -lt ${now} ] ; then
 cat <<EOT
 BEGIN:VALARM
 ACTION:DISPLAY
 TRIGGER:-P${reminder}M
+REPEAT:1
 DESCRIPTION:${object}
 END:VALARM
 EOT
+	fi
 done
 
 cat<<EOT
 END:VEVENT
 EOT
-
-echo
 }
 
 ########################################################################
@@ -61,21 +62,18 @@ echo "${QUERY_STRING}"\
 ical_hash=$(<${JMB_CGI_TMP}/query.${tsn})
 rm ${JMB_CGI_TMP}/query.${tsn}
 
+#REFRESH-INTERVAL;VALUE=DURATION:${JMB_ICAL_REFRESH}
+#X-PUBLISHED-TTL:${JMB_ICAL_REFRESH}
+
 # Paramètres du flux iCal
-cat<<EOT > ${out}
+cat<<EOT |awk -v ORS='\r\n' 1 > ${out}
 BEGIN:VCALENDAR
 PRODID:-//Jisti-jmb
 VERSION:2.0
-
 NAME:${JMB_ICAL_NAME}
 X-WR-CALNAME:${JMB_ICAL_NAME}
-
 DESCRIPTION:${JMB_ICAL_DESC}
 X-WR-CALDESC:${JMB_ICAL_DESC}
-
-REFRESH-INTERVAL;VALUE=DURATION:${JMB_ICAL_REFRESH}
-X-PUBLISHED-TTL:${JMB_ICAL_REFRESH}
-
 BEGIN:VTIMEZONE
 TZID:${JMB_ICAL_TZID}
 X-LIC-LOCATION:${JMB_ICAL_TZID}
@@ -94,7 +92,6 @@ DTSTART:19701025T030000
 RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
 END:STANDARD
 END:VTIMEZONE
-
 EOT
 
 # Hash dans l'URL ?
@@ -113,10 +110,10 @@ if [ ! -z "${ical_hash}" ] ; then
 		# Générer la liste des évennements
 		for f in $(ls -1 ${JMB_BOOKING_DATA}/ 2>/dev/null |sort -n) ; do
 
-			unset name mail_owner begin duration end object guests
+			unset name mail_owner begin duration end object guests is_guest is_owner
 
 			dtstamp=$(stat -c "%Y" ${JMB_BOOKING_DATA}/${f})
-			dtstamp=$(date -d@${dtstamp} "+%Y%m%dT%H%M00Z")
+			dtstamp=$(date -d@${dtstamp} "+%Y%m%dT%H%M00")
 
 			source ${JMB_BOOKING_DATA}/${f}
 
@@ -140,7 +137,7 @@ if [ ! -z "${ical_hash}" ] ; then
 					dtend=$(date -d@${dtend} "+%Y%m%dT%H%M00")
 				fi
 
-				out_ical >> ${out}
+				out_ical |awk -v ORS='\r\n' 1 >> ${out}
 
 			fi
 
@@ -149,7 +146,7 @@ if [ ! -z "${ical_hash}" ] ; then
 	fi
 fi
 
-cat<<EOT >> ${out}
+cat<<EOT |awk -v ORS='\r\n' 1 >> ${out}
 END:VCALENDAR
 EOT
 

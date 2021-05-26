@@ -65,6 +65,7 @@ function http_200_ical {
 
 echo "Status: 200 OK" > ${JMB_CGI_TMP}/http_${tsn}.header
 echo "Content-Type: text/calendar; charset=utf-8" >> ${JMB_CGI_TMP}/http_${tsn}.header
+echo "Content-disposition: inline; filename=\"events.ics\""
 
 http_send
 
