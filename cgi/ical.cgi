@@ -35,12 +35,12 @@ DTEND;TZID=Europe/Paris:${dtend}
 EOT
 
 for reminder in ${JMB_MAIL_REMINDER} ; do
-	if [ $(( ${begin} + ( ${reminder} * 60 )) ) -lt ${now} ] ; then
+	# ICSx5 ne supporte pas les "reminders dans le passé"
+	if [ ${now} -lt $(( ${begin} - (${reminder}*60) )) ] ; then
 cat <<EOT
 BEGIN:VALARM
 ACTION:DISPLAY
-TRIGGER:-P${reminder}M
-REPEAT:1
+TRIGGER:-PT${reminder}M
 DESCRIPTION:${object}
 END:VALARM
 EOT
@@ -62,17 +62,14 @@ echo "${QUERY_STRING}"\
 ical_hash=$(<${JMB_CGI_TMP}/query.${tsn})
 rm ${JMB_CGI_TMP}/query.${tsn}
 
-#REFRESH-INTERVAL;VALUE=DURATION:${JMB_ICAL_REFRESH}
-#X-PUBLISHED-TTL:${JMB_ICAL_REFRESH}
-
 # Paramètres du flux iCal
 cat<<EOT |awk -v ORS='\r\n' 1 > ${out}
 BEGIN:VCALENDAR
 PRODID:-//Jisti-jmb
 VERSION:2.0
 NAME:${JMB_ICAL_NAME}
-X-WR-CALNAME:${JMB_ICAL_NAME}
 DESCRIPTION:${JMB_ICAL_DESC}
+X-WR-CALNAME:${JMB_ICAL_NAME}
 X-WR-CALDESC:${JMB_ICAL_DESC}
 BEGIN:VTIMEZONE
 TZID:${JMB_ICAL_TZID}
