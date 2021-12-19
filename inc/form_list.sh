@@ -167,8 +167,10 @@ cat<<EOT
   <I><B>Jitsi Meet</B> est une solution de visioconf&eacute;rence 100%<BR>
   Open Source, s&eacute;curis&eacute;e, h&eacute;berg&eacute;e sur nos serveurs.<BR>
   </I><BR>
-  Pour un fonctionnement optimal, nous recommandons l'utilisation<BR>
-  du navigateur Chrome/Chromium et d'un micro-casque.
+  </A>
+  <A style="color:#FF0000";>
+  Pour un fonctionnement optimal, nous recommandons<BR>
+  l'utilisation d'un micro-casque.
   </A>
 </CENTER>
 EOT

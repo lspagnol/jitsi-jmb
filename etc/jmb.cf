@@ -133,7 +133,6 @@ JMB_MAIL_REMINDER_GUEST=${JMB_PATH}/inc/mail_reminder_guest.sh
 JMB_ICAL_NAME="Visio Rendez-vous"
 JMB_ICAL_DESC="Visio Rendez-vous"
 JMB_ICAL_TZID="Europe/Paris"
-#JMB_ICAL_REFRESH="PT4H"
 
 ########################################################################
 # Paramètres du formulaire réservation
