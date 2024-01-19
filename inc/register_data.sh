@@ -43,6 +43,18 @@ fi
 
 end=$(( ${begin} + ${duration} ))
 
+# Expension liste invités abonnés à liste de diffusion
+conf_guests=$(expandMailList ${conf_guests})
+
+# On vérifie le nombre d'invités
+n=$(echo ${conf_guests} |wc -w)
+if [ ${n} -eq 0 ] || [ ${n} -gt ${JMB_MAX_GUESTS} ] ; then
+	url_redirect="${JMB_DEFAULT_URL_REDIRECT}"
+	# Envoyer le contenu HTML de la réservation
+	source ${JMB_PATH}/inc/page_register_error.sh >> ${out}
+	http_200
+fi
+
 # Enregistrement des données du formulaire
 cat<<EOT > ${JMB_BOOKING_DATA}/${tsn}
 name=${conf_name}
@@ -50,8 +62,8 @@ mail_owner=${HTTP_MAIL}
 begin=${begin}
 duration=${duration}
 end=${end}
-object='${object}'
-guests='${conf_guests}'
+object="${object}"
+guests="${conf_guests}"
 EOT
 
 # Enregistrement des rappels par mail

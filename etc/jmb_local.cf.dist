@@ -30,7 +30,7 @@
 # Commande de requête LDAP
 #JMB_LDAPSEARCH="/usr/bin/ldapsearch -x -LLL -o ldif-wrap=no -h ssds-ldap -b ou=people,dc=univ-reims,dc=fr"
 
-# Filtre LDAP: comptes autorisés à créer et éditier les réunions
+# Filtre LDAP: comptes autorisés à créer et éditer les réunions
 #JMB_LDAP_FILTER="eduPersonAffiliation=student"
 #JMB_LDAP_FILTER="|(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
 
@@ -67,3 +67,10 @@
 # secondes avant leur date de début, celles qui ont démarré sont orange
 #JMB_LIST_HIGHLIGHT_OWNER="900"
 #JMB_LIST_HIGHLIGHT_GUEST="300"
+
+# Fichier d'abonnement aux listes de diffusion
+# Format:
+# adresse_mail_liste adresse_mail_abonné1
+# adresse_mail_liste adresse_mail_abonné2
+...
+#JMB_LISTS_SUBSCRIBERS="/var/lib/tsync-get/listes.lists_subscribers"

@@ -153,8 +153,14 @@ if [ "${REQUEST_METHOD}" = "POST" ]; then
 	# Filtrage des données POST pour limiter le risque d'injection
 	# On ne conserve que les variables et caractères autorisés
 
+	# Interdire injection de commandes:
+	# supprimer $ (%24)
+	# remplacer ` (%60) par ' (%27)
+	# remplacer " (%22) par ' (%27)
+
 	cat\
 	 |tr -d -c '[:alnum:]&=_%.\-\+'\
+	 |sed 's/%24//g ; s/%60/%27/g ; s/%22/%27/g'\
 	 |sed 's/&/\n/g ; s/%40/@/g ; s/%3A/:/g ; s/%2B/Z+/g'\
 	 |egrep '^(name|mail_owner|start_time|duration|conf_tsn|conf_name|conf_date|conf_time|conf_duration|conf_object|conf_guests|old_conf_date|old_conf_time|old_conf_guests)='\
 	  > ${JMB_CGI_TMP}/post-data.${tsn}
@@ -223,7 +229,7 @@ printf '%b' "${u//%/\\x}" |iconv -f iso-8859-1 -t UTF-8
 
 function urlencode {
 
-old_lc_collate=$LC_COLLATE
+local olc=${LC_COLLATE}
 LC_COLLATE=C
     
 local length="${#1}"
@@ -235,7 +241,7 @@ for (( i = 0; i < length; i++ )); do
 	esac
 done
     
-LC_COLLATE=$old_lc_collate
+LC_COLLATE=${olc}
 
 }
 
@@ -271,5 +277,34 @@ else
 	is_allowed=0
 
 fi
+
+}
+
+function expandMailList {
+# Remplacer les adresses mail de type liste par les abonnés de la liste
+
+local mail mails list n
+
+if [ -z "${JMB_LISTS_SUBSCRIBERS}" ] ; then
+	echo ${@}
+	return
+fi
+
+list=$(
+	while [ "${1}" != "" ] ; do
+		mail=${1}
+		mails=$(egrep "^${mail}(@| )" ${JMB_LISTS_SUBSCRIBERS} |awk '{print $2}')
+		if [ -z "${mails}" ] ; then
+			echo ${mail}
+		else
+			echo "${mails}"
+		fi
+		shift
+	done |sort |uniq |grep -v "^${HTTP_MAIL}$"
+)
+
+list=$(echo "${list}" |egrep "@.*\.")
+
+echo ${list}
 
 }

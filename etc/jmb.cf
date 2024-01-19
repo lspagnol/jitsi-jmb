@@ -55,9 +55,9 @@ JMB_GEN_NAME="pwgen -A -0 12 1"
 # Commande de requête LDAP
 JMB_LDAPSEARCH="/usr/bin/ldapsearch -x -LLL -o ldif-wrap=no -h ssds-ldap -b ou=people,dc=univ-reims,dc=fr"
 
-# Filtre LDAP: comptes autorisés à créer et éditier les réunions
+# Filtre LDAP: comptes autorisés à créer et éditer les réunions
 #JMB_LDAP_FILTER="eduPersonAffiliation=student"
-JMB_LDAP_FILTER="|(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
+JMB_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
 
 # Modules de vérification à exécuter lors des appels de Jicofo
 #JMB_CHECK_MODULES="ldap-filter ldap-self booking"
@@ -126,6 +126,13 @@ JMB_MAIL_DEL_OWNER=${JMB_PATH}/inc/mail_del_owner.sh
 JMB_MAIL_REMINDER_OWNER=${JMB_PATH}/inc/mail_reminder_owner.sh
 JMB_MAIL_REMINDER_GUEST=${JMB_PATH}/inc/mail_reminder_guest.sh
 
+# Fichier d'abonnement aux listes de diffusion
+# Format:
+# adresse_mail_liste adresse_mail_abonné1
+# adresse_mail_liste adresse_mail_abonné2
+# ...
+JMB_LISTS_SUBSCRIBERS="/var/lib/tsync-get/listes.lists_subscribers_mails.txt"
+
 ########################################################################
 # iCal
 ########################################################################
@@ -157,6 +164,9 @@ JMB_STEP_MEETING_DURATION="30"
 # secondes avant leur date de début, celles qui ont démarré sont orange
 JMB_LIST_HIGHLIGHT_OWNER="900"
 JMB_LIST_HIGHLIGHT_GUEST="300"
+
+# Nombre maximum d'invités
+JMB_MAX_GUESTS=100
 
 ########################################################################
 

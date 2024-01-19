@@ -104,7 +104,7 @@ if [ ! -z "${ical_hash}" ] ; then
 		mails=$($JMB_LDAPSEARCH uid=${uid} mail mailAlternateAddress |egrep '^(mail|mailAlternateAddress):' |awk '{print $2}')
 		mails=$(echo ${mails} |sed 's/ /|/g')
 
-		# Générer la liste des évennements
+		# Générer la liste des évènements
 		for f in $(ls -1 ${JMB_BOOKING_DATA}/ 2>/dev/null |sort -n) ; do
 
 			unset name mail_owner begin duration end object guests is_guest is_owner

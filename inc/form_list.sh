@@ -164,8 +164,8 @@ cat<<EOT
   <BR>
   <BR>
   <A>
-  <I><B>Jitsi Meet</B> est une solution de visioconf&eacute;rence 100%<BR>
-  Open Source, s&eacute;curis&eacute;e, h&eacute;berg&eacute;e sur nos serveurs.<BR>
+  <I><B>Rendez-Vous</B> est une solution de visioconf&eacute;rence <B>souveraine</B>,<BR>
+  100% Open Source, s&eacute;curis&eacute;e, h&eacute;berg&eacute;e sur nos serveurs.<BR>
   </I><BR>
   </A>
   <A style="color:#FF0000";>

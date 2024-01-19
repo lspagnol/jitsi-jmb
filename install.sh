@@ -52,6 +52,7 @@ done
 chown -R root:root ${JMB_PATH}
 chmod +x ${JMB_PATH}/cgi/*
 chmod +x ${JMB_PATH}/bin/*
+ln -s ${JMB_PATH}/bin/jitsi-jmb_show /usr/local/bin
 
 # Création des répertoires utilisés par JMB
 mkdir -p ${JMB_DATA}
