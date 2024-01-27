@@ -12,12 +12,12 @@
 ## Présentation:
 
 * **JMB** est un *POC* de réservation/planification de visioconférences *Jitsi Meet*:
-  * Les CGI en Bash, c'est moche, mais j'ai pas le temps de tout ré-écrire en Python ...
   * **token.cgi** assure l'**authentification** via n'importe quel module d'authentification d'Apache,
   * **token.cgi** assure l'**autorisation** (activation des réunions) via les infos gérées par **booking.cgi**,
   * **booking.cgi** permet de gérer/planifier/réserver les visioconférences,
   * **ical.cgi** génère un flux iCal pour chaque utilisateur.
 * **JMB** est modulaire: vous pouvez créer/ajouter vos propres modules de contrôle.
+* *Les CGI en Bash, c'est moche, mais j'ai pas le temps de tout ré-écrire en Python ... avis aux volontaire ! ;)*
 
 ## Prérequis:
 
