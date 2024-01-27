@@ -2,8 +2,8 @@
 
 ## Mots clé:
 
-* Planification
-* Réservation
+* Authentification universelle (CAS, Shibboleth, SAML, LDAP, ...)
+* Planification, réservation
 * Modération, modérateur
 * Rappels par mail (début des réunions)
 * Rappels via XMPP (fin des réunions)
@@ -13,17 +13,16 @@
 ## Présentation:
 
 * **JMB** est un *POC* de réservation/planification de visioconférences *Jitsi Meet*:
-  * le **CGI** *conference.cgi*, appelé par *Jicofo*, assure le contrôle de la création et de la modération des visioconférences,
+  * le **CGI** *token.cgi*, assure l'authentification via n'importe quel module d'authentification d'Apache,
   * le **CGI** *booking.cgi* permet de planifier/réserver les visioconférences.
 * **JMB** est modulaire: vous pouvez créer/ajouter vos propres modules de contrôle.
-* **JMB** s'appuie sur l'API Rest de Jicofo.
 
 ## Prérequis:
 
 Le serveur *Jisti Meet* **DOIT** être installé, configuré et fonctionnel avec:
 
-* *Apache*
-* L'authentification *Shibboleth*
+* *Nginx*
+* L'authentification *JWT*
 
 ## Installation:
 
