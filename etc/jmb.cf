@@ -7,7 +7,7 @@
 ########################################################################
 
 ########################################################################
-# Ne modifiez pas les répertoires !!!
+# Répertoires: *** NE PAS MODIFIER !!! ***
 ########################################################################
 
 # Répertoire d'installation
@@ -78,7 +78,7 @@ JMB_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(
 # -> Voir /opt/jitsi-jmb/modules/LISEZMOI.txt
 JMB_IDENTITY_MODULE="identity-cas"
 
-# Réservations: modules de vérification à exécuter lors des appels de Jicofo
+# Réservations: modules de vérification à exécuter
 # -> Voir /opt/jitsi-jmb/modules/LISEZMOI.txt
 JMB_CHECK_MODULES="ldap-filter private-room booking"
 

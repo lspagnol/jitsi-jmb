@@ -3,74 +3,41 @@
 # Il est lu après le fichier pricipal (jmb.cf)
 ########################################################################
 
-# Nom du service, il sera affiché dans les onglets du navigateur
-#JMB_NAME="Jitsi Meet Booking"
+# Requête LDAP
+JMB_LDAPSEARCH="/usr/bin/ldapsearch -o ldif-wrap=no -H ldap://ldap.mondomaine.fr -x -LLL -b ou=people,dc=mondomaine,dc=fr -D uid=jitsi-jmb,ou=account,ou=app,dc=mondomaine,dc=fr -y /etc/ldap/ldap.secret"
 
-# Domaine de messagerie
-# Par défaut, calculé à partir du hostname du serveur. Si le FQDN du
-# serveur ne correspond pas au domaine de messagerie, vous pouvez le
-# modifier ici
-#JMB_MAIL_DOMAIN="mondomaine.fr"
-
-# Rappels début réunion via mail (minutes)
-#JMB_MAIL_REMINDER="10080 1440 60"
-
-# Rappels fin réunion via XMPP (minutes)
-#JMB_XMPP_REMINDER="15 5"
-
-# Durée par défaut des réunions (secondes)
-#JMB_DEFAULT_DURATION=7200
-
-# Durée par défaut des réunions dans le formulaire (minutes)
-#JMB_DEFAULT_MEETING_DURATION="90"
-
-# Commande de génération des noms de réunion
-#JMB_GEN_NAME="pwgen -A -0 12 1"
-
-# Commande de requête LDAP
-#JMB_LDAPSEARCH="/usr/bin/ldapsearch -x -LLL -o ldif-wrap=no -h ssds-ldap -b ou=people,dc=univ-reims,dc=fr"
-
-# Filtre LDAP: comptes autorisés à créer et éditer les réunions
-#JMB_LDAP_FILTER="eduPersonAffiliation=student"
-#JMB_LDAP_FILTER="|(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
-
-# Modules de vérification à exécuter lors des appels de Jicofo
-#JMB_CHECK_MODULES="ldap-filter ldap-self booking"
-#JMB_CHECK_MODULES="ldap-filter private-room booking"
-
-# Durée d'attente avant redirection du navigateur (secondes)
-#JMB_SLEEP_REDIRECT="5"
-
-# URL de redirection par défaut
-#JMB_DEFAULT_URL_REDIRECT="?list"
-
-# URL de redirection en fin de conférence pour les utilisateurs qui ne
-# sont pas passé par l'interface de réservation
-#JMB_REDIRECT_CLOSE="https://jitsi.org/"
-
-# Objet par défaut des réunions
-#JMB_DEFAULT_OBJECT="R&eacute;union sans objet"
-
-# Durée par défaut des réunions (minutes)
-#JMB_DEFAULT_MEETING_DURATION="60"
-
-# Durée minimale des réunions (minutes)
-#JMB_MIN_MEETING_DURATION="30"
-
-# Durée maximum des réunions (minutes)
-#JMB_MAX_MEETING_DURATION="480"
-
-# Incrément durée réunion (minutes)
-#JMB_STEP_MEETING_DURATION="30"
-
-# Formulaire "liste des réunions: mise en évidence (vert) des réunions N
-# secondes avant leur date de début, celles qui ont démarré sont orange
-#JMB_LIST_HIGHLIGHT_OWNER="900"
-#JMB_LIST_HIGHLIGHT_GUEST="300"
+# Filtre LDAP: comptes autorisés à créer/éditer les réunions
+JMB_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
 
 # Fichier d'abonnement aux listes de diffusion
 # Format:
 # adresse_mail_liste adresse_mail_abonné1
 # adresse_mail_liste adresse_mail_abonné2
-...
-#JMB_LISTS_SUBSCRIBERS="/var/lib/tsync-get/listes.lists_subscribers"
+# ...
+JMB_LISTS_SUBSCRIBERS="/var/lib/tsync-get/listes.lists_subscribers_mails.txt"
+
+# JWT:
+# -> "Application ID"
+# -> voir /etc/prosody/conf.avail/**FQDN**.fr.cfg.lua
+# Identique à la variable "app_id" dans la section "VirtualHost" du FQDN
+JMB_JWT_ISS="jitsi-auth"
+
+# JWT:
+# -> clé partagée pour la signature des jetons
+# -> voir /etc/prosody/conf.avail/**FQDN**.fr.cfg.lua
+# Identique à la variable "app_secret" dans la section "VirtualHost" du FQDN
+JMB_JWT_SECRET="super_clee_partagee"
+
+# Identité/authentification:
+# -> récupération des infos utilisateur
+# -> Voir /opt/jitsi-jmb/modules/LISEZMOI.txt
+JMB_IDENTITY_MODULE="identity-cas"
+
+# Réservations:
+# -> modules de vérification
+# -> Voir /opt/jitsi-jmb/modules/LISEZMOI.txt
+JMB_CHECK_MODULES="ldap-filter private-room booking"
+
+# iCal:
+JMB_ICAL_NAME="Visio Rendez-vous"
+JMB_ICAL_DESC="Visio Rendez-vous"
