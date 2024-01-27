@@ -1,0 +1,20 @@
+#!/bin/bash
+
+########################################################################
+
+# Charger la configuration
+JMB_PATH=/opt/jitsi-jmb
+source ${JMB_PATH}/etc/jmb.cf
+
+########################################################################
+
+echo "Current:"
+munin-run jitsi_videobridge_summary_conferences |sed 's/\.value//g'
+echo
+
+echo "Booking:"
+for res in $(ls -1 ${JMB_BOOKING_DATA}) ; do
+	source ${JMB_BOOKING_DATA}/${res}
+	echo "${res} -- $(date -d @${begin} +"%F %H:%M") -> $(date -d @${end} +"%F %H:%M") -- ${owner} -- ${name} -- ${object}"
+done
+echo
