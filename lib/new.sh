@@ -4,7 +4,9 @@
 # GCI (booking.cgi): création d'une réunion
 ########################################################################
 
-isAllowed
+# Vérifier si l'utilisateur est autorisé à créer/editer une réunion
+# Résultat: variable "is_allowed=0" -> non, "is_allowed=1" -> oui
+set_is_allowed
 if [ "${is_allowed}" = "0" ] ; then
 	http_403 "Vous n'êtes pas autorisé à créer une réunion"
 fi

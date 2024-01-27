@@ -8,6 +8,6 @@ cat<<EOT
 
 
 Vous pouvez gérer vos visioconférences en suivant ce lien:
-${JMB_SCHEME}://${SERVER_NAME}/booking.cgi
+${JMB_SCHEME}://${JMB_SERVER_NAME}/booking.cgi
 EOT
 fi

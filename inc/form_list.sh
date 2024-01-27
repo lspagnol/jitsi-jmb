@@ -6,7 +6,7 @@ function out_table {
 cat<<EOT
     <TR>
       <TD${onair}>${form_object}</TD>
-      <TD${onair}>${form_mail_owner}</TD>
+      <TD${onair}>${form_owner}</TD>
       <TD${onair}><CENTER>${form_date}</CENTER></TD>
       <TD${onair}><CENTER>${form_time}</CENTER></TD>
       <TD${onair}><CENTER>${form_duration}</CENTER></TD>
@@ -17,19 +17,20 @@ EOT
 
 ########################################################################
 
-# Vérifier si l'utilisateur est autorisé à créer/editer une réunion
-isAllowed
+# Récupérer les infos utilisateur
+[ -f ${JMB_PATH}/modules/${JMB_IDENTITY_MODULE}.sh ] && source ${JMB_PATH}/modules/${JMB_IDENTITY_MODULE}.sh
 
-# Identifiant utilisateur
-uid=$($JMB_LDAPSEARCH mail=${HTTP_MAIL} uid |grep "^uid: " |awk '{print $2}')
+# Vérifier si l'utilisateur est autorisé à créer/editer une réunion
+# Résultat: variable "is_allowed=0" -> non, "is_allowed=1" -> oui
+set_is_allowed
 
 # Flux iCal
-if [ -f ${JMB_ICAL_DATA}/by-user/${uid} ] ; then
-	ical_hash=$(<${JMB_ICAL_DATA}/by-user/${uid})
+if [ -f ${JMB_ICAL_DATA}/by-user/${auth_uid} ] ; then
+	ical_hash=$(<${JMB_ICAL_DATA}/by-user/${auth_uid})
 else
 	ical_hash=$(pwgen 16 1)
-	echo "${ical_hash}" > ${JMB_ICAL_DATA}/by-user/${uid}
-	echo "${uid}" > ${JMB_ICAL_DATA}/by-hash/${ical_hash}
+	echo "${ical_hash}" > ${JMB_ICAL_DATA}/by-user/${auth_uid}
+	echo "${auth_uid}" > ${JMB_ICAL_DATA}/by-hash/${ical_hash}
 fi
 
 cat<<EOT
@@ -50,10 +51,10 @@ EOT
 
 if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_allowed}" = "1" ] ; then
 
-	self=$(grep "^${uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
+	self=$(grep "^${auth_uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
 	cat<<EOT
 <A><I>Ma r&eacute;union priv&eacute;e, disponible &agrave; tout moment: </I></A><BR>
-<A href=${self}>${JMB_SCHEME}://${SERVER_NAME}/${self}</A>
+<A href=${self}>${JMB_SCHEME}://${JMB_SERVER_NAME}/${self}</A>
 <P></P>
 EOT
 
@@ -80,16 +81,26 @@ EOT
 
 for f in $(ls -1 ${JMB_BOOKING_DATA}/ 2>/dev/null |sort -nr) ; do
 
-	unset name mail_owner begin duration end object guests
-	unset form_object form_date form_time form_duration form_mail_owner form_action
-	unset is_owner is_guest
+	unset name owner begin duration end object guests moderators
+	unset form_object form_date form_time form_duration form_owner form_action
+	unset is_owner is_guest is_moderator
 	unset onair
 
 	source ${JMB_BOOKING_DATA}/${f}
 
 	if [ ${now} -le ${end} ] ; then
 
-		echo " ${guests} " |grep -q " ${HTTP_MAIL} "
+		if [ "${owner}" = "${auth_mail}" ] ; then
+			is_owner=1
+			# Mise en évidence anticipée réunions pour le proprio
+			if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_OWNER} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
+				# La réunion n'est plus modifiable
+				onair=" bgcolor=\"PaleGreen\""
+				form_action="<A href=/token.cgi?room=${name}>Rejoindre</A>"
+			fi
+		fi
+
+		echo " ${guests} " |grep -q " ${auth_mail} "
 		if [ ${?} -eq 0 ] ; then
 			is_guest=1
 			# Mise en évidence anticipée réunions pour les invités
@@ -99,17 +110,17 @@ for f in $(ls -1 ${JMB_BOOKING_DATA}/ 2>/dev/null |sort -nr) ; do
 			fi
 		fi
 
-		if [ "${HTTP_MAIL}" = "${mail_owner}" ] ; then
-			is_owner=1
-			# Mise en évidence anticipée réunions pour le proprio
+		echo " ${moderators} " |grep -q " ${auth_mail} "
+		if [ ${?} -eq 0 ] ; then
+			is_moderator=1
+			# Mise en évidence anticipée réunions pour les modérateurs
 			if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_OWNER} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
-				# La réunion n'est plus modifiable
-				form_action="<A href=${name}>Rejoindre</A>"
 				onair=" bgcolor=\"PaleGreen\""
+				form_action="<A href=/token.cgi?room=${name}>Rejoindre</A>"
 			fi
 		fi
 
-		if [ "${is_owner}" = "1" ] || [ "${is_guest}" = "1" ] ; then
+		if [ "${is_owner}" = "1" ] || [ "${is_guest}" = "1" ] || [ "${is_moderator}" = "1" ] ; then
 
 			[ ! -z "${object}" ] && form_object=$(utf8_to_html "${object}")
 			if [ ! -z "${begin}" ] ; then
@@ -117,7 +128,7 @@ for f in $(ls -1 ${JMB_BOOKING_DATA}/ 2>/dev/null |sort -nr) ; do
 				form_time=$(date -d@${begin} "+%H:%M")
 			fi
 			[ ! -z "${duration}" ] && form_duration=$(( ${duration} / 60 ))
-			[ ! -z "${mail_owner}" ] && form_mail_owner=${mail_owner}
+			[ ! -z "${owner}" ] && form_owner=${owner}
 
 			if [ "${is_allowed}" = "1" ] && [ "${is_owner}" = "1" ] && [ ${now} -lt ${begin} ] ; then
 				form_action="${form_action}<A> </A><A href=/booking.cgi?edit&id=${f}>Editer</A>"
@@ -143,7 +154,7 @@ EOT
 
 cat<<EOT
   <A><I>Mon flux iCal (synchronisation d'agenda): </I></A><BR>
-  <A href=/ical.cgi?${ical_hash}>${JMB_SCHEME}://${SERVER_NAME}/ical.cgi?${ical_hash}</A>
+  <A href=/ical.cgi?${ical_hash}>${JMB_SCHEME}://${JMB_SERVER_NAME}/ical.cgi?${ical_hash}</A>
   <P></P>
 EOT
 

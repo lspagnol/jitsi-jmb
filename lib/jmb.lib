@@ -21,7 +21,19 @@ http_send
 
 }
 
-# Réponse HTTP "Forbidden" retourne les arguments en HTML
+# Réponse HTTP "Redirect temporary", URL de redirection en argument
+function http_302 {
+
+echo "Status: 302 OK" > ${JMB_CGI_TMP}/http_${tsn}.header
+echo "Content-Type: text/html" >> ${JMB_CGI_TMP}/http_${tsn}.header
+echo "Location: ${1}" >> ${JMB_CGI_TMP}/http_${tsn}.header
+
+http_send
+
+}
+
+# Réponse HTTP "Forbidden" retourne les arguments en HTML, redirection
+# au bout de ${JMB_SLEEP_REDIRECT} secondes vers ${url_redirect}
 # Envoyer le contenu de ${JMB_CGI_TMP}/http_${tsn}.header
 function http_403 {
 
@@ -29,7 +41,6 @@ echo "Status: 403 Forbidden" > ${JMB_CGI_TMP}/http_${tsn}.header
 echo "Content-Type: text/html" >> ${JMB_CGI_TMP}/http_${tsn}.header
 
 local message=$(utf8_to_html "${@}")
-local url_redirect="?list"
 source ${JMB_PATH}/inc/page_http_403.sh > ${JMB_CGI_TMP}/http_${tsn}.message
 
 http_send
@@ -91,13 +102,13 @@ exit 0
 }
 
 ########################################################################
-# Contenus JSON pour Jicofo
+# Contenus JSON pour Jicofo -> OBSOLETE !! (auth via JWT / Prosody)
 
 function message_200_json {
 cat<<EOT > ${JMB_CGI_TMP}/http_${tsn}.message
 {
  "name": "${name}",
- "mail_owner": "${mail_owner}",
+ "owner": "${owner}",
  "start_time": "${start_time}",
  "duration": ${duration}
 }
@@ -113,6 +124,54 @@ EOT
 }
 
 ########################################################################
+# Jetons JWT
+
+function jwt_gen_header {
+cat<<EOT
+{
+	"typ": "JWT",
+	"alg": "HS256"
+}
+EOT
+}
+
+function jwt_gen_payload {
+cat<<EOT
+{
+	"context": {
+		"user": {
+			"id": "${auth_uid}",
+			"name": "${auth_name}",
+			"email": "${auth_mail}"
+			}
+		},
+	"aud": "chat",
+	"iss": "${JMB_JWT_ISS}",
+	"sub": "${JMB_SERVER_NAME}",
+	"room": "${room}",
+	"nbf": ${nbf},
+	"exp": ${exp}
+}
+EOT
+}
+
+function jwt_base64_encode {
+	input=${1:-$(</dev/stdin)}
+	# Use `tr` to URL encode the output from base64.
+	printf '%s' "${input}" |base64 |tr -d '=' |tr '/+' '_-' |tr -d '\n'
+}
+
+function jwt_json {
+	input=${1:-$(</dev/stdin)}
+	printf '%s' "${input}" |jq -c .
+}
+
+function jwt_hmacsha256_sign {
+	input=${1:-$(</dev/stdin)}
+	printf '%s' "${input}" |openssl dgst -binary -sha256 -hmac "${JMB_JWT_SECRET}"
+}
+
+########################################################################
 # Divers
 
 # Décodage et extraction des données POST
@@ -121,7 +180,7 @@ function postdecode {
 # Variables envoyées par Jicofo:
 # ------------------------------
 # name (nom de la conférence)
-# mail_owner (récupéré à partir des attributs Shibboleth)
+# owner (récupéré à partir des attributs Shibboleth)
 # start_time (au format 2020-05-05T12:16:57.518Z+02)
 # duration (toujours -1)
 
@@ -162,7 +221,7 @@ if [ "${REQUEST_METHOD}" = "POST" ]; then
 	 |tr -d -c '[:alnum:]&=_%.\-\+'\
 	 |sed 's/%24//g ; s/%60/%27/g ; s/%22/%27/g'\
 	 |sed 's/&/\n/g ; s/%40/@/g ; s/%3A/:/g ; s/%2B/Z+/g'\
-	 |egrep '^(name|mail_owner|start_time|duration|conf_tsn|conf_name|conf_date|conf_time|conf_duration|conf_object|conf_guests|old_conf_date|old_conf_time|old_conf_guests)='\
+	 |egrep '^(name|owner|start_time|duration|conf_tsn|conf_name|conf_date|conf_time|conf_duration|conf_object|conf_moderators|conf_guests|old_conf_date|old_conf_time|old_conf_moderators|old_conf_guests)='\
 	  > ${JMB_CGI_TMP}/post-data.${tsn}
 
 	# Evaluation des données POST filtrées
@@ -180,6 +239,19 @@ if [ "${REQUEST_METHOD}" = "POST" ]; then
 		old_conf_guests=${old_conf_guests//%0D%0A/ }
 		old_conf_guests=${old_conf_guests//+/ }
 		old_conf_guests=${old_conf_guests//  /}
+	fi
+
+	# Mise en forme liste mails modérateurs
+	if [ ! -z "${conf_moderators}" ] ; then
+		conf_moderators=${conf_moderators//%0D%0A/ }
+		conf_moderators=${conf_moderators//+/ }
+		conf_moderators=${conf_moderators//  /}
+	fi
+
+	if [ ! -z "${old_conf_moderators}" ] ; then
+		old_conf_moderators=${old_conf_moderators//%0D%0A/ }
+		old_conf_moderators=${old_conf_moderators//+/ }
+		old_conf_moderators=${old_conf_moderators//  /}
 	fi
 
 	# Décodage de l'objet de la réunion
@@ -213,7 +285,7 @@ rm ${JMB_CGI_TMP}/query.${tsn}
 echo "${QUERY_STRING}"\
  |tr -d -c '[:alnum:]&=_%.\-\+'\
  |sed "s/^${query}&// ; s/&/\n/g"\
- |egrep '^(id)='\
+ |egrep '^(id|room)='\
   > ${JMB_CGI_TMP}/params.${tsn}
 test -s ${JMB_CGI_TMP}/params.${tsn} && eval $(<${JMB_CGI_TMP}/params.${tsn})
 rm ${JMB_CGI_TMP}/params.${tsn}
@@ -253,20 +325,34 @@ echo "${@}" |recode UTF-8..HTML_4.0
 
 }
 
-function utf8_to_base64mail {
-# Convertir la chaine passée en argument (utf8)
+function utf8_to_mime {
+# Convertir la chaine passée en argument (utf8) en mime/base64
 # -> base 64 pour le sujet du mail
 
-local b64="$(echo -n "${@}" |recode UTF-8../Base64)"
+# https://web.maths.unsw.edu.au/~lafaye/CCM/courrier-electronique/mime.htm
+# Le standard MIME propose le format suivant : 
+# =?charset?encodage?resultat?=
+# charset représente le jeu de caractère utilisé,
+# encodage définit l'encodage souhaité avec deux valeurs possibles :
+# Q pour quoted-printable
+# B pour base64 
+# resultat: texte encodé selon la méthode spécifiée. 
+# Exemple en codage Quoted-Printable avec « Comment ça marche ? » comme sujet de message :
+# Subject: Comment =?ISO-8859-1?Q?=E7a_marche_=3F?=
+
+# "recode" ne fonctionne pas via CGI, faut pas chercher à comprendre ...
+#local b64="$(echo -n "${@}" |recode UTF-8../Base64)"
+
+local b64="$(echo -n "${@}" |base64)"
 echo "=?UTF-8?B?${b64}?="
 
 }
 
-function isAllowed {
+function set_is_allowed {
 # Vérifier si un utilisateur est autorisé à créer / éditer une réunion
 # -> utilise le filtre définit dans JMB_LDAP_FILTER
 
-$JMB_LDAPSEARCH "(&(mail=${HTTP_MAIL})(${JMB_LDAP_FILTER}))" uid |grep -q '^uid: '
+$JMB_LDAPSEARCH "(&(uid=${auth_uid})(${JMB_LDAP_FILTER}))" uid |grep -q '^uid: '
 
 if [ ${?} = 0 ] ; then
 
@@ -280,7 +366,7 @@ fi
 
 }
 
-function expandMailList {
+function expand_list_subscribers {
 # Remplacer les adresses mail de type liste par les abonnés de la liste
 
 local mail mails list n
@@ -300,7 +386,7 @@ list=$(
 			echo "${mails}"
 		fi
 		shift
-	done |sort |uniq |grep -v "^${HTTP_MAIL}$"
+	done |sort |uniq |grep -v "^${auth_mail}$"
 )
 
 list=$(echo "${list}" |egrep "@.*\.")

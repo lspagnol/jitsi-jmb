@@ -14,10 +14,7 @@ out=${JMB_CGI_TMP}/http_${tsn}.message
 
 if [ -z "${conf_name}" ] ; then
 	# Aucune donnée du formulaire -> appel direct de l'URL ?
-	url_redirect="${JMB_DEFAULT_URL_REDIRECT}"
-	# Envoyer le contenu HTML de la réservation vide
-	source ${JMB_PATH}/inc/page_register_error.sh >> ${out}
-	http_200
+	http_403 "Aucune donnée à enregistrer"
 fi
 
 ########################################################################
@@ -26,7 +23,7 @@ fi
 begin=$(date -d "${conf_date} ${conf_time}" +%s)
 
 if [ ${begin} -lt ${now} ] ; then
-	http_403 "La date de la réunion est antérieure à la date actuelle"
+	http_403 "Données non enregistrées: la date de la réunion est antérieure à la date actuelle"
 fi
 
 # Calul durée
@@ -43,26 +40,34 @@ fi
 
 end=$(( ${begin} + ${duration} ))
 
-# Expension liste invités abonnés à liste de diffusion
-conf_guests=$(expandMailList ${conf_guests})
+# On vérifie le nombre de modérateurs
+n=$(echo ${conf_moderators} |wc -w)
+if [ ${n} -gt ${JMB_MAX_MODERATORS} ] ; then
+	http_403 "Données non enregistrées: vous avez indiqué ${n} modérateurs (le maximum est ${JMB_MAX_MODERATORS})"
+fi
+
+# Expansion liste invités abonnés à liste de diffusion
+conf_guests=$(expand_list_subscribers ${conf_guests})
 
 # On vérifie le nombre d'invités
 n=$(echo ${conf_guests} |wc -w)
-if [ ${n} -eq 0 ] || [ ${n} -gt ${JMB_MAX_GUESTS} ] ; then
-	url_redirect="${JMB_DEFAULT_URL_REDIRECT}"
-	# Envoyer le contenu HTML de la réservation
-	source ${JMB_PATH}/inc/page_register_error.sh >> ${out}
-	http_200
+if [ ${n} -eq 0 ] ; then
+	http_403 "Données non enregistrées: vous n'avez indiqué aucun invité"
+fi
+
+if [ ${n} -gt ${JMB_MAX_GUESTS} ] ; then
+	http_403 "Données non enregistrées: vous avez indiqué ${n} invités (le maximum est ${JMB_MAX_GUESTS})"
 fi
 
 # Enregistrement des données du formulaire
 cat<<EOT > ${JMB_BOOKING_DATA}/${tsn}
 name=${conf_name}
-mail_owner=${HTTP_MAIL}
+owner=${auth_mail}
 begin=${begin}
 duration=${duration}
 end=${end}
 object="${object}"
+moderators="${conf_moderators}"
 guests="${conf_guests}"
 EOT
 
@@ -75,7 +80,7 @@ if [ ! -z "${JMB_MAIL_REMINDER}" ] ; then
 			cat<<EOT > ${JMB_MAIL_REMINDER_DATA}/${tsn}.${r}
 reminder=${reminder}
 booking_tsn=${tsn}
-SERVER_NAME=${SERVER_NAME}
+SERVER_NAME=${JMB_SERVER_NAME}
 JMB_MAIL_DOMAIN=${JMB_MAIL_DOMAIN}
 EOT
 		fi
@@ -91,7 +96,7 @@ if [ ! -z "${JMB_XMPP_REMINDER_DATA}" ] ; then
 reminder=${reminder}
 booking_tsn=${tsn}
 grace=${r}
-SERVER_NAME=${SERVER_NAME}
+SERVER_NAME=${JMB_SERVER_NAME}
 EOT
 	done
 fi

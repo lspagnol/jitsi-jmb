@@ -26,10 +26,10 @@ cat<<EOT
 BEGIN:VEVENT
 DTSTAMP:${dtstamp}
 UID:${f}
-ORGANIZER:MAILTO:${mail_owner}
+ORGANIZER:MAILTO:${owner}
 STATUS:CONFIRMED
 SUMMARY:${object}
-LOCATION:${JMB_SCHEME}://${SERVER_NAME}/${name}
+LOCATION:${JMB_SCHEME}://${JMB_SERVER_NAME}/${name}
 DTSTART;TZID=Europe/Paris:${dtstart}
 DTEND;TZID=Europe/Paris:${dtend}
 EOT
@@ -107,24 +107,29 @@ if [ ! -z "${ical_hash}" ] ; then
 		# Générer la liste des évènements
 		for f in $(ls -1 ${JMB_BOOKING_DATA}/ 2>/dev/null |sort -n) ; do
 
-			unset name mail_owner begin duration end object guests is_guest is_owner
+			unset name owner begin duration end object guests moderators is_guest is_owner is_moderator
 
 			dtstamp=$(stat -c "%Y" ${JMB_BOOKING_DATA}/${f})
 			dtstamp=$(date -d@${dtstamp} "+%Y%m%dT%H%M00")
 
 			source ${JMB_BOOKING_DATA}/${f}
 
+			echo " ${owner} " |egrep -q " (${mails}) "
+			if [ ${?} -eq 0 ] ; then
+				is_owner=1
+			fi
+
 			echo " ${guests} " |egrep -q " (${mails}) "
 			if [ ${?} -eq 0 ] ; then
 				is_guest=1
 			fi
 
-			echo " ${mail_owner} " |egrep -q " (${mails}) "
+			echo " ${moderators} " |egrep -q " (${mails}) "
 			if [ ${?} -eq 0 ] ; then
-				is_owner=1
+				is_guest=1
 			fi
 
-			if [ "${is_owner}" = "1" ] || [ "${is_guest}" = "1" ] ; then
+			if [ "${is_owner}" = "1" ] || [ "${is_guest}" = "1" ] || [ "${is_moderator}" = "1" ] ; then
 
 				if [ ! -z "${begin}" ] ; then
 					dtstart=$(date -d@${begin} "+%Y%m%dT%H%M00")

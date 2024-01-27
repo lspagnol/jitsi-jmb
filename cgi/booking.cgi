@@ -24,6 +24,9 @@ getdecode
 # On positionne le cookie de l'interface de gestion
 setcookie=1
 
+# Récupérer les infos utilisateur à partir de l'authentification
+source ${JMB_PATH}/modules/${JMB_IDENTITY_MODULE}.sh
+
 ########################################################################
 
 case ${query} in

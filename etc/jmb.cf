@@ -39,28 +39,47 @@ JMB_ICAL_DATA="${JMB_DATA}/ical"
 # à modifier dans "jmb_local.cf"
 ########################################################################
 
+# Chemin du fichier DEBUG
+JMB_DEBUG=${JMB_CGI_TMP}/debug.${now}
+
 # Nom du service, il sera affiché dans les onglets du navigateur
 JMB_NAME="Jitsi Meet Booking"
 
+# FQDN du service
+JMB_SERVER_NAME="$(hostname -f)"
+
 # Domaine de messagerie
-JMB_MAIL_DOMAIN="${SERVER_NAME#*.}"
+JMB_MAIL_DOMAIN="${JMB_SERVER_NAME#*.}"
 
 # Scheme du serveur HTTP http ou https
 # ... ça existe encore "HTTP" sans "S" ? .. ;)
-JMB_SCHEME=https
+JMB_SCHEME="https"
+
+# JWT -> "Application ID"
+# -> voir /etc/prosody/conf.avail/**FQDN**.fr.cfg.lua
+# Identique à la variable "app_id" dans la section "VirtualHost" du FQDN
+JMB_JWT_ISS=""
+
+# JWT -> clé partagée pour la signature des jetons
+# -> voir /etc/prosody/conf.avail/**FQDN**.fr.cfg.lua
+# Identique à la variable "app_secret" dans la section "VirtualHost" du FQDN
+JMB_JWT_SECRET=""
 
 # Commande de génération des noms de réunion
-JMB_GEN_NAME="pwgen -A -0 12 1"
+JMB_GEN_NAME="pwgen -A -0 14 1"
 
 # Commande de requête LDAP
-JMB_LDAPSEARCH="/usr/bin/ldapsearch -x -LLL -o ldif-wrap=no -h ssds-ldap -b ou=people,dc=univ-reims,dc=fr"
+JMB_LDAPSEARCH="/usr/bin/ldapsearch -x -LLL -o ldif-wrap=no -h ssds-ldap -b ou=people,dc=mydomain,dc=fr"
 
 # Filtre LDAP: comptes autorisés à créer et éditer les réunions
-#JMB_LDAP_FILTER="eduPersonAffiliation=student"
 JMB_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
 
-# Modules de vérification à exécuter lors des appels de Jicofo
-#JMB_CHECK_MODULES="ldap-filter ldap-self booking"
+# Identité / authentification: module à appeler pour récupérer les infos utilisateur
+# -> Voir /opt/jitsi-jmb/modules/LISEZMOI.txt
+JMB_IDENTITY_MODULE="identity-cas"
+
+# Réservations: modules de vérification à exécuter lors des appels de Jicofo
+# -> Voir /opt/jitsi-jmb/modules/LISEZMOI.txt
 JMB_CHECK_MODULES="ldap-filter private-room booking"
 
 # Durée d'attente avant redirection du navigateur (secondes)
@@ -92,53 +111,53 @@ JMB_DAEMONS="jicofo prosody"
 # Adresse mail d'expéditeur pour les notifications
 JMB_MAIL_FROM_NOTIFICATION="Jitsi Meet <noreply@univ-reims.fr>"
 
-# Réservation visioconférence
-JMB_SUBJECT_NEW_OWNER="=?UTF-8?B?UsOpc2VydmF0aW9uIHZpc2lvY29uZsOpcmVuY2U=?="
+# Sujets des mails de notification
+JMB_SUBJECT_NEW_OWNER="Réservation visioconférence"
+JMB_SUBJECT_NEW_GUEST="Invitation visioconférence"
+JMB_SUBJECT_NEW_MODERATOR="Invitation visioconférence"
 
-# Invitation visioconférence
-JMB_SUBJECT_NEW_GUEST="=?UTF-8?B?SW52aXRhdGlvbiB2aXNpb2NvbmbDqXJlbmNl?="
+JMB_SUBJECT_EDIT_OWNER="Réservation visioconférence (mise à jour)"
+JMB_SUBJECT_EDIT_GUEST="Invitation visioconférence (mise à jour)"
+JMB_SUBJECT_EDIT_MODERATOR="Invitation visioconférence (mise à jour)"
 
-# Réservation visioconférence (mise à jour)
-JMB_SUBJECT_EDIT_OWNER="=?UTF-8?B?UsOpc2VydmF0aW9uIHZpc2lvY29uZsOpcmVuY2UgKG1pc2Ugw6Agam91cik=?="
+JMB_SUBJECT_DEL_OWNER="Réservation visioconférence annulée"
+JMB_SUBJECT_DEL_GUEST="Invitation visioconférence annulée"
+JMB_SUBJECT_DEL_MODERATOR="Invitation visioconférence annulée"
 
-# Invitation visioconférence (mise à jour)
-JMB_SUBJECT_EDIT_GUEST="=?UTF-8?B?SW52aXRhdGlvbiB2aXNpb2NvbmbDqXJlbmNlIChtaXNlIMOgIGpvdXIp?="
-
-# Réservation visioconférence annulée
-JMB_SUBJECT_DEL_OWNER="=?UTF-8?B?UsOpc2VydmF0aW9uIHZpc2lvY29uZsOpcmVuY2UgYW5udWzDqWU=?="
-
-# Invitation visioconférence annulée
-JMB_SUBJECT_DEL_GUEST="=?UTF-8?B?SW52aXRhdGlvbiB2aXNpb2NvbmbDqXJlbmNlIGFubnVsw6ll?="
-
-# Rappel: vous organisez une visioconférence
-JMB_SUBJECT_MAIL_REMINDER_OWNER="=?UTF-8?B?UmFwcGVsOiB2b3VzIG9yZ2FuaXNleiB1bmUgdmlzaW9jb25mw6lyZW5jZQ==?="
-
-# Rappel: vous participez à une visioconférence
-JMB_SUBJECT_MAIL_REMINDER_GUEST="=?UTF-8?B?UmFwcGVsOiB2b3VzIHBhcnRpY2lwZXogw6AgdW5lIHZpc2lvY29uZsOpcmVuY2U=?="
+JMB_SUBJECT_MAIL_REMINDER_OWNER="Rappel: vous organisez une visioconférence"
+JMB_SUBJECT_MAIL_REMINDER_GUEST="Rappel: vous participez à une visioconférence"
+JMB_SUBJECT_MAIL_REMINDER_MODERATOR="Rappel: vous animez une visioconférence"
 
 # Templates contenu mails
-JMB_MAIL_NEW_GUEST=${JMB_PATH}/inc/mail_new_guest.sh
 JMB_MAIL_NEW_OWNER=${JMB_PATH}/inc/mail_new_owner.sh
-JMB_MAIL_EDIT_GUEST=${JMB_PATH}/inc/mail_edit_guest.sh
+JMB_MAIL_NEW_GUEST=${JMB_PATH}/inc/mail_new_guest.sh
+JMB_MAIL_NEW_MODERATOR=${JMB_PATH}/inc/mail_new_moderator.sh
+
 JMB_MAIL_EDIT_OWNER=${JMB_PATH}/inc/mail_edit_owner.sh
-JMB_MAIL_DEL_GUEST=${JMB_PATH}/inc/mail_del_guest.sh
+JMB_MAIL_EDIT_GUEST=${JMB_PATH}/inc/mail_edit_guest.sh
+JMB_MAIL_EDIT_MODERATOR=${JMB_PATH}/inc/mail_edit_moderator.sh
+
 JMB_MAIL_DEL_OWNER=${JMB_PATH}/inc/mail_del_owner.sh
+JMB_MAIL_DEL_GUEST=${JMB_PATH}/inc/mail_del_guest.sh
+JMB_MAIL_DEL_MODERATOR=${JMB_PATH}/inc/mail_del_moderator.sh
+
 JMB_MAIL_REMINDER_OWNER=${JMB_PATH}/inc/mail_reminder_owner.sh
 JMB_MAIL_REMINDER_GUEST=${JMB_PATH}/inc/mail_reminder_guest.sh
+JMB_MAIL_REMINDER_MODERATOR=${JMB_PATH}/inc/mail_reminder_moderator.sh
 
 # Fichier d'abonnement aux listes de diffusion
 # Format:
 # adresse_mail_liste adresse_mail_abonné1
 # adresse_mail_liste adresse_mail_abonné2
 # ...
-JMB_LISTS_SUBSCRIBERS="/var/lib/tsync-get/listes.lists_subscribers_mails.txt"
+JMB_LISTS_SUBSCRIBERS=""
 
 ########################################################################
 # iCal
 ########################################################################
 
-JMB_ICAL_NAME="Visio Rendez-vous"
-JMB_ICAL_DESC="Visio Rendez-vous"
+JMB_ICAL_NAME="Visio Jitsi Meet"
+JMB_ICAL_DESC="Visio Jitsi Meet"
 JMB_ICAL_TZID="Europe/Paris"
 
 ########################################################################
@@ -160,10 +179,13 @@ JMB_MAX_MEETING_DURATION="480"
 # Incrément durée réunion (minutes)
 JMB_STEP_MEETING_DURATION="30"
 
-# Formulaire "liste des réunions: mise en évidence (vert) des réunions N
-# secondes avant leur date de début, celles qui ont démarré sont orange
+# Mise en évidence des réunions (fond vert) dans la liste  N secondes
+# avant leur date de début, fond orange si la date de début est atteinte
 JMB_LIST_HIGHLIGHT_OWNER="900"
 JMB_LIST_HIGHLIGHT_GUEST="300"
+
+# Nombre maximum de modérateurs
+JMB_MAX_MODERATORS=2
 
 # Nombre maximum d'invités
 JMB_MAX_GUESTS=100
@@ -177,5 +199,4 @@ fi
 
 ########################################################################
 
-# Fichier de sortie pour DEBUG
-JMB_DEBUG=${JMB_CGI_TMP}/debug.${now}
+

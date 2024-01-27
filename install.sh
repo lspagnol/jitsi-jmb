@@ -44,7 +44,7 @@ JMB_DATA=/var/www/jitsi-jmb
 
 # Installation des scripts
 mkdir -p ${JMB_PATH}
-for d in bin cgi lib check_modules etc inc ; do
+for d in bin cgi lib modules etc inc ; do
 	mkdir -p ${JMB_PATH}/${d}
 	cp ${d}/* ${JMB_PATH}/${d}
 done
@@ -52,7 +52,7 @@ done
 chown -R root:root ${JMB_PATH}
 chmod +x ${JMB_PATH}/cgi/*
 chmod +x ${JMB_PATH}/bin/*
-ln -s ${JMB_PATH}/bin/jitsi-jmb_show /usr/local/bin
+ln -fs ${JMB_PATH}/bin/jitsi-jmb_show /usr/local/bin
 
 # Création des répertoires utilisés par JMB
 mkdir -p ${JMB_DATA}
@@ -62,50 +62,69 @@ for d in tmp booking booking_archive mail_reminder xmpp_reminder ical ical/by-us
 	chown www-data: ${JMB_DATA}/${d}
 done
 
-# Configuration JMB/Apache -> accès aux CGIs
-[ -f /etc/apache2/conf_enabled-enabled/jitsi-jmb.conf ] || ln -fs ${JMB_PATH}/etc/jmb-apache.conf /etc/apache2/conf_enabled-enabled/jitsi-jmb.conf
-[ -f /etc/apache2/sites-enabled/jitsi-jmb.conf ] || ln -fs ${JMB_PATH}/etc/jmb-apache.conf /etc/apache2/sites-enabled/jitsi-jmb.conf
-[ -f /etc/apache2/mods-enabled/cgid.load ] || a2enmod cgid
-cat README-conf-Apache.md
-
-# Configuration de Jicofo
-grep -q '^org\.jitsi\.impl\.reservation\.rest\.BASE_URL=' /etc/jitsi/jicofo/sip-communicator.properties
-if [ ${?} -ne 0 ] ; then
-	echo "org.jitsi.impl.reservation.rest.BASE_URL=http://localhost" >> /etc/jitsi/jicofo/sip-communicator.properties
+# Plugins Munin
+# Seulement si "/usr/local/share/munin/" existe (pour MAJ)
+if [ -d /usr/local/share/munin/ ] ; then
+	cp munin/* /usr/local/share/munin/
 fi
 
-# Configuration de sendxmpp
-echo "username: anonymous" > /root/.sendxmpprc
-chmod 600 /root/.sendxmpprc
+cp ${JMB_PATH}/etc/jmb_URCA.cf ${JMB_PATH}/etc/jmb_local.cf
+##chgrp www-data /etc/ldap/ldap.secret
+##chmod 640 /etc/ldap/ldap.secret
 
-# Page Logout Shibboleth
-ln -fs /opt/jitsi-jmb/inc/localLogout_fr.html /etc/shibboleth/
+#root@ssds-jitsi:~# ls -1 /etc/prosody/conf.d/*.cfg.lua
+#/etc/prosody/conf.d/ssds-jitsi.univ-reims.fr.cfg.lua
+#root@ssds-jitsi:~# 
 
-# Script de redémarrage du JMS
-ln -fs /opt/jitsi-jmb/bin/jitsi-restart /usr/local/sbin/jitsi-restart
+#cat /etc/prosody/conf.d/ssds-jitsi.univ-reims.fr.cfg.lua |egrep "^[[:space:]]+app_(id|secret)="
+#    app_id="jitsi-auth"
+#    app_secret="hhhhhhhhhhhhhhhhhhhhhh"
 
-# Modules Prosody supplémentaires (déconnexion des utilisateurs fantômes)
-# - Remplacer storage = "none" par storage = "memory" dans /etc/prosody/conf.d/FQDN.cfg.lua
-# - ajouter "pinger" à la liste des modules activés dans /etc/prosody/prosody.cfg.lua
-chown -R root: lua
-cp lua/* /usr/lib/prosody/modules/
 
-# Planification archivage des réunions expirées
-cat<<EOT>/etc/cron.d/jitsi-jmb
-################################################################
-# Planification Jitsi JMB
+## Configuration JMB/Apache -> accès aux CGIs
+#[ -f /etc/apache2/conf_enabled-enabled/jitsi-jmb.conf ] || ln -fs ${JMB_PATH}/etc/jmb-apache.conf /etc/apache2/conf_enabled-enabled/jitsi-jmb.conf
+#[ -f /etc/apache2/sites-enabled/jitsi-jmb.conf ] || ln -fs ${JMB_PATH}/etc/jmb-apache.conf /etc/apache2/sites-enabled/jitsi-jmb.conf
+#[ -f /etc/apache2/mods-enabled/cgid.load ] || a2enmod cgid
+#cat README-conf-Apache.md
 
-# Purge des réunions planifiées et expirées
-*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_prune
+## Configuration de Jicofo
+#grep -q '^org\.jitsi\.impl\.reservation\.rest\.BASE_URL=' /etc/jitsi/jicofo/sip-communicator.properties
+#if [ ${?} -ne 0 ] ; then
+	#echo "org.jitsi.impl.reservation.rest.BASE_URL=http://localhost" >> /etc/jitsi/jicofo/sip-communicator.properties
+#fi
 
-# Mise à jour de la liste des salons privés
-*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_private-rooms
+## Configuration de sendxmpp
+#echo "username: anonymous" > /root/.sendxmpprc
+#chmod 600 /root/.sendxmpprc
 
-# Envoi des rappels par mail (début réunions)
-*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_mail-reminder
+## Page Logout Shibboleth
+#ln -fs /opt/jitsi-jmb/inc/localLogout_fr.html /etc/shibboleth/
 
-# Envoi des notification XMPP (fin réunion)
-*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_xmpp-reminder
+## Script de redémarrage du JMS
+#ln -fs /opt/jitsi-jmb/bin/jitsi-restart /usr/local/sbin/jitsi-restart
 
-#
-EOT
+## Modules Prosody supplémentaires (déconnexion des utilisateurs fantômes)
+## - Remplacer storage = "none" par storage = "memory" dans /etc/prosody/conf.d/FQDN.cfg.lua
+## - ajouter "pinger" à la liste des modules activés dans /etc/prosody/prosody.cfg.lua
+#chown -R root: lua
+#cp lua/* /usr/lib/prosody/modules/
+
+## Planification archivage des réunions expirées
+#cat<<EOT>/etc/cron.d/jitsi-jmb
+#################################################################
+## Planification Jitsi JMB
+
+## Purge des réunions planifiées et expirées
+#*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_prune
+
+## Mise à jour de la liste des salons privés
+#*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_private-rooms
+
+## Envoi des rappels par mail (début réunions)
+#*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_mail-reminder
+
+## Envoi des notification XMPP (fin réunion)
+#*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_xmpp-reminder
+
+##
+#EOT

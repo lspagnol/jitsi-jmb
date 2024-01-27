@@ -41,8 +41,9 @@ diff ${JMB_CGI_TMP}/uids_new ${JMB_CGI_TMP}/uids_old >/dev/null
 
 if [ ${?} -ne 0 ] ; then
 	cat ${JMB_CGI_TMP}/uids_new |while read uid ; do
-		room=${uid//_/U}
-		room=${room//-/M}
+		room=${uid}
+#		room=${room//_/U}
+#		room=${room//-/M}
 		echo "${uid} ${room}"
 	done > ${JMB_CGI_TMP}/private_rooms
 	mv ${JMB_CGI_TMP}/uids_new ${JMB_CGI_TMP}/uids_old

@@ -33,6 +33,7 @@ Le serveur *Jisti Meet* **DOIT** être installé, configuré et fonctionnel avec
 chmod +x install.sh
 . /install.sh
 ```
+
 * Si vous avez un logo, copiez-le dans */opt/jitsi-jmb/etc/logo.png* et décommentez les lignes correspondantes dans la configuration d'Apache.
 
 ## Divers:
@@ -47,8 +48,6 @@ chmod +x install.sh
 * https://github.com/jitsi/jicofo/blob/master/doc/reservation.md
 * https://github.com/jitsi/jitsi-videobridge/blob/master/doc/rest.md
 * https://github.com/jitsi/jitsi-videobridge/blob/master/doc/rest-colibri.md
-
 * https://github.com/jitsi/jitsi-meet/blob/master/doc/turn.md
 * https://community.jitsi.org/t/non-standard-characters-in-conference-room-name-request-result-in-404-error/18199/2
-
 * https://doc.ubuntu-fr.org/prosody

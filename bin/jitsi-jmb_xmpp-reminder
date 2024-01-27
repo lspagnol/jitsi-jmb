@@ -31,7 +31,7 @@ for f in $(ls -1 ${JMB_XMPP_REMINDER_DATA}/ 2>/dev/null) ; do
 		# Lire les données de la réunion
 		source ${JMB_BOOKING_DATA}/${booking_tsn}
 
-		cat<<EOT |sendxmpp -t -n -r "Jitsi Meet" -j ${SERVER_NAME} -c ${name}@conference.${SERVER_NAME} 2>/dev/null>/dev/null
+		cat<<EOT |sendxmpp -t -n -r "Jitsi Meet" -j ${JMB_SERVER_NAME} -c ${name}@conference.${JMB_SERVER_NAME} 2>/dev/null>/dev/null
 RAPPEL: la réunion se termine dans ${grace} minutes !!
 EOT
 

@@ -16,9 +16,10 @@ now=$(date +%s)
 
 ########################################################################
 
-# Charger la configuration
+# Charger la configuration et les fonctions
 JMB_PATH=/opt/jitsi-jmb
 source ${JMB_PATH}/etc/jmb.cf
+source ${JMB_PATH}/lib/jmb.lib
 
 ########################################################################
 
@@ -37,8 +38,8 @@ for f in $(ls -1 ${JMB_MAIL_REMINDER_DATA}/ 2>/dev/null) ; do
 		 -a "Content-Transfer-Encoding: 8bit"\
 		 -a "Content-Language: fr"\
 		 -a "from: ${JMB_MAIL_FROM_NOTIFICATION}"\
-		 -a "subject: ${JMB_SUBJECT_MAIL_REMINDER_OWNER}"\
-		 ${mail_owner}
+		 -a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_OWNER})"\
+		 ${owner}
 
 		# Rappel aux invités
 		for guest in ${guests} ; do
@@ -47,8 +48,8 @@ for f in $(ls -1 ${JMB_MAIL_REMINDER_DATA}/ 2>/dev/null) ; do
 			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 			 -a "Content-Transfer-Encoding: 8bit"\
 			 -a "Content-Language: fr"\
-			 -a "from: ${mail_owner}"\
-			 -a "subject: ${JMB_SUBJECT_MAIL_REMINDER_GUEST}"\
+			 -a "from: ${owner}"\
+			 -a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_GUEST})"\
 			 ${guest}
 		done
 

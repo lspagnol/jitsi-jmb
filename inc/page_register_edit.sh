@@ -10,7 +10,8 @@ cat<<EOT
   </HEAD>
   <BODY>
     <DIV><STRONG>R&eacute;union modifi&eacute;e !</STRONG></DIV>
-    <P>Vos invit&eacute;s: ${conf_guests:-aucun}</P>
+    <P>Mod&eacute;rateurs: ${conf_moderators:-aucun}</P>
+    <P>Invit&eacute;s: ${conf_guests:-aucun}</P>
     <P>Vous allez &ecirc;tre redirig&eacute; dans ${JMB_SLEEP_REDIRECT} secondes.</P>
   </BODY>
 </HTML>

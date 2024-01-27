@@ -26,7 +26,11 @@
 
 ########################################################################
 
-. $MUNIN_LIBDIR/plugins/plugin.sh
+if [ -z "${MUNIN_LIBDIR}" ] ; then
+	source /usr/share/munin/plugins/plugin.sh
+else
+	source ${MUNIN_LIBDIR}/plugins/plugin.sh
+fi
 
 ########################################################################
 

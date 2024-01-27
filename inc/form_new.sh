@@ -15,7 +15,7 @@ fi
 
 cat<<EOT
   <H2>Nouvelle r&eacute;union</H2>
-  <P>${JMB_SCHEME}://${SERVER_NAME}/${conf_name}</P>
+  <P>${JMB_SCHEME}://${JMB_SERVER_NAME}/${conf_name}</P>
 </CENTER>
 <FORM method="POST">
   <INPUT type="hidden" name="conf_tsn" value="${tsn}">
@@ -37,8 +37,12 @@ cat<<EOT
     <INPUT type="text" name="conf_object" value="${JMB_DEFAULT_OBJECT}">
   </DIV>
   <DIV>
-    <LABEL>Invit&eacute;s</LABEL>
-    <TEXTAREA name="conf_guests"></TEXTAREA>
+    <LABEL>Mod&eacute;rateurs <I>max:${JMB_MAX_MODERATORS}</I></LABEL>
+    <TEXTAREA id="moderators" name="conf_moderators"></TEXTAREA>
+  </DIV>
+  <DIV>
+    <LABEL>Invit&eacute;s <I>max:${JMB_MAX_GUESTS}</I></LABEL>
+    <TEXTAREA id="guests" name="conf_guests"></TEXTAREA>
   </DIV>
   <DIV class="button">
     <INPUT type="submit" value="Cr&eacute;er la r&eacute;union" onclick="javascript: form.action='?register_new';">

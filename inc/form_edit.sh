@@ -14,14 +14,15 @@ EOT
 fi
 
 cat<<EOT
-  <H2>Edition de la r&eacute;union</H2>
-  <P>${JMB_SCHEME}://${SERVER_NAME}/${conf_name}</P>
+  <H2>Modification de la r&eacute;union</H2>
+  <P>${JMB_SCHEME}://${JMB_SERVER_NAME}/${conf_name}</P>
 </CENTER>
 <FORM method="POST">
   <INPUT type="hidden" name="conf_tsn" value="${tsn}">
   <INPUT type="hidden" name="conf_name" value="${conf_name}">
   <INPUT type="hidden" name="old_conf_date" value="${old_conf_date}">
   <INPUT type="hidden" name="old_conf_time" value="${old_conf_time}">
+  <INPUT type="hidden" name="old_conf_moderators" value="${old_conf_moderators}">
   <INPUT type="hidden" name="old_conf_guests" value="${old_conf_guests}">
   <DIV>
     <LABEL>Date</LABEL>
@@ -40,8 +41,12 @@ cat<<EOT
     <INPUT type="text" name="conf_object" value="${conf_object}">
   </DIV>
   <DIV>
-    <LABEL>Invit&eacute;s</LABEL>
-    <TEXTAREA name="conf_guests">${conf_guests}</TEXTAREA>
+    <LABEL>Mod&eacute;rateurs <I>max:${JMB_MAX_MODERATORS}</I></LABEL>
+    <TEXTAREA id="moderators" name="conf_moderators">${conf_moderators}</TEXTAREA>
+  </DIV>
+  <DIV>
+    <LABEL>Invit&eacute;s <I>max:${JMB_MAX_GUESTS}</I></LABEL>
+    <TEXTAREA id="guests" name="conf_guests">${conf_guests}</TEXTAREA>
   </DIV>
   <DIV class="button">
     <INPUT type="submit" value="Modifier la r&eacute;union" onclick="javascript: form.action='?register_edit';">
