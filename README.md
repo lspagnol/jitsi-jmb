@@ -1,21 +1,21 @@
 # Jitsi Meet Booking (JMB)
 
-## Mots clé:
+## Fonctionnalités:
 
 * Authentification universelle (CAS, Shibboleth, SAML, LDAP, ...)
-* Planification, réservation
-* Modération, modérateur
+* Réservation et planification des réunions
+* Gestion des modérateurs et des invités
 * Rappels par mail (début des réunions)
 * Rappels via XMPP (fin des réunions)
 * Flux iCal
-* Booking, moderator, reminder
 
 ## Présentation:
 
 * **JMB** est un *POC* de réservation/planification de visioconférences *Jitsi Meet*:
-  * le **CGI** *token.cgi* assure l'**authentification** via n'importe quel module d'authentification d'Apache,
-  * le **CGI** *token.cgi* assure l'**autorisation** (activation des réunions) via les infos gérées par *booking.cgi*,
-  * le **CGI** *booking.cgi* permet de planifier/réserver les visioconférences.
+  * **token.cgi** assure l'**authentification** via n'importe quel module d'authentification d'Apache,
+  * **token.cgi** assure l'**autorisation** (activation des réunions) via les infos gérées par **booking.cgi**,
+  * **booking.cgi** permet de gérer/planifier/réserver les visioconférences,
+  * **ical.cgi** génère un flux iCal pour chaque utilisateur.
 * **JMB** est modulaire: vous pouvez créer/ajouter vos propres modules de contrôle.
 
 ## Prérequis:
