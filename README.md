@@ -17,7 +17,7 @@
   * **booking.cgi** permet de gérer/planifier/réserver les visioconférences,
   * **ical.cgi** génère un flux iCal pour chaque utilisateur.
 * **JMB** est modulaire: vous pouvez créer/ajouter vos propres modules de contrôle.
-* *Les CGI en Bash, c'est moche, mais j'ai pas le temps de tout ré-écrire en Python ... avis aux volontaire ! ;)*
+* *Les CGI en Bash, c'est moche, mais j'ai pas le temps de tout ré-écrire en Python ... avis aux volontaires ! ;)*
 
 ## Prérequis:
 
