@@ -13,9 +13,8 @@
 ## Présentation:
 
 * **JMB** est un *POC* de réservation/planification de visioconférences *Jitsi Meet*:
-  * le **CGI** *token.cgi*
-   * assure l'authentification via n'importe quel module d'authentification d'Apache,
-   * assure l'autorisation (activation de réunion) via les infos gérées par *booking.cgi*.
+  * le **CGI** *token.cgi* assure l'**authentification** via n'importe quel module d'authentification d'Apache,
+  * le **CGI** *token.cgi* assure l'**autorisation** (activation des réunions) via les infos gérées par *booking.cgi*,
   * le **CGI** *booking.cgi* permet de planifier/réserver les visioconférences.
 * **JMB** est modulaire: vous pouvez créer/ajouter vos propres modules de contrôle.
 
