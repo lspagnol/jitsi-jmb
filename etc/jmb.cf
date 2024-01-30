@@ -52,7 +52,7 @@ JMB_SERVER_NAME="$(hostname -f)"
 JMB_MAIL_DOMAIN="${JMB_SERVER_NAME#*.}"
 
 # Scheme du serveur HTTP http ou https
-# ... ça existe encore "HTTP" sans "S" ? .. ;)
+# ... ça existe encore "HTTP" sans "S" ? ... ;)
 JMB_SCHEME="https"
 
 # JWT -> "Application ID"
@@ -127,23 +127,6 @@ JMB_SUBJECT_DEL_MODERATOR="Invitation visioconférence annulée"
 JMB_SUBJECT_MAIL_REMINDER_OWNER="Rappel: vous organisez une visioconférence"
 JMB_SUBJECT_MAIL_REMINDER_GUEST="Rappel: vous participez à une visioconférence"
 JMB_SUBJECT_MAIL_REMINDER_MODERATOR="Rappel: vous animez une visioconférence"
-
-# Templates contenu mails
-JMB_MAIL_NEW_OWNER=${JMB_PATH}/inc/mail_new_owner.sh
-JMB_MAIL_NEW_GUEST=${JMB_PATH}/inc/mail_new_guest.sh
-JMB_MAIL_NEW_MODERATOR=${JMB_PATH}/inc/mail_new_moderator.sh
-
-JMB_MAIL_EDIT_OWNER=${JMB_PATH}/inc/mail_edit_owner.sh
-JMB_MAIL_EDIT_GUEST=${JMB_PATH}/inc/mail_edit_guest.sh
-JMB_MAIL_EDIT_MODERATOR=${JMB_PATH}/inc/mail_edit_moderator.sh
-
-JMB_MAIL_DEL_OWNER=${JMB_PATH}/inc/mail_del_owner.sh
-JMB_MAIL_DEL_GUEST=${JMB_PATH}/inc/mail_del_guest.sh
-JMB_MAIL_DEL_MODERATOR=${JMB_PATH}/inc/mail_del_moderator.sh
-
-JMB_MAIL_REMINDER_OWNER=${JMB_PATH}/inc/mail_reminder_owner.sh
-JMB_MAIL_REMINDER_GUEST=${JMB_PATH}/inc/mail_reminder_guest.sh
-JMB_MAIL_REMINDER_MODERATOR=${JMB_PATH}/inc/mail_reminder_moderator.sh
 
 # Fichier d'abonnement aux listes de diffusion
 # Format:

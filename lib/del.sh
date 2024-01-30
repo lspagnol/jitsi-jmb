@@ -31,31 +31,45 @@ rm ${JMB_BOOKING_DATA}/${tsn}
 rm ${JMB_MAIL_REMINDER_DATA}/${tsn}.* 2>/dev/null
 rm ${JMB_XMPP_REMINDER_DATA}/${tsn}.* 2>/dev/null
 
-tpl_owner="${JMB_PATH}/inc/mail_del_owner.sh"
-tpl_guest="${JMB_PATH}/inc/mail_del_guest.sh"
-subject_owner="$(utf8_to_mime ${JMB_SUBJECT_DEL_OWNER})"
-subject_guest="$(utf8_to_mime ${JMB_SUBJECT_DEL_GUEST})"
+# Sélection du template "annulation d'une réunion"
+mail_tpl="${JMB_PATH}/inc/mail_tpl_del.sh"
 
 # Mail de notification au demandeur
-source ${tpl_owner} |mail\
+role="owner"
+mailto="${auth_mail}"
+subject="$(utf8_to_mime ${JMB_SUBJECT_DEL_OWNER})"
+source ${mail_tpl} |mail\
  -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
  -a "Content-Transfer-Encoding: 8bit"\
  -a "Content-Language: fr"\
  -a "from: ${JMB_MAIL_FROM_NOTIFICATION}"\
- -a "subject: ${subject_owner}"\
-  ${auth_mail}
+ -a "subject: ${subject}"\
+  ${mailto}
 
 # Mail de notification aux invités
-for guest in ${conf_guests} ; do
-
-	source ${tpl_guest} |mail\
+role=guest
+subject="$(utf8_to_mime ${JMB_SUBJECT_DEL_GUEST})"
+for mailto in ${conf_guests} ; do
+	source ${mail_tpl} |mail\
 	 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 	 -a "Content-Transfer-Encoding: 8bit"\
 	 -a "Content-Language: fr"\
 	 -a "from: ${auth_mail}"\
-	 -a "subject: ${subject_guest}"\
-	 ${guest}
+	 -a "subject: ${subject}"\
+	 ${mailto}
+done
 
+# Mail de notification aux modérateurs
+role=moderator
+subject="$(utf8_to_mime ${JMB_SUBJECT_DEL_MODERATOR})"
+for mailto in ${conf_moderators} ; do
+	source ${mail_tpl} |mail\
+	 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+	 -a "Content-Transfer-Encoding: 8bit"\
+	 -a "Content-Language: fr"\
+	 -a "from: ${auth_mail}"\
+	 -a "subject: ${subject}"\
+	 ${mailto}
 done
 
 # Afficher la page Web de confirmation de la suppression

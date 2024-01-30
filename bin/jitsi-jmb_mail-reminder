@@ -23,6 +23,8 @@ source ${JMB_PATH}/lib/jmb.lib
 
 ########################################################################
 
+mail_tpl="${JMB_PATH}/inc/mail_tpl_reminder.sh"
+
 for f in $(ls -1 ${JMB_MAIL_REMINDER_DATA}/ 2>/dev/null) ; do
 
 	source ${JMB_MAIL_REMINDER_DATA}/${f}
@@ -33,25 +35,42 @@ for f in $(ls -1 ${JMB_MAIL_REMINDER_DATA}/ 2>/dev/null) ; do
 		source ${JMB_BOOKING_DATA}/${booking_tsn}
 
 		# Rappel à l'organisateur
-		source ${JMB_MAIL_REMINDER_OWNER} |mail\
+		mailto="${owner}"
+		role="owner"
+		source ${mail_tpl} |mail\
 		 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 		 -a "Content-Transfer-Encoding: 8bit"\
 		 -a "Content-Language: fr"\
 		 -a "from: ${JMB_MAIL_FROM_NOTIFICATION}"\
 		 -a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_OWNER})"\
-		 ${owner}
+		 ${mailto}
 
 		# Rappel aux invités
-		for guest in ${guests} ; do
+		role="guest"
+		for mailto in ${guests} ; do
 			# Mail de notification
-			source ${JMB_MAIL_REMINDER_GUEST} |mail\
+			source ${mail_tpl} |mail\
 			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 			 -a "Content-Transfer-Encoding: 8bit"\
 			 -a "Content-Language: fr"\
 			 -a "from: ${owner}"\
 			 -a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_GUEST})"\
-			 ${guest}
+			 ${mailto}
 		done
+
+		# Rappel aux modérateurs
+		role="moderator"
+		for mailto in ${moderators} ; do
+			# Mail de notification
+			source ${mail_tpl} |mail\
+			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+			 -a "Content-Transfer-Encoding: 8bit"\
+			 -a "Content-Language: fr"\
+			 -a "from: ${owner}"\
+			 -a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_MODERATOR})"\
+			 ${mailto}
+		done
+
 
 		# Suppression du reminder
 		rm ${JMB_MAIL_REMINDER_DATA}/${f}

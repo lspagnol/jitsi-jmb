@@ -11,8 +11,8 @@ if [ "${is_allowed}" = "0" ] ; then
 	http_403 "Vous n'êtes pas autorisé à modifier une réunion"
 fi
 
-tpl_owner="${JMB_PATH}/inc/mail_edit_owner.sh"
-subject_owner="$(utf8_to_mime ${JMB_SUBJECT_EDIT_OWNER})"
+mail_tpl="${JMB_PATH}/inc/mail_tpl_edit.sh"
+subject="$(utf8_to_mime ${JMB_SUBJECT_EDIT_OWNER})"
 
 source ${JMB_PATH}/inc/register_data.sh
 source ${JMB_PATH}/inc/mail_register.sh
