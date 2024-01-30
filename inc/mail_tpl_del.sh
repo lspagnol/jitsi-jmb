@@ -63,4 +63,4 @@ EOT
 
 esac
 
-source ${JMB_PATH}/inc/mail_footer.sh
+source ${JMB_PATH}/inc/mail_tpl_footer.sh

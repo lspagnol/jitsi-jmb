@@ -56,5 +56,5 @@ EOT
 
 esac
 
-source ${JMB_PATH}/inc/mail_best_practices.sh
-source ${JMB_PATH}/inc/mail_footer_owner.sh
+source ${JMB_PATH}/inc/mail_tpl_best_practices.sh
+source ${JMB_PATH}/inc/mail_tpl_footer.sh
