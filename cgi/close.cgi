@@ -20,7 +20,16 @@ out=${JMB_CGI_TMP}/http_${tsn}.message
 
 ########################################################################
 
-set |egrep '^HTTP_COOKIE=' |cut -d"=" -f2- |sed s/\'// |sed 's/ //' |egrep -q '(^|;)viajmb=1(;|$)'
+# On vérifie le referer
+set |egrep -q "^HTTP_REFERER=${JMB_SCHEME}://${JMB_SERVER_NAME//./\\.}/"
+if [ $? -ne 0 ] ; then
+	# L'appel au CGI n'est pas fait par la fin d'une session Jitsi
+	# -> redirection vers le CGI de l'interface de gestion
+	http_302 "/booking.cgi"
+fi
+
+# On verifie le cookie
+set |egrep '^HTTP_COOKIE=' |egrep -q '(^|;| )viajmb=1'
 if [ ${?} -eq 0 ] ; then
 	# Le cookie "viajmb=1" est présent, redirection sur le CGI de l'interface de gestion
 	url_redirect=${JMB_DEFAULT_URL_REDIRECT}
