@@ -17,7 +17,6 @@
 #   ln -s /usr/local/share/munin/jitsi_videobridge_summary_ /etc/munin/plugins/jitsi_videobridge_summary_network
 #   ln -s /usr/local/share/munin/jitsi_videobridge_summary_ /etc/munin/plugins/jitsi_videobridge_summary_conferences
 #   ln -s /usr/local/share/munin/jitsi_videobridge_summary_ /etc/munin/plugins/jitsi_videobridge_summary_participants
-#   ln -s /usr/local/share/munin/jitsi_videobridge_summary_ /etc/munin/plugins/jitsi_videobridge_summary_videostreams
 #   echo -e "[jitsi_videobridge_summary_system]\nenv.videobridges videobridge_host1 videobridge_host2" > /etc/munin/plugin-conf.d/jitsi-videobridge-summary
 #
 #   Edit /etc/munin/plugin-conf.d/jitsi-videobridge-summary and set videobriges hostnames to "env.videobridges"
@@ -48,9 +47,6 @@ case ${metrics} in
 	;;
 	participants)
 		stats="participants videochannels endpoints_sending_video endpoints_sending_audio inactive_endpoints"
-	;;
-	videostreams)
-		stats="videostreams"
 	;;
 	network)
 		stats="bit_rate_download bit_rate_upload"
@@ -89,15 +85,6 @@ videochannels.label videochannels
 endpoints_sending_audio.label endpoints_sending_audio
 endpoints_sending_video.label endpoints_sending_video
 inactive_endpoints.label inactive_endpoints
-EOT
-		;;
-
-		videostreams)
-cat<<EOT
-graph_title Summary of videostreams
-graph_args --base 1000 -l 0
-graph_vlabel number
-videostreams.label videostreams
 EOT
 		;;
 

@@ -9,16 +9,11 @@
 #
 # This plugin needs jq, bc, curl or wget
 # It also needs rest api of videobridge
-# /etc/jitsi/videobridge/config -> JVB_OPTS="--apis=rest, "
+# hocon -f /etc/jitsi/videobridge/jvb.conf set videobridge.apis.rest.enabled true
+# hocon -f /etc/jitsi/videobridge/jvb.conf set videobridge.rest.debug.enabled true
 #
-#   apt -y install jq bc
+#   apt -y install jq bc curl
 #
-#   apt -y install curl
-#
-#   Curl is removed when shibboleth is installed on Debian or Ubuntu, so install wget
-#   apt -y install wget
-#
-#   wget -O jitsi_videobridge_ https://raw.githubusercontent.com/lspagnol/misc-scripts/master/jitsi_videobridge_
 #   chmod +x jitsi_videobridge_
 #   mkdir /usr/local/share/munin
 #   cp jitsi_videobridge_ /usr/local/share/munin
@@ -26,9 +21,11 @@
 #   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_conferences
 #   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_participants
 #   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_reservations
-#   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_videostreams
 #   ln -s /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_system
-#   echo -e "[jitsi_videobridge_system]\nuser root" > /etc/munin/plugin-conf.d/jitsi-videobridge
+#
+#   echo -e "[jitsi_videobridge_*]\nuser root" > /etc/munin/plugin-conf.d/jitsi-videobridge
+#   echo "env.DB /var/www/jitsi-jmb/data/jitsi-jmb.db" >> /etc/munin/plugin-conf.d/jitsi-videobridge
+#
 #   service munin-node restart
 #
 ########################################################################
@@ -39,16 +36,21 @@ else
 	source ${MUNIN_LIBDIR}/plugins/plugin.sh
 fi
 
+now=$(date +%s)
+
 ########################################################################
 
 function get_jitsi_stats {
 # Try with curl
 if [ -f /usr/bin/curl ] ; then
 	jitsi_stats=$(curl -s -f -m 3 http://localhost:8080/colibri/stats)
+	#curl -s -f -m 3 --noproxy "*" http://127.0.0.1:8080/colibri/stats 
+	#jitsi_stats=$(curl -s -f -m 3 http://localhost:8080/metrics -H 'Accept: application/json')
 	[ -z "${jitsi_stats}" ] && exit
 else
 	if [ -f /usr/bin/wget ] ; then
-		wget -T2 -t1 -q -O /tmp/jitsi-videobridge.stats http://localhost:8080/colibri/stats
+		#wget -T2 -t1 -q -O /tmp/jitsi-videobridge.stats http://localhost:8080/metrics -H 'Accept: application/json'
+		wget -T2 -t1 -q -O /tmp/jitsi-videobridge.stat http://localhost:8080/colibri/stats
 		if [ $? -eq 0 ] ; then
 			jitsi_stats=$(cat /tmp/jitsi-videobridge.stats 2>/dev/null)
 			[ -z "${jitsi_stats}" ] && exit
@@ -73,13 +75,10 @@ metrics=${metrics##*_}
 
 case ${metrics} in
 	conferences)
-		stats="conferences inactive_conferences"
+		stats="conferences p2p_conferences inactive_conferences"
 	;;
 	participants)
 		stats="participants videochannels endpoints_sending_video endpoints_sending_audio inactive_endpoints"
-	;;
-	videostreams)
-		stats="videostreams"
 	;;
 	network)
 		stats="bit_rate_download bit_rate_upload"
@@ -129,15 +128,6 @@ planned.label planned_conferences
 EOT
 		;;
 
-		videostreams)
-cat<<EOT
-graph_title Videostreams
-graph_args --base 1000 -l 0
-graph_vlabel number
-videostreams.label videostreams
-EOT
-		;;
-
 		network)
 cat<<EOT
 graph_title Network
@@ -174,22 +164,22 @@ fi
 
 case ${metrics} in
 
-	conferences|participants|videostreams|network)
-	
+	conferences|participants|network)
+
 		get_jitsi_stats
-		
+
 		for stat in ${stats} ; do
 			val=$(echo ${jitsi_stats} | jq ".${stat}")
-		    val=${val:-0}
-		    [ ${metrics} = "network" ] && val=$(( ${val} * 1024 ))
-		    echo "${stat}.value ${val}"
+			val=${val:-0}
+			[ ${metrics} = "network" ] && { val=$(echo "${val} * 1024" |bc) ; val=${val%.*} ; }
+			echo "${stat}.value ${val}"
 		done
 
 	;;
 
 	reservations)
 
-		planned=$(ls -1 /var/www/jitsi-jmb/booking/ 2>/dev/null |wc -l)
+		planned=$(sqlite3 ${DB} "SELECT count() from meetings WHERE meeting_end > '${now}';")
 		echo "planned.value ${planned}"
 
 	;;
