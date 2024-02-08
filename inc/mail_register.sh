@@ -13,6 +13,15 @@ source ${mail_tpl} |mail\
 	-a "Subject: ${subject}"\
 	${mailto}
 
+# Si l'adresse de l'organisateur ne correspond pas au domaine du serveur
+# Jitsi, on remplace l'adresse d'enveloppe pour passer les contrôles SPF
+echo "${auth_mail}" |egrep -q "${JMB_MAIL_DOMAIN//\./\\.}$"
+if [ $? -eq 0 ] ; then
+	envelope_from="${auth_mail}"
+else
+	envelope_from="${JMB_MAIL_FROM_NOTIFICATION}"
+fi
+
 # Mail d'invitation aux invités & modérateurs
 if [ "${conf_date}" != "${old_conf_date}" ] || [ "${conf_time}" != "${old_conf_time}" ] ; then
 
@@ -35,6 +44,7 @@ if [ "${conf_date}" != "${old_conf_date}" ] || [ "${conf_time}" != "${old_conf_t
 		fi
 
 		source ${mail_tpl} |mail\
+			-r "${envelope_from}"\
 			-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 			-a "Content-Transfer-Encoding: 8bit"\
 			-a "Content-Language: fr"\
@@ -61,6 +71,7 @@ if [ "${conf_date}" != "${old_conf_date}" ] || [ "${conf_time}" != "${old_conf_t
 		fi
 
 		source ${mail_tpl} |mail\
+			-r "${envelope_from}"\
 			-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 			-a "Content-Transfer-Encoding: 8bit"\
 			-a "Content-Language: fr"\
@@ -86,6 +97,7 @@ else
 		if [ ${?} -ne 0 ] ; then
 
 			source ${mail_tpl} |mail\
+				-r "${envelope_from}"\
 				-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 				-a "Content-Transfer-Encoding: 8bit"\
 				-a "Content-Language: fr"\
@@ -105,6 +117,7 @@ else
 		if [ ${?} -ne 0 ] ; then
 
 			source ${mail_tpl} |mail\
+				-r "${envelope_from}"\
 				-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 				-a "Content-Transfer-Encoding: 8bit"\
 				-a "Content-Language: fr"\
