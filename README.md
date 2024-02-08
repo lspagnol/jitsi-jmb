@@ -41,7 +41,7 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
     * affiche la liste des réunions planifiées (réunions créés par l'utilisateur et celles auxquelles il est invité en tant que participant ou modérateur),
     * permet d'accéder aux réunions planifiées
       * redirection via **token.cgi** pour les propriétaires,
-      * redirection **join.cgi** pour les participants ou modérateurs),
+      * redirection via **join.cgi** pour les participants ou modérateurs),
     * permet d'inviter des participants et/ou des modérateurs,
     * les participants et/ou des modérateurs peuvent être des *utilisateurs externes* (ne pouvant pas s'authentifier),
     * génère, pour une réunion donnée, un *hash individuel* pour chaque participants et/ou modérateur,
