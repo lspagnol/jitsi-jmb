@@ -10,8 +10,7 @@
 * Rappels par mail (début des réunions)
 * ~~Rappels via XMPP (fin des réunions)~~ **FIXME** (*sendxmpp* ne fonctionne plus avec *Prosody*)
 * Flux iCal pour la synchronisation des agendas
-![Screenshot1: liste des réunions](screenshot1.png)
-![Screenshot2: édition d'une réunion](screenshot2.png)
+| ![Screenshot1: liste des réunions](screenshot1.png) | ![Screenshot2: édition d'une réunion](screenshot2.png) |
 
 ## Historique:
 **JBM** a été écrit en quelques jours au début du premier confinement de la crise Covid pour proposer une solution de visioconférence souveraine et peu coûteuse à nos utilisateurs.
