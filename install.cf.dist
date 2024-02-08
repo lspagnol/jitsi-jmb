@@ -1,0 +1,5 @@
+#JITSI_NAME="${JITSI_NAME}"
+#CAS_SERVER="${CAS_SERVER}"
+#CASLoginURL="${CASLoginURL}"
+#CASValidateURL="${CASValidateURL}"
+#CASRootProxiedAs="${CASRootProxiedAs}"
