@@ -10,6 +10,9 @@
 * Rappels par mail (début des réunions)
 * ~~Rappels via XMPP (fin des réunions)~~ **FIXME** (*sendxmpp* ne fonctionne plus avec *Prosody*)
 * Flux iCal pour la synchronisation des agendas
+<img src="screenshot1.png" alt="Screenshot1: liste des réunions" width="100"/>
+<img src="screenshot2.png" alt="Screenshot2: édition d'une réunion" width="100"/>
+
 [Screenshot1: liste des réunions](screenshot1.png | width=100 )
 [Screenshot2: édition d'une réunion](screenshot2.png | width=100)
 
