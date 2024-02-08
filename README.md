@@ -1,6 +1,6 @@
 # Jitsi Meet Booking (JMB)
 
-<img src="screenshot1.png" alt="Screenshot1: liste des réunions" width="300"/><img src="screenshot2.png" alt="Screenshot2: édition d'une réunion" width="300"/>
+<img src="screenshot1.png" alt="Screenshot1: liste des réunions" width="350"/><img src="screenshot2.png" alt="Screenshot2: édition d'une réunion" width="350"/>
 
 ## Fonctionnalités:
 
