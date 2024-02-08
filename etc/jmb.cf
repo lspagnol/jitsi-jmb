@@ -19,6 +19,9 @@ JMB_DATA="/var/www/jitsi-jmb"
 # Stockage des données temporaires des CGIs
 JMB_CGI_TMP="${JMB_DATA}/tmp"
 
+# Stockage des données (SQLite)
+JMB_DB="${JMB_DATA}/data/jitsi-jmb.db"
+
 # Stockage des données de réservation
 JMB_BOOKING_DATA=${JMB_DATA}/booking
 
@@ -58,11 +61,15 @@ JMB_SCHEME="https"
 # JWT -> "Application ID"
 # -> voir /etc/prosody/conf.avail/**FQDN**.fr.cfg.lua
 # Identique à la variable "app_id" dans la section "VirtualHost" du FQDN
+# Variable inscrite automatiquement dans /opt/jitsi-jmb/etc/jmb_jwt.cf
+# lors de l'installation
 JMB_JWT_ISS=""
 
 # JWT -> clé partagée pour la signature des jetons
 # -> voir /etc/prosody/conf.avail/**FQDN**.fr.cfg.lua
 # Identique à la variable "app_secret" dans la section "VirtualHost" du FQDN
+# Variable inscrite automatiquement  dans /opt/jitsi-jmb/etc/jmb_jwt.cf
+# lors de l'installation
 JMB_JWT_SECRET=""
 
 # Commande de génération des noms de réunion
@@ -174,6 +181,12 @@ JMB_MAX_MODERATORS=2
 JMB_MAX_GUESTS=100
 
 ########################################################################
+
+# Charger le fichier de conf pour JWT
+# Ce fichier est généré renseigné automatiquement pendant l'installation
+if [ -f ${JMB_PATH}/etc/jmb_jwt.cf ] ; then
+	source ${JMB_PATH}/etc/jmb_jwt.cf
+fi
 
 # Charger le fichier de configuration personnalisé
 if [ -f ${JMB_PATH}/etc/jmb_local.cf ] ; then

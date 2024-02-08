@@ -193,6 +193,7 @@ function postdecode {
 # conf_duration (durée en minutes)
 # conf_object (objet de la réunion)
 # conf_guests (liste des adresses mail invitées)
+# conf_moderators (adresses mail des modérateurs)
 
 # Variables envoyés par le formulaire form_edit.sh:
 # -------------------------------------------------
@@ -206,6 +207,7 @@ function postdecode {
 # old_conf_date (date d'origine de la conférence)
 # old_conf_time (heure d'origine de la conférence)
 # old_conf_guests (liste d'origine des invités)
+# old_conf_moderators (adresses mail des modérateurs)
 
 if [ "${REQUEST_METHOD}" = "POST" ]; then
 
@@ -273,6 +275,7 @@ function getdecode {
 # ------------------------------------
 # query
 # id
+# room
 
 echo "${QUERY_STRING}"\
  |tr -d -c '[:alnum:]&=_%.\-\+'\
@@ -393,4 +396,68 @@ list=$(echo "${list}" |egrep "@.*\.")
 
 echo ${list}
 
+}
+
+function get_meeting_infos {
+# Récupérer toutes les infos d'une réunion planifiée
+# Arguments: $1 -> identifiant de la réunion dans la DB ("${tsn}")
+# Variables en retour:
+# name
+# object
+# begin
+# duration
+# end
+# owner
+# guests (liste sur 1 seule ligne)
+# moderators (liste sur 1 seule ligne)
+
+local r
+
+# Table "meetings"
+r=$(sqlite3 -list ${JMB_DB} "SELECT meeting_name, meeting_object, meeting_begin, meeting_duration, meeting_end FROM meetings WHERE meeting_id='${1}';")
+old_ifs="${IFS}" ; IFS="|"
+r=(${r}) ; IFS="${old_ifs}"
+name=${r[0]}
+object=${r[1]}
+begin=${r[2]}
+duration=${r[3]}
+end=${r[4]}
+
+# Table "attendees"
+owner=$(sqlite3 ${JMB_DB} "SELECT attendee_email FROM attendees WHERE attendee_meeting_id='${1}' AND attendee_role='owner';")
+guests=$(sqlite3 ${JMB_DB} "SELECT attendee_email FROM attendees WHERE attendee_meeting_id='${1}' AND attendee_role='guest';")
+moderators=$(sqlite3 ${JMB_DB} "SELECT attendee_email FROM attendees WHERE attendee_meeting_id='${1}' AND attendee_role='moderator';")
+
+# Passer la liste des modérateurs et invités sur une seule ligne
+guests=(${guests}) ; guests=${guests[@]}
+moderators=(${moderators}) ; moderators=${moderators[@]}
+
+}
+
+function gen_meeting_hash {
+# Générer un hash de réunion
+# Variable en retour:
+# hash
+
+hash=$(pwgen -s -0 16 1)
+
+}
+
+function get_meeting_hash {
+# Récupérer le hash d'une réunion
+# Arguments: $1 -> identifiant de la réunion dans la DB ("${tsn}")
+#            $2 -> adresse mail du participant
+#            $3 -> role du participant
+# Variable en retour:
+# hash
+
+hash=$(sqlite3 ${JMB_DB} "\
+	SELECT attendee_meeting_hash FROM attendees
+	WHERE attendee_meeting_id='${1}' AND attendee_email='${2}' AND attendee_role='${3}';
+")
+
+}
+
+function log {
+echo "${@}" |logger -t jitsi-jmb
 }

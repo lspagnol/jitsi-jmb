@@ -25,13 +25,18 @@ EOT
 set_is_allowed
 
 # Flux iCal
-if [ -f ${JMB_ICAL_DATA}/by-user/${auth_uid} ] ; then
-	ical_hash=$(<${JMB_ICAL_DATA}/by-user/${auth_uid})
-else
+ical_hash=$(sqlite3 ${JMB_DB} "SELECT ical_hash FROM ical WHERE ical_owner='${auth_uid}';")
+if [ -z "${ical_hash}" ] ; then
 	ical_hash=$(pwgen 16 1)
-	echo "${ical_hash}" > ${JMB_ICAL_DATA}/by-user/${auth_uid}
-	echo "${auth_uid}" > ${JMB_ICAL_DATA}/by-hash/${ical_hash}
+	echo "INSERT INTO ical (ical_owner,ical_hash) values ('${auth_uid}','${ical_hash}');" |sqlite3 ${JMB_DB}
 fi
+#if [ -f ${JMB_ICAL_DATA}/by-user/${auth_uid} ] ; then
+	#ical_hash=$(<${JMB_ICAL_DATA}/by-user/${auth_uid})
+#else
+	#ical_hash=$(pwgen 16 1)
+	#echo "${ical_hash}" > ${JMB_ICAL_DATA}/by-user/${auth_uid}
+	#echo "${auth_uid}" > ${JMB_ICAL_DATA}/by-hash/${ical_hash}
+#fi
 
 cat<<EOT
 <CENTER>
@@ -54,7 +59,7 @@ if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_allowed}" = "1" ] ; then
 	self=$(grep "^${auth_uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
 	cat<<EOT
 <A><I>Ma r&eacute;union priv&eacute;e, disponible &agrave; tout moment: </I></A><BR>
-<A href=${self}>${JMB_SCHEME}://${JMB_SERVER_NAME}/${self}</A>
+<A href=token.cgi?room=${self}>${JMB_SCHEME}://${JMB_SERVER_NAME}/${self}</A>
 <P></P>
 EOT
 
@@ -79,69 +84,73 @@ cat<<EOT
     </TR>
 EOT
 
-for f in $(ls -1 ${JMB_BOOKING_DATA}/ 2>/dev/null |sort -nr) ; do
+# Liste des réunions planifiées
+for f in $(\
+	sqlite3 ${JMB_DB} "\
+		SELECT meetings.meeting_id FROM meetings
+		INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
+		WHERE attendees.attendee_email='${auth_mail}' AND meetings.meeting_end > '${now}';") ; do
 
 	unset name owner begin duration end object guests moderators
 	unset form_object form_date form_time form_duration form_owner form_action
 	unset is_owner is_guest is_moderator
-	unset onair
+	unset onair hash
 
-	source ${JMB_BOOKING_DATA}/${f}
+	# Récupérer les infos de la réunion
+	get_meeting_infos ${f}
 
-	if [ ${now} -le ${end} ] ; then
+	if [ "${owner}" = "${auth_mail}" ] ; then
+		is_owner=1
+		# Mise en évidence anticipée réunions pour le proprio
+		if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_OWNER} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
+			# La réunion n'est plus modifiable
+			onair=" bgcolor=\"PaleGreen\""
+			form_action="<A href=/token.cgi?room=${name}>Rejoindre</A>"
+		fi
+	fi
 
-		if [ "${owner}" = "${auth_mail}" ] ; then
-			is_owner=1
-			# Mise en évidence anticipée réunions pour le proprio
-			if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_OWNER} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
-				# La réunion n'est plus modifiable
-				onair=" bgcolor=\"PaleGreen\""
-				form_action="<A href=/token.cgi?room=${name}>Rejoindre</A>"
-			fi
+	echo " ${guests} " |grep -q " ${auth_mail} "
+	if [ ${?} -eq 0 ] ; then
+		is_guest=1
+		get_meeting_hash ${f} ${auth_mail} guest
+		# Mise en évidence anticipée réunions pour les invités
+		if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_GUEST} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
+			onair=" bgcolor=\"PaleGreen\""
+			form_action="<A href=/join.cgi?id=${hash}>Rejoindre</A>"
+		fi
+	fi
+
+	echo " ${moderators} " |grep -q " ${auth_mail} "
+	if [ ${?} -eq 0 ] ; then
+		is_moderator=1
+		get_meeting_hash ${f} ${auth_mail} moderator
+		# Mise en évidence anticipée réunions pour les modérateurs
+		if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_OWNER} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
+			onair=" bgcolor=\"PaleGreen\""
+			form_action="<A href=/join.cgi?id=${hash}>Rejoindre</A>"
+		fi
+	fi
+
+	if [ "${is_owner}" = "1" ] || [ "${is_guest}" = "1" ] || [ "${is_moderator}" = "1" ] ; then
+
+		[ ! -z "${object}" ] && form_object=$(utf8_to_html "${object}")
+		if [ ! -z "${begin}" ] ; then
+			form_date=$(date -d@${begin} "+%d/%m/%Y")
+			form_time=$(date -d@${begin} "+%H:%M")
+		fi
+		[ ! -z "${duration}" ] && form_duration=$(( ${duration} / 60 ))
+		[ ! -z "${owner}" ] && form_owner=${owner}
+
+		if [ "${is_allowed}" = "1" ] && [ "${is_owner}" = "1" ] && [ ${now} -lt ${begin} ] ; then
+			form_action="${form_action}<A> </A><A href=/booking.cgi?edit&id=${f}>Editer</A>"
 		fi
 
-		echo " ${guests} " |grep -q " ${auth_mail} "
-		if [ ${?} -eq 0 ] ; then
-			is_guest=1
-			# Mise en évidence anticipée réunions pour les invités
-			if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_GUEST} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
-				onair=" bgcolor=\"PaleGreen\""
-				form_action="<A href=${name}>Rejoindre</A>"
-			fi
+		# Si l'heure est dépassé -> orange
+		if [ ${now} -ge ${begin} ] ; then
+			onair=" bgcolor=\"orange\""
 		fi
 
-		echo " ${moderators} " |grep -q " ${auth_mail} "
-		if [ ${?} -eq 0 ] ; then
-			is_moderator=1
-			# Mise en évidence anticipée réunions pour les modérateurs
-			if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_OWNER} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
-				onair=" bgcolor=\"PaleGreen\""
-				form_action="<A href=/token.cgi?room=${name}>Rejoindre</A>"
-			fi
-		fi
-
-		if [ "${is_owner}" = "1" ] || [ "${is_guest}" = "1" ] || [ "${is_moderator}" = "1" ] ; then
-
-			[ ! -z "${object}" ] && form_object=$(utf8_to_html "${object}")
-			if [ ! -z "${begin}" ] ; then
-				form_date=$(date -d@${begin} "+%d/%m/%Y")
-				form_time=$(date -d@${begin} "+%H:%M")
-			fi
-			[ ! -z "${duration}" ] && form_duration=$(( ${duration} / 60 ))
-			[ ! -z "${owner}" ] && form_owner=${owner}
-
-			if [ "${is_allowed}" = "1" ] && [ "${is_owner}" = "1" ] && [ ${now} -lt ${begin} ] ; then
-				form_action="${form_action}<A> </A><A href=/booking.cgi?edit&id=${f}>Editer</A>"
-			fi
-
-			# Si l'heure est dépassé -> orange
-			if [ ${now} -ge ${begin} ] ; then
-				onair=" bgcolor=\"orange\""
-			fi
-
-			out_table
-
-		fi
+		out_table
 
 	fi
 

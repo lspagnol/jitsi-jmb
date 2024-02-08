@@ -25,56 +25,58 @@ source ${JMB_PATH}/lib/jmb.lib
 
 mail_tpl="${JMB_PATH}/inc/mail_tpl_reminder.sh"
 
-for f in $(ls -1 ${JMB_MAIL_REMINDER_DATA}/ 2>/dev/null) ; do
+# Récupérer les IDs des réunions pour lesquelles un rappel doit être envoyé -> variable "${tsn}"
+for f in $(\
+	sqlite3 ${JMB_DB} "\
+	SELECT mail_reminder_meeting_id FROM mail_reminder
+	WHERE '${now}' >= mail_reminder_date AND mail_reminder_done = '0';") ; do
 
-	source ${JMB_MAIL_REMINDER_DATA}/${f}
+	# Lire les données de la réunion
+	get_meeting_infos ${f}
 
-	if [ ${now} -ge ${reminder} ] ; then
+	# La durée est stockée en secondes, le mail indique des minutes
+	duration=$(( ${duration} / 60 ))
 
-		# Lire les données de la réunion
-		source ${JMB_BOOKING_DATA}/${booking_tsn}
+	# Rappel à l'organisateur
+	mailto="${owner}"
+	role="owner"
+	source ${mail_tpl} |mail\
+		-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+		-a "Content-Transfer-Encoding: 8bit"\
+		-a "Content-Language: fr"\
+		-a "from: ${JMB_MAIL_FROM_NOTIFICATION}"\
+		-a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_OWNER})"\
+		${mailto}
 
-		# Rappel à l'organisateur
-		mailto="${owner}"
-		role="owner"
+	# Rappel aux invités
+	role="guest"
+	for mailto in ${guests} ; do
+		get_meeting_hash ${f} ${mailto} ${role}
+		# Mail de notification
 		source ${mail_tpl} |mail\
-		 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
-		 -a "Content-Transfer-Encoding: 8bit"\
-		 -a "Content-Language: fr"\
-		 -a "from: ${JMB_MAIL_FROM_NOTIFICATION}"\
-		 -a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_OWNER})"\
-		 ${mailto}
+			-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+			-a "Content-Transfer-Encoding: 8bit"\
+			-a "Content-Language: fr"\
+			-a "from: ${owner}"\
+			-a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_GUEST})"\
+			${mailto}
+	done
 
-		# Rappel aux invités
-		role="guest"
-		for mailto in ${guests} ; do
-			# Mail de notification
-			source ${mail_tpl} |mail\
-			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
-			 -a "Content-Transfer-Encoding: 8bit"\
-			 -a "Content-Language: fr"\
-			 -a "from: ${owner}"\
-			 -a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_GUEST})"\
-			 ${mailto}
-		done
+	# Rappel aux modérateurs
+	role="moderator"
+	for mailto in ${moderators} ; do
+		get_meeting_hash ${f} ${mailto} ${role}
+		# Mail de notification
+		source ${mail_tpl} |mail\
+			-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+			-a "Content-Transfer-Encoding: 8bit"\
+			-a "Content-Language: fr"\
+			-a "from: ${owner}"\
+			-a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_MODERATOR})"\
+			${mailto}
+	done
 
-		# Rappel aux modérateurs
-		role="moderator"
-		for mailto in ${moderators} ; do
-			# Mail de notification
-			source ${mail_tpl} |mail\
-			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
-			 -a "Content-Transfer-Encoding: 8bit"\
-			 -a "Content-Language: fr"\
-			 -a "from: ${owner}"\
-			 -a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_MODERATOR})"\
-			 ${mailto}
-		done
-
-
-		# Suppression du reminder
-		rm ${JMB_MAIL_REMINDER_DATA}/${f}
-
-	fi
+	# Reminder "consommé" -> on le désactive
+	echo "UPDATE mail_reminder SET mail_reminder_done='1' WHERE mail_reminder_meeting_id='${f}' AND mail_reminder_date < '${now}';" |sqlite3 ${JMB_DB}
 
 done

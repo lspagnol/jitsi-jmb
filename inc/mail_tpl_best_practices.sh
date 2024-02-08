@@ -1,5 +1,5 @@
 ########################################################################
-# Notification mail: "bonnes pratiques"
+# Template notification mail: "bonnes pratiques"
 ########################################################################
 
 cat<<EOT

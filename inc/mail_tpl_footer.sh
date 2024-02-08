@@ -1,5 +1,5 @@
 ########################################################################
-# Notification mail: footer
+# Template notification mail: footer
 ########################################################################
 
 # On intègre la référence au service de réservation pour les

@@ -59,44 +59,45 @@ if [ ${n} -gt ${JMB_MAX_GUESTS} ] ; then
 	http_403 "Données non enregistrées: vous avez indiqué ${n} invités (le maximum est ${JMB_MAX_GUESTS})"
 fi
 
-# Enregistrement des données du formulaire
-cat<<EOT > ${JMB_BOOKING_DATA}/${tsn}
-name=${conf_name}
-owner=${auth_mail}
-begin=${begin}
-duration=${duration}
-end=${end}
-object="${object}"
-moderators="${conf_moderators}"
-guests="${conf_guests}"
+########################################################################
+
+# Préparation des rappels / mail
+if [ ! -z "${JMB_MAIL_REMINDER}" ] ; then
+
+	cat<<EOT > ${JMB_CGI_TMP}/${tsn}.sql
+UPDATE mail_reminder SET mail_reminder_done='1' WHERE mail_reminder_meeting_id='${tsn}';
 EOT
 
-# Enregistrement des rappels par mail
-if [ ! -z "${JMB_MAIL_REMINDER}" ] ; then
-	rm ${JMB_MAIL_REMINDER_DATA}/${tsn}.* 2>/dev/null
 	for r in ${JMB_MAIL_REMINDER} ; do
 		reminder=$(( ${begin} - ( ${r} * 60 ) ))
-		if [ "${reminder}" -gt "${now}" ] ; then
-			cat<<EOT > ${JMB_MAIL_REMINDER_DATA}/${tsn}.${r}
-reminder=${reminder}
-booking_tsn=${tsn}
-SERVER_NAME=${JMB_SERVER_NAME}
-JMB_MAIL_DOMAIN=${JMB_MAIL_DOMAIN}
+		if [ ${reminder} -gt ${now} ] ; then
+			cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
+INSERT INTO mail_reminder (mail_reminder_meeting_id,mail_reminder_date,mail_reminder_done)
+VALUES ('${tsn}','${reminder}','0');
 EOT
 		fi
 	done
+
 fi
 
-# Enregistrement des rappels par XMPP
+########################################################################
+
+# Préparation des rappels / XMPP
+
 if [ ! -z "${JMB_XMPP_REMINDER_DATA}" ] ; then
-	rm ${JMB_XMPP_REMINDER_DATA}/${tsn}.* 2>/dev/null
-	for r in ${JMB_XMPP_REMINDER} ; do
-		reminder=$(( ${end} - ( ${r} * 60 ) ))
-		cat<<EOT > ${JMB_XMPP_REMINDER_DATA}/${tsn}.${r}
-reminder=${reminder}
-booking_tsn=${tsn}
-grace=${r}
-SERVER_NAME=${JMB_SERVER_NAME}
+
+	cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
+UPDATE xmpp_reminder SET xmpp_reminder_done='1' WHERE xmpp_reminder_meeting_id='${tsn}';
 EOT
+
+	for r in ${JMB_MAIL_REMINDER} ; do
+		reminder=$(( ${end} - ( ${r} * 60 ) ))
+		if [ ${reminder} -gt ${now} ] ; then
+			cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
+INSERT INTO xmpp_reminder (xmpp_reminder_meeting_id,xmpp_reminder_date,xmpp_reminder_done)
+VALUES ('${tsn}','${reminder}','0');
+EOT
+		fi
 	done
+
 fi

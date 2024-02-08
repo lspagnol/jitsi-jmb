@@ -20,7 +20,7 @@ out=${JMB_CGI_TMP}/http_${tsn}.message
 
 ########################################################################
 
-# Décodage et extraction des données GET
+# Décodage et extraction des données GET ("room=" passé dans l'URL)
 getdecode
 
 # Récupérer les infos utilisateur à partir de l'authentification
@@ -31,12 +31,11 @@ source ${JMB_PATH}/modules/${JMB_IDENTITY_MODULE}.sh
 # Durée par défaut des conférences
 duration=${JMB_DEFAULT_DURATION}
 
-# Période de validité du jeton
-exp=$(( ${now} + 5 ))
+# Période de validité du jeton (-5 secondes, + 15 minutes)
+exp=$(( ${now} + 900 ))
 nbf=$(( ${now} - 5 ))
 
 # Préparation du jeton
-
 header=$(jwt_gen_header)
 payload=$(jwt_gen_payload)
 
@@ -57,7 +56,23 @@ for check_module in ${JMB_CHECK_MODULES} ; do
 	[ -f ${JMB_PATH}/modules/${check_module}.sh ] && source ${JMB_PATH}/modules/${check_module}.sh
 done
 
+log "token.cgi: meeting_name='${room}', meeting_hash='', email='${auth_mail}', role='owner', auth_uid='${auth_uid}'"
+
+# Récupérer les infos de la réunion
+r=$(sqlite3 -list ${JMB_DB} "\
+ SELECT meetings.meeting_id,attendees.attendee_count FROM meetings
+ INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
+ WHERE meetings.meeting_name='${room}' AND attendees.attendee_email='${auth_mail}' AND attendees.attendee_role='owner' AND meetings.meeting_end > '${now}';")
+old_ifs="${IFS}" ; IFS="|"
+r=(${r}) ; IFS="${old_ifs}"
+meeting_id=${r[0]}
+count=${r[1]}
+
+# Incrémentation et MAJ du compteur de connexion
+count=${count:-0}
+((count++))
+echo "UPDATE attendees SET attendee_count='${count}' WHERE attendee_meeting_id='${meeting_id}' AND attendee_email='${auth_mail}' AND attendee_role='owner';" |sqlite3 ${JMB_DB}
+
 # Auth OK + modules de vérification OK
 # -> redirection vers la salle de réunion avec le token JWT en paramètre
-#http_302 "/${room}#config.prejoinConfig.enabled=false?jwt=${header_payload}.${signature}"
 http_302 "/${room}?jwt=${header_payload}.${signature}"

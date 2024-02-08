@@ -94,25 +94,30 @@ EOT
 # Hash dans l'URL ?
 if [ ! -z "${ical_hash}" ] ; then
 
-	# Le hash existe ?
-	if [ -f ${JMB_ICAL_DATA}/by-hash/${ical_hash} ] ; then
+	# Chercher l'identifiant correspondant au hash
+	uid=$(sqlite3 ${JMB_DB} "SELECT ical_owner FROM ical WHERE ical_hash='${ical_hash}';")
 
-		# Récupérer l'identifiant qui correspond au hash
-		uid=$(<${JMB_ICAL_DATA}/by-hash/${ical_hash})
-		
+	# Le hash/uid existe ?
+	if [ ! -z "${uid}" ] ; then
+
 		# Récupérer la liste des adresses mail de l'utilisateur
 		mails=$($JMB_LDAPSEARCH uid=${uid} mail mailAlternateAddress |egrep '^(mail|mailAlternateAddress):' |awk '{print $2}')
 		mails=$(echo ${mails} |sed 's/ /|/g')
 
 		# Générer la liste des évènements
-		for f in $(ls -1 ${JMB_BOOKING_DATA}/ 2>/dev/null |sort -n) ; do
-
+		for f in $(\
+			sqlite3 ${JMB_DB} "\
+				SELECT DISTINCT meetings.meeting_id FROM meetings
+				INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
+				WHERE meetings.meeting_end > '${now}';") ; do
+	
 			unset name owner begin duration end object guests moderators is_guest is_owner is_moderator
 
 			dtstamp=$(stat -c "%Y" ${JMB_BOOKING_DATA}/${f})
 			dtstamp=$(date -d@${dtstamp} "+%Y%m%dT%H%M00")
 
-			source ${JMB_BOOKING_DATA}/${f}
+			# Récupérer les infos de la réunion
+			get_meeting_infos ${f}
 
 			echo " ${owner} " |egrep -q " (${mails}) "
 			if [ ${?} -eq 0 ] ; then

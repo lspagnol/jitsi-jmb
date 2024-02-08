@@ -12,11 +12,11 @@ Bonjour,
 
 Vous participez à une visioconférence:
 
-Objet.....: ${object}
-Date......: $(date -d @${begin} +"%d/%m/%Y")
-Heure.....: $(date -d @${begin} +%H:%M)
-Durée.....: $(( ${duration} / 60 )) minutes
-Adresse...: ${JMB_SCHEME}://${JMB_SERVER_NAME}/${name}
+Objet.........: ${object}
+Date..........: $(date -d @${begin} +"%d/%m/%Y")
+Heure.........: $(date -d @${begin} +%H:%M)
+Durée.........: ${duration} minutes
+Adresse.......: ${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}
 EOT
 	;;
 
@@ -26,13 +26,15 @@ EOT
 cat<<EOT
 Bonjour,
 
-Vous animez une visioconférence:
+Vous modérez/animez une visioconférence:
 
-Objet.....: ${object}
-Date......: $(date -d @${begin} +"%d/%m/%Y")
-Heure.....: $(date -d @${begin} +%H:%M)
-Durée.....: $(( ${duration} / 60 )) minutes
-Adresse...: ${JMB_SCHEME}://${JMB_SERVER_NAME}/token.cgi?room=${name}
+Objet.........: ${object}
+Date..........: $(date -d @${begin} +"%d/%m/%Y")
+Heure.........: $(date -d @${begin} +%H:%M)
+Durée.........: ${duration} minutes
+Adresse.......: ${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}
+Modérateurs...: ${moderators:-aucun}
+Invités.......: ${guests:-aucun}
 EOT
 	;;
 
@@ -44,11 +46,13 @@ Bonjour,
 
 Vous organisez une visioconférence:
 
-Objet.....: ${object}
-Date......: $(date -d @${begin} +"%d/%m/%Y")
-Heure.....: $(date -d @${begin} +%H:%M)
-Durée.....: $(( ${duration} / 60 )) minutes
-Adresse...: ${JMB_SCHEME}://${JMB_SERVER_NAME}/token.cgi?room=${name}
+Objet.........: ${object}
+Date..........: $(date -d @${begin} +"%d/%m/%Y")
+Heure.........: $(date -d @${begin} +%H:%M)
+Durée.........: ${duration} minutes
+Adresse.......: ${JMB_SCHEME}://${JMB_SERVER_NAME}/token.cgi?room=${name}
+Modérateurs...: ${moderators:-aucun}
+Invités.......: ${guests:-aucun}
 EOT
 	;;
 

@@ -6,21 +6,22 @@
 role="owner"
 mailto="${auth_mail}"
 source ${mail_tpl} |mail\
- -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
- -a "Content-Transfer-Encoding: 8bit"\
- -a "Content-Language: fr"\
- -a "From: ${JMB_MAIL_FROM_NOTIFICATION}"\
- -a "Subject: ${subject}"\
-  ${mailto}
+	-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+	-a "Content-Transfer-Encoding: 8bit"\
+	-a "Content-Language: fr"\
+	-a "From: ${JMB_MAIL_FROM_NOTIFICATION}"\
+	-a "Subject: ${subject}"\
+	${mailto}
 
 # Mail d'invitation aux invités & modérateurs
-if [ "${conf_date}" != "${old_conf_date}" ]\
- || [ "${conf_time}" != "${old_conf_time}" ] ; then
+if [ "${conf_date}" != "${old_conf_date}" ] || [ "${conf_time}" != "${old_conf_time}" ] ; then
 
 	# Modification date|heure -> notifier les invités et les modérateurs
 
 	role="guest"
 	for mailto in ${conf_guests} ; do
+
+		get_meeting_hash ${tsn} ${mailto} ${role}
 
 		echo " ${old_conf_guests} " | grep -q " ${mailto} "
 		if [ ${?} -eq 0 ] ; then
@@ -34,17 +35,19 @@ if [ "${conf_date}" != "${old_conf_date}" ]\
 		fi
 
 		source ${mail_tpl} |mail\
-		 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
-		 -a "Content-Transfer-Encoding: 8bit"\
-		 -a "Content-Language: fr"\
-		 -a "From: ${auth_mail}"\
-		 -a "Subject: ${subject}"\
-		 ${mailto}
+			-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+			-a "Content-Transfer-Encoding: 8bit"\
+			-a "Content-Language: fr"\
+			-a "From: ${auth_mail}"\
+			-a "Subject: ${subject}"\
+			${mailto}
 
 	done
 
 	role="moderator"
 	for mailto in ${conf_moderators} ; do
+
+		get_meeting_hash ${tsn} ${mailto} ${role}
 
 		echo " ${old_conf_moderators} " | grep -q " ${mailto} "
 		if [ ${?} -eq 0 ] ; then
@@ -58,12 +61,12 @@ if [ "${conf_date}" != "${old_conf_date}" ]\
 		fi
 
 		source ${mail_tpl} |mail\
-		 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
-		 -a "Content-Transfer-Encoding: 8bit"\
-		 -a "Content-Language: fr"\
-		 -a "From: ${auth_mail}"\
-		 -a "Subject: ${subject}"\
-		 ${mailto}
+			-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+			-a "Content-Transfer-Encoding: 8bit"\
+			-a "Content-Language: fr"\
+			-a "From: ${auth_mail}"\
+			-a "Subject: ${subject}"\
+			${mailto}
 
 	done
 
@@ -83,12 +86,12 @@ else
 		if [ ${?} -ne 0 ] ; then
 
 			source ${mail_tpl} |mail\
-			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
-			 -a "Content-Transfer-Encoding: 8bit"\
-			 -a "Content-Language: fr"\
-			 -a "From: ${auth_mail}"\
-			 -a "Subject: ${subject}"\
-			 ${mailto}
+				-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+				-a "Content-Transfer-Encoding: 8bit"\
+				-a "Content-Language: fr"\
+				-a "From: ${auth_mail}"\
+				-a "Subject: ${subject}"\
+				${mailto}
 
 		fi
 
@@ -102,12 +105,12 @@ else
 		if [ ${?} -ne 0 ] ; then
 
 			source ${mail_tpl} |mail\
-			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
-			 -a "Content-Transfer-Encoding: 8bit"\
-			 -a "Content-Language: fr"\
-			 -a "From: ${auth_mail}"\
-			 -a "Subject: ${subject}"\
-			 ${mailto}
+				-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+				-a "Content-Transfer-Encoding: 8bit"\
+				-a "Content-Language: fr"\
+				-a "From: ${auth_mail}"\
+				-a "Subject: ${subject}"\
+				${mailto}
 
 		fi
 

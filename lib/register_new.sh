@@ -15,6 +15,7 @@ mail_tpl="${JMB_PATH}/inc/mail_tpl_new.sh"
 subject="$(utf8_to_mime ${JMB_SUBJECT_NEW_OWNER})"
 
 source ${JMB_PATH}/inc/register_data.sh
+source ${JMB_PATH}/inc/register_sql_new.sh
 source ${JMB_PATH}/inc/mail_register.sh
 
 ########################################################################

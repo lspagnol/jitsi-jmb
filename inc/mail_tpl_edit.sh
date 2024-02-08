@@ -17,7 +17,7 @@ Objet.........: ${object}
 Date..........: $(date -d @${begin} +"%d/%m/%Y")
 Heure.........: $(date -d @${begin} +%H:%M)
 Durée.........: ${conf_duration} minutes
-Adresse.......: ${JMB_SCHEME}://${JMB_SERVER_NAME}/${conf_name}
+Adresse.......: ${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}
 
 Merci de confirmer votre présence.
 EOT
@@ -29,16 +29,18 @@ EOT
 cat<<EOT
 Bonjour,
 
-Je vous invite à animer une visioconférence.
+Je vous invite à modérer/animer une visioconférence.
 Cette notification annule et remplace la précédente.
 
 Objet.........: ${object}
 Date..........: $(date -d @${begin} +"%d/%m/%Y")
 Heure.........: $(date -d @${begin} +%H:%M)
 Durée.........: ${conf_duration} minutes
-Adresse.......: ${JMB_SCHEME}://${JMB_SERVER_NAME}/token.cgi?room=${conf_name}
+Adresse.......: ${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}
 Modérateurs...: ${conf_moderators:-aucun}
 Invités.......: ${conf_guests:-aucun}
+
+Merci de confirmer votre présence.
 EOT
 	;;
 

@@ -30,7 +30,6 @@ r=$(sqlite3 -list ${JMB_DB} "\
  SELECT meetings.meeting_id,meetings.meeting_name,attendees.attendee_role,attendees.attendee_email,attendees.attendee_count FROM meetings
  INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
  WHERE attendee_meeting_hash='${id}' AND meetings.meeting_end > '${now}';")
-
 old_ifs="${IFS}" ; IFS="|"
 r=(${r}) ; IFS="${old_ifs}"
 meeting_id=${r[0]}

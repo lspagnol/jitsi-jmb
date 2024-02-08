@@ -18,7 +18,7 @@ tsn=${id}
 out=${JMB_CGI_TMP}/http_${tsn}.message
 
 # Récupérer les données
-source ${JMB_BOOKING_DATA}/${tsn}
+get_meeting_infos ${tsn}
 
 if [ "${owner}" != "${auth_mail}" ] ; then
 	http_403 "Vous n'etes pas le propriétaire de cette réunion"

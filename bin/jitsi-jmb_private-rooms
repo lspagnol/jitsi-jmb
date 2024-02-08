@@ -20,11 +20,6 @@ now=$(date +%s)
 JMB_PATH=/opt/jitsi-jmb
 source ${JMB_PATH}/etc/jmb.cf
 
-# Charger le fichier de configuration personnalisé URCA
-if [ -f ${JMB_PATH}/etc/jmb_URCA.cf ] ; then
-	source ${JMB_PATH}/etc/jmb_URCA.cf
-fi
-
 ########################################################################
 
 touch ${JMB_CGI_TMP}/uids_old

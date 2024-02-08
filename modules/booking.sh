@@ -4,51 +4,29 @@
 # Réunions planifiées
 ########################################################################
 
-# Si la réunion est planifiée, s'assurer qu'elle n'est pas expirée et
-# que la demande d'activation est faite par son propriétaire.
+# Si la réunion est planifiée, s'assurer qu'elle n'est pas expirée et que
+# la demande d'activation est faite par son propriétaire ou un modérateur
 
-grep -H "^name=${room}$" ${JMB_BOOKING_DATA}/* 2>/dev/null |cut -d: -f1 > ${JMB_CGI_TMP}/${tsn}.booking
-if [ ${PIPESTATUS[0]} = 0 ] ; then
+# On récupère les infos de la réunion planifiée
+tsn=$(sqlite3 ${JMB_DB} "SELECT meeting_id FROM meetings WHERE meeting_name='${room}';")
 
-	# La réunion est planifiée
+if [ ! -z "${tsn}" ] ; then
 
-	r=$(cat ${JMB_CGI_TMP}/${tsn}.booking)
-	rm ${JMB_CGI_TMP}/${tsn}.booking
+	# La base contient une réservation pour "${room}"
 
-	# Elle est expirée par défaut
-	expired=1
+	get_meeting_infos ${tsn}
 
-	# On recherche une période non expirée dans
-	# la liste des réservations
-	for f in ${r} ; do
-	        unset begin duration end
-	        eval $(egrep "^(begin|duration)=" ${f})
-	        end=$(( ${begin} + ${duration} ))
-	        if [ ${now} -lt ${end} ] ; then
-			# On a trouvé une réservation non expirée
-	                expired=0
-	                c=${f}
-                	# On corrige la durée de la réunion
-					duration=$(( ${duration} + ${begin} - ${now} ))
-	                break
-	        fi
-	done
-
-	if [ ${expired} = 1 ] ; then
-        	http_403 "La date de la réunion '${room}' est expirée"
+	if [ ${now} -ge ${end} ] ; then
+		http_403 "La réunion '${room}' est terminée"
 	fi
 
-	grep -q "^owner=${auth_mail}$" ${c}
-	if [ ${?} -ne 0 ] ; then
-		# L'utilisateur n'est pas le propriétaire de la réunion
-		# On vérifie s'il est déclaré en tant que modérateur
-		eval $(egrep "^moderators=" ${c})
+	if [ "${owner}" != "${auth_mail}" ] ; then
+		# L'utilisateur n'est pas propriétaire
 		echo " ${moderators} " |grep -q " ${auth_mail} "
 		if [ ${?} -ne 0 ] ; then
-			http_403 "Vous n'êtes pas modérateur de la réunion '${room}'"
+			# L'utilisateur n'est pas modérateur
+			http_403 "Vous n'êtes pas propriétaire ou modérateur de la réunion '${room}'"
 		fi
 	fi
 
 fi
-
-rm ${JMB_CGI_TMP}/${tsn}.booking

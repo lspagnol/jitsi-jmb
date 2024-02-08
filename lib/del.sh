@@ -18,18 +18,14 @@ tsn=${conf_tsn}
 out=${JMB_CGI_TMP}/http_${tsn}.message
 
 # Récupérer les données
-source ${JMB_BOOKING_DATA}/${tsn}
-
-url_redirect="${JMB_DEFAULT_URL_REDIRECT}"
+get_meeting_infos ${tsn}
 
 if [ "${owner}" != "${auth_mail}" ] ; then
 	http_403 "Vous n'etes pas le propriétaire de cette réunion"
 fi
 
 # Vérification passée, on peut supprimer les données
-rm ${JMB_BOOKING_DATA}/${tsn}
-rm ${JMB_MAIL_REMINDER_DATA}/${tsn}.* 2>/dev/null
-rm ${JMB_XMPP_REMINDER_DATA}/${tsn}.* 2>/dev/null
+source ${JMB_PATH}/inc/register_sql_del.sh
 
 # Sélection du template "annulation d'une réunion"
 mail_tpl="${JMB_PATH}/inc/mail_tpl_del.sh"
@@ -74,5 +70,4 @@ done
 
 # Afficher la page Web de confirmation de la suppression
 source ${JMB_PATH}/inc/page_register_del.sh >> ${out}
-
 http_200

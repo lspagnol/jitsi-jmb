@@ -1,7 +1,10 @@
 ########################################################################
 # Fichier de configuration local
-# Il est lu après le fichier pricipal (jmb.cf)
+# Lu après /opt/jitsi-jmb/etc/jmb.cf et /opt/jitsi-jmb/etc/jmb_jwt.cf
 ########################################################################
+
+# FQDN du service
+#JMB_SERVER_NAME=""
 
 # Requête LDAP
 JMB_LDAPSEARCH="/usr/bin/ldapsearch -o ldif-wrap=no -H ldap://ldap.mondomaine.fr -x -LLL -b ou=people,dc=mondomaine,dc=fr -D uid=jitsi-jmb,ou=account,ou=app,dc=mondomaine,dc=fr -y /etc/ldap/ldap.secret"
@@ -14,24 +17,7 @@ JMB_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(
 # adresse_mail_liste adresse_mail_abonné1
 # adresse_mail_liste adresse_mail_abonné2
 # ...
-JMB_LISTS_SUBSCRIBERS="/var/lib/tsync-get/listes.lists_subscribers_mails.txt"
-
-# JWT:
-# -> "Application ID"
-# -> voir /etc/prosody/conf.avail/**FQDN**.fr.cfg.lua
-# Identique à la variable "app_id" dans la section "VirtualHost" du FQDN
-JMB_JWT_ISS="jitsi-auth"
-
-# JWT:
-# -> clé partagée pour la signature des jetons
-# -> voir /etc/prosody/conf.avail/**FQDN**.fr.cfg.lua
-# Identique à la variable "app_secret" dans la section "VirtualHost" du FQDN
-JMB_JWT_SECRET="super_clee_partagee"
-
-# Identité/authentification:
-# -> récupération des infos utilisateur
-# -> Voir /opt/jitsi-jmb/modules/LISEZMOI.txt
-JMB_IDENTITY_MODULE="identity-cas"
+#JMB_LISTS_SUBSCRIBERS="/var/lib/tsync-get/listes.lists_subscribers_mails.txt"
 
 # Réservations:
 # -> modules de vérification

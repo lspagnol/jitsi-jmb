@@ -8,7 +8,7 @@ en argmument.
 
 check_module     nom du module sans ".sh"
 duration         durée, normalement toujours "-1"
-owner       adresse mail récupérée de l'auth Shibboleth
+owner            adresse mail récupérée de l'auth Shibboleth
 name             nom de la conférence
 now              timestamp exécution du script en secondes
 tsn              timestamp exécution du script en nanosecondes
