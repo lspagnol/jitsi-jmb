@@ -1,5 +1,7 @@
 # Jitsi Meet Booking (JMB)
 
+<img src="screenshot1.png" alt="Screenshot1: liste des réunions" width="300"/><img src="screenshot2.png" alt="Screenshot2: édition d'une réunion" width="300"/>
+
 ## Fonctionnalités:
 
 * Authentification JWT universelle / modules auth Apache (CAS, Shibboleth, SAML, LDAP, SQL, ...)
@@ -10,11 +12,6 @@
 * Rappels par mail (début des réunions)
 * ~~Rappels via XMPP (fin des réunions)~~ **FIXME** (*sendxmpp* ne fonctionne plus avec *Prosody*)
 * Flux iCal pour la synchronisation des agendas
-<img src="screenshot1.png" alt="Screenshot1: liste des réunions" width="100"/>
-<img src="screenshot2.png" alt="Screenshot2: édition d'une réunion" width="100"/>
-
-[Screenshot1: liste des réunions](screenshot1.png | width=100 )
-[Screenshot2: édition d'une réunion](screenshot2.png | width=100)
 
 ## Historique:
 **JBM** a été écrit en quelques jours au début du premier confinement de la crise Covid pour proposer une solution de visioconférence souveraine et peu coûteuse à nos utilisateurs.
