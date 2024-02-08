@@ -8,7 +8,7 @@
 * Gestion des modérateurs
 * Un modérateur peut être un utilisateur *externe* (ne pouvant pas s'authentifier)
 * Rappels par mail (début des réunions)
-* ~~Rappels via XMPP (fin des réunions)~~
+* ~~Rappels via XMPP (fin des réunions)~~ **FIXME** -> *sendxmpp* ne fonctionne plus avec *Prosody*
 * Flux iCal
 
 ## Présentation:
