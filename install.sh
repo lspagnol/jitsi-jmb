@@ -106,7 +106,7 @@ ln -fs ${JMB_PATH}/bin/jitsi-restart /usr/local/sbin
 # Conf JMB
 if [ ! -f ${JMB_PATH}/etc/jmb_local.cf ] ; then
 	cp ${JMB_PATH}/etc/jmb_local.cf.dist ${JMB_PATH}/etc/jmb_local.cf
-	sed -i "s/^#JMB_SERVER_NAME=/JMB_SERVER_NAME=\"${JITSI_NAME}\"/g" ${JMB_PATH}/etc/jmb_local.cf
+	sed -i "s/^#JMB_SERVER_NAME=.*/JMB_SERVER_NAME=\"${JITSI_NAME}\"/g" ${JMB_PATH}/etc/jmb_local.cf
 fi
 
 # Création des répertoires utilisés par JMB

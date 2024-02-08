@@ -70,6 +70,12 @@ reboot
 
 * Si vous avez un logo, copiez-le dans */opt/jitsi-jmb/etc/logo.png* et décommentez les lignes correspondantes dans la configuration d'Apache.
 
+## TODO
+
+* Corriger les rappels *xmpp*
+* Générer et ajouter un contenu ICS aux notifications envoyés par mail
+* Ajout -r ${mailfrom} à la commande mail si l'organisateur n'est pas sur le domaine du serveur Jitsi (fixer l'expéditeur d'enveloppe pour passer les contrôles SPF)
+
 ## Divers:
 
 * [Plugins Munin](https://github.com/lspagnol/jitsi-jmb/tree/master/munin)
@@ -91,3 +97,4 @@ reboot
 * https://github.com/jitsi/jitsi-meet/blob/master/doc/turn.md
 * https://community.jitsi.org/t/non-standard-characters-in-conference-room-name-request-result-in-404-error/18199/2
 * https://doc.ubuntu-fr.org/prosody
+
