@@ -33,11 +33,12 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 **JMB** a donc été modifié en profondeur:
   * Authentification **JWT** / modules auth Apache,
   * le stockage des données passe d'une arborescence de fichiers plats à une base SQLite,
-  * ajout du rôle de *modérateur* (un modérateur n'est pas nécessairement un utilisateur qui peut s'authentifier !).
+  * ajout du rôle de *modérateur* (un modérateur n'étant pas nécessairement un utilisateur qui peut s'authentifier).
 
 ## Prérequis:
 
   * Le serveur *Jisti Meet* **DOIT** être installé, configuré et fonctionnel avec l'authentication JWT.
+  * -> voir [README-install_jitsi-meet-tokens.md]
 
 ## Installation:
 
