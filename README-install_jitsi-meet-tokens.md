@@ -1,10 +1,10 @@
 # Installation de Jitsi Meet + tokens JWT
 
- * *Jitsi Meet* **DOIT** être installé et configuré conrrectement **AVANT** *Jitsi-JMB*:
-  * certificat électronique (-> *Let's Encrypt* ou autre certificat signé),
-  * support des jetons **JWT**
+  * *Jitsi Meet* **DOIT** être installé et configuré conrrectement **AVANT** *Jitsi-JMB*:
+    * certificat électronique (-> *Let's Encrypt* ou autre certificat signé),
+    * support des jetons **JWT**
 
- * Si *Jitsi Meet* est déjà installé, nous recommandons de le désinstaller totalement au préalable:
+  * Si *Jitsi Meet* est déjà installé, nous recommandons de le désinstaller totalement au préalable:
 ```
 apt remove --purge $(dpkg -l |egrep "jitsi|prosody|lua|nginx|apache|supervisor|nginx|turn|xmpp" |awk '{print $2}')
 apt autoremove --purge
