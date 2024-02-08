@@ -74,7 +74,7 @@ reboot
 
 * Corriger les rappels *xmpp*
 * Générer et ajouter un contenu ICS aux notifications envoyés par mail
-* Ajout -r ${mailfrom} à la commande mail si l'organisateur n'est pas sur le domaine du serveur Jitsi (fixer l'expéditeur d'enveloppe pour passer les contrôles SPF)
+* ~~Ajout -r ${mailfrom} à la commande mail si l'organisateur n'est pas sur le domaine du serveur Jitsi (fixer l'expéditeur d'enveloppe pour passer les contrôles SPF)~~
 
 ## Divers:
 
