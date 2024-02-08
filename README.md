@@ -2,14 +2,14 @@
 
 ## Fonctionnalités:
 
-* Authentification JWT universelle / modules auth Apache (CAS, Shibboleth, SAML, LDAP, SQL, ...)
-* Réservation et planification des réunions
-* Gestion des invités
-* Gestion des modérateurs
-* Un modérateur peut être un utilisateur *externe* (ne pouvant pas s'authentifier)
-* Rappels par mail (début des réunions)
+* **Authentification universelle** JWT / modules d'authentificatopn Apache (CAS, Shibboleth, SAML, LDAP, SQL, ...)
+* **Réservation et planification** des réunions
+* Gestion des **invités**
+* Gestion des **modérateurs**
+* Un **modérateur peut être un utilisateur externe** (ne pouvant pas s'authentifier)
+* **Rappels par mail** (début des réunions)
 * ~~Rappels via XMPP (fin des réunions)~~ **FIXME** (*sendxmpp* ne fonctionne plus avec *Prosody*)
-* Flux iCal pour la synchronisation des agendas
+* **Flux iCal** pour la synchronisation des agendas
 
 <img src="screenshot1.png" alt="Screenshot1: liste des réunions" width="350"/><img src="screenshot2.png" alt="Screenshot2: édition d'une réunion" width="350"/>
 
