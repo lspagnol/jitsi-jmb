@@ -45,8 +45,9 @@ JMB_ICAL_DATA="${JMB_DATA}/ical"
 # Chemin du fichier DEBUG
 JMB_DEBUG=${JMB_CGI_TMP}/debug.${now}
 
-# Nom du service, il sera affiché dans les onglets du navigateur
-JMB_NAME="Jitsi Meet Booking"
+# Nom du service, il sera affiché dans les onglets du navigateur et la
+# liste des réunions (booking.cgi)
+JMB_NAME="Jitsi Meet"
 
 # FQDN du service
 JMB_SERVER_NAME="$(hostname -f)"

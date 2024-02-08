@@ -154,7 +154,7 @@ fi
 # invités de se connecter aux réunions actives
 egrep -q "^VirtualHost \"guest\.${JITSI_NAME//./\\.}\"" /etc/prosody/conf.d/${JITSI_NAME}.cfg.lua
 if [ $? -ne 0 ] ; then
-	cat<<EOT>>/etc/prosody/conf.d/${JITSI_NAME}.cfg.lua
+cat<<EOT>>/etc/prosody/conf.d/${JITSI_NAME}.cfg.lua
 
 VirtualHost "guest.${JITSI_NAME}"
      authentication = "anonymous"
@@ -216,7 +216,7 @@ if [ -d /etc/shibboleth/ ] ; then
 	ln -fs /opt/jitsi-jmb/inc/localLogout_fr.html /etc/shibboleth/
 fi
 
-# MDP LDAP si configuré
+# MDP LDAP si configuré -> corriger les droits
 if [ -f /etc/ldap/ldap.secret ] ; then
 	chown root:www-data /etc/ldap/ldap.secret
 	chmod 640 /etc/ldap/ldap.secret
@@ -237,7 +237,7 @@ cat<<EOT>/etc/cron.d/jitsi-jmb
 ################################################################
 # Planification Jitsi JMB
 
-# Purge des réunions planifiées et expirées
+# Purge des réunions planifiées et expirées -> **FIXME** (obsolète -> DB / SQLite)
 #*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_prune
 
 # Mise à jour de la liste des salons privés
@@ -246,7 +246,7 @@ cat<<EOT>/etc/cron.d/jitsi-jmb
 # Envoi des rappels par mail (début réunion)
 */5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_mail-reminder
 
-# Envoi des notification XMPP (fin réunion) -> **FIXME**
+# Envoi des notification XMPP (fin réunion) -> **FIXME** (sendxmpp ne fonctionne plus avec Prosody)
 #*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_xmpp-reminder
 
 #

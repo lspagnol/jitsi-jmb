@@ -30,13 +30,6 @@ if [ -z "${ical_hash}" ] ; then
 	ical_hash=$(pwgen 16 1)
 	echo "INSERT INTO ical (ical_owner,ical_hash) values ('${auth_uid}','${ical_hash}');" |sqlite3 ${JMB_DB}
 fi
-#if [ -f ${JMB_ICAL_DATA}/by-user/${auth_uid} ] ; then
-	#ical_hash=$(<${JMB_ICAL_DATA}/by-user/${auth_uid})
-#else
-	#ical_hash=$(pwgen 16 1)
-	#echo "${ical_hash}" > ${JMB_ICAL_DATA}/by-user/${auth_uid}
-	#echo "${auth_uid}" > ${JMB_ICAL_DATA}/by-hash/${ical_hash}
-#fi
 
 cat<<EOT
 <CENTER>
@@ -58,11 +51,14 @@ if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_allowed}" = "1" ] ; then
 
 	self=$(grep "^${auth_uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
 	cat<<EOT
-<A><I>Ma r&eacute;union priv&eacute;e, disponible &agrave; tout moment: </I></A><BR>
-<A href=token.cgi?room=${self}>${JMB_SCHEME}://${JMB_SERVER_NAME}/${self}</A>
+<DIV title="Cliquez sur ce lien pour ouvrir votre salle de r&eacute;union priv&eacute;e">
+ <I><A href=token.cgi?room=${self}>Ma r&eacute;union priv&eacute;e</A>, disponible &agrave; tout moment:</I>
+</DIV>
+<DIV title="Donnez ce lien &agrave; votre/vos correspondant(s)">
+ <A href=${self}>${JMB_SCHEME}://${JMB_SERVER_NAME}/${self}</A>
+</DIV>
 <P></P>
 EOT
-
 fi
 
 cat<<EOT
@@ -184,7 +180,7 @@ cat<<EOT
   <BR>
   <BR>
   <A>
-  <I><B>Rendez-Vous</B> est une solution de visioconf&eacute;rence <B>souveraine</B>,<BR>
+  <I><B>${JMB_NAME}</B> est une solution de visioconf&eacute;rence <B>souveraine</B>,<BR>
   100% Open Source, s&eacute;curis&eacute;e, h&eacute;berg&eacute;e sur nos serveurs.<BR>
   </I><BR>
   </A>
