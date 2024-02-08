@@ -9,11 +9,13 @@
 apt remove --purge $(dpkg -l |egrep "jitsi|prosody|lua|nginx|apache|supervisor|nginx|turn|xmpp" |awk '{print $2}')
 apt autoremove --purge
 rm -rf /etc/apache2 /etc/nginx /etc/jitsi /etc/prosody /usr/lib/nginx/ /usr/share/nginx/ /var/lib/apache2 /usr/local/lib/nginx/ /var/lib/prosody /etc/prosody
+reboot
 ```
 
   * L'installation de *jitsi-meet-tokens* **DOIT** être effectuée en même temps que les autres paquets pour que toutes les dépendances soient satisfaites:
 ```
 apt install lua5.2 liblua5.2-dev jitsi-meet jitsi-meet-prosody jitsi-meet-tokens jitsi-meet-turnserver jitsi-meet-web jitsi-meet-web-config
+reboot
 ```
 
   * `Configuration de jitsi-videobridge2`

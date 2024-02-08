@@ -42,11 +42,11 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 
 ## Installation:
 
-* Lancez le script d'installation et suivez les indications:
+* Lancez le script d'installation et suivez les indications puis redémarrez le serveur:
 
 ```
-chmod +x install.sh
-. /install.sh
+bash install.sh
+reboot
 ```
 
 * Si vous avez un logo, copiez-le dans */opt/jitsi-jmb/etc/logo.png* et décommentez les lignes correspondantes dans la configuration d'Apache.
