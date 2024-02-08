@@ -16,8 +16,7 @@
 * **JMB** est un *POC* de réservation/planification pour les visioconférences *Jitsi Meet*:
   * **booking.cgi** permet de gérer/planifier/réserver les visioconférences,
   * **token.cgi** assure l'**authentification** JWT, il est *protégé* par un module d'authentification d'Apache (Shibboleth, SAML/auth_mellon, CAS, LDAP, SQL, ...)
-  * **token.cgi** assure l'**autorisation** (activation des réunions) via les infos gérées par **booking.cgi**,
-  * **join.cgi** assure le lien avec les URLs de réunions pour les modérateurs et les invités
+  * **join.cgi** assure le lien avec les URLs de réunions pour les modérateurs et les invités (pas d'authentification)
   * **ical.cgi** génère un flux iCal pour chaque utilisateur.
 * **JMB** est modulaire: vous pouvez créer/ajouter vos propres modules de contrôle.
 * *Les CGI en Bash, c'est moche, mais j'ai pas le temps de tout ré-écrire en Python ... avis aux volontaires ! ;)*
@@ -26,7 +25,7 @@
 **JBM** a été écrit en quelques jours au début du premier confinement de la crise Covid pour proposer une solution de visioconférence souveraine et peu coûteuse à nos utilisateurs.
 L'idée de départ était de fournir un outil de planification simple à utiliser: seuls les utilisateurs authentifiés pouvaient planifier, démarrer et modérer les réunions.
 L'authentification était assurée par Shibboleth et la planification par l'API de réservation de Jicofo.
-JMB a intégré, dès le départ, un mécanisme de rappels par mail d'abonnement à un agenda par flux iCal.
+JMB a intégré, dès le départ, un mécanisme de rappels par mail et un flux iCal pour la synchronisation des agendas.
 Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibboleth et (ce qui est probablement lié) l'API de réservation a été migrée de Jicofo à Prosody (ce qui la rend inutilisable).
 **Jitsi Meet** évolue très rapidement, l'authentification par Shibboleth n'étant plus supportée, il était indispensable de modifier **JMB** pour passer à **JWT**.
 
@@ -34,6 +33,30 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
   * Authentification **JWT** / modules auth Apache,
   * le stockage des données passe d'une arborescence de fichiers plats à une base SQLite,
   * ajout du rôle de *modérateur* (un modérateur n'étant pas nécessairement un utilisateur qui peut s'authentifier).
+
+## Fonctionnement:
+  * Le GCI **booking.cgi**:
+    * est protégé par un module d'authentification Apache (par défaut: *auth_cas*),
+    * permet de planifier des réunions et de modifier ses réunions,
+    * affiche la liste des réunions planifiées (celles qu'il a créé et celles auxquelles il est invité en tant que participant ou modérateur),
+    * permet d'accéder aux réunions planifiées (redirection via **token.cgi** pour les propriétaires ou **join.cgi** pour les participants ou modérateurs),
+    * permet d'inviter des participants et/ou des modérateurs,
+    * les participants et/ou des modérateurs peuvent être des *utilisateurs externes* (ne pouvant pas s'authentifier),
+    * génère, pour une réunion donnée, un *hash individuel* pour chaque participants et/ou modérateur,
+    * expédie un mail de notification à chaque participant.
+  * Le CGI **token.cgi**:
+    * est protégé par un module d'authentification Apache (par défaut: *auth_cas*),
+    * n'est invoqué que par le propriétaire d'une réunion,
+    * génère un jeton **JWT** et l'ajoute en paramètre lors de la redirection vers *Jitsi**.
+  * Le CGI **join.cgi**:
+    * n'est pas protégé par une authentification (chaque participant a un *hash individuel*),
+    * est invoqué par les modérateurs et les invités,
+    * **modérateurs**: il génère un jeton **JWT** et l'ajoute en paramètre lors de la redirection vers *Jitsi**,
+    * **invités**: il redirige directement vers *Jitsi*.
+  * Le CGI **ical.cgi**:
+    * n'est pas protégé par une authentification (chaque utilisateur a un *hash individuel*),
+    * génère un flux iCal permettant de synchroniser des agendas (Thunderbird, Smartphone, Nextcloud, ...),
+    * sont utilisateur est limitée aux utilisateurs qui peuvent accéder à **booking.cgi** (utilisateurs pouvant s'authentifier).
 
 ## Prérequis:
 
