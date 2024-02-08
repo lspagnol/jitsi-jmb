@@ -38,7 +38,7 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 ## Prérequis:
 
   * Le serveur *Jisti Meet* **DOIT** être installé, configuré et fonctionnel avec l'authentication JWT.
-  * -> voir [README-install_jitsi-meet-tokens.md]
+  * -> voir [README-install_jitsi-meet-tokens.md](README-install_jitsi-meet-tokens.md)
 
 ## Installation:
 
