@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ########################################################################
+
 # Ne pas modifier ces variables !!!
 
 JMB_PATH=/opt/jitsi-jmb
@@ -240,6 +241,14 @@ fi
 #echo "username: anonymous" > /root/.sendxmpprc
 #chmod 600 /root/.sendxmpprc
 
+## Modules Prosody supplémentaires (déconnexion des utilisateurs fantômes) -> **FIXME**
+## - Remplacer storage = "none" par storage = "memory" dans /etc/prosody/conf.d/FQDN.cfg.lua
+## - ajouter "pinger" à la liste des modules activés dans /etc/prosody/prosody.cfg.lua
+#chown -R root: lua
+#cp lua/* /usr/lib/prosody/modules/
+
+cp ${JMB_PATH}/etc/jmb_URCA.cf ${JMB_PATH}/etc/jmb_local.cf
+
 # Planification
 cat<<EOT>/etc/cron.d/jitsi-jmb
 ################################################################
@@ -260,15 +269,7 @@ cat<<EOT>/etc/cron.d/jitsi-jmb
 #
 EOT
 
-## Modules Prosody supplémentaires (déconnexion des utilisateurs fantômes) -> **FIXME**
-## - Remplacer storage = "none" par storage = "memory" dans /etc/prosody/conf.d/FQDN.cfg.lua
-## - ajouter "pinger" à la liste des modules activés dans /etc/prosody/prosody.cfg.lua
-#chown -R root: lua
-#cp lua/* /usr/lib/prosody/modules/
-
-cp ${JMB_PATH}/etc/jmb_URCA.cf ${JMB_PATH}/etc/jmb_local.cf
-#cp ${JMB_PATH}/etc/auth_cas.conf /etc/apache2/mods-available/auth_cas.conf
-
+# FIN !!!
 
 cat<<EOT
 
