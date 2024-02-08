@@ -115,9 +115,17 @@ done
 
 # Initialisation de la base SQLite
 if [ ! -f ${JMB_DATA}/data/jitsi-jmb.db ] ; then
+
 	cat schema_sqlite.sql |sqlite3 ${JMB_DATA}/data/jitsi-jmb.db
 	chown www-data: ${JMB_DATA}/data/jitsi-jmb.db
 	chmod 660 ${JMB_DATA}/data/jitsi-jmb.db
+
+	# Importation des donnés présentes (fichiers plats) dans la base SQLite
+	if [ -d ${JMB_DATA}/booking ] ; then
+		bash migrate2sqlite.sh
+		rm -rf ${JMB_DATA}/booking/ ${JMB_DATA}/booking_archive/ ${JMB_DATA}/ical/ ${JMB_DATA}/mail_reminder/ ${JMB_DATA}/xmpp_reminder/
+	fi
+
 fi
 
 # Conf JMB / Nginx:
@@ -258,9 +266,9 @@ EOT
 #chown -R root: lua
 #cp lua/* /usr/lib/prosody/modules/
 
-
 cp ${JMB_PATH}/etc/jmb_URCA.cf ${JMB_PATH}/etc/jmb_local.cf
 #cp ${JMB_PATH}/etc/auth_cas.conf /etc/apache2/mods-available/auth_cas.conf
+
 
 cat<<EOT
 
