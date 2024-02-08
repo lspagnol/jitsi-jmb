@@ -38,6 +38,10 @@ CASLoginURL="https://${CAS_SERVER}/cas/login"
 CASValidateURL="https://${CAS_SERVER}/cas/serviceValidate"
 CASRootProxiedAs="https://${JITSI_NAME}"
 
+# On charge le fichier de conf/install pour écraser les variables
+# prédéfinies si nécessaire
+source install.cf
+
 ########################################################################
 
 cat<<EOT

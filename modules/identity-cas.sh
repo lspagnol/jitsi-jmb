@@ -23,7 +23,7 @@ fi
 if [[ "${HTTP_CAS_MAIL,,}" =~ ==$ ]] ; then
 	auth_mail=$(echo -n "${HTTP_CAS_MAIL}" |base64 -d)
 else
-	auth_mail="${HTTP_CAS_MAIL,,}"
+	auth_mail="${HTTP_CAS_MAIL}"
 fi
 
 if [[ "${HTTP_CAS_GIVENNAME}" =~ ==$ ]] ; then
@@ -39,5 +39,5 @@ else
 fi
 
 auth_uid="${auth_uid,,}"
-auth_mail=${auth_mail,,}
+auth_mail="${auth_mail,,}"
 auth_name="${auth_givenname^^} ${auth_sn^^}"
