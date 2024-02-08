@@ -2,7 +2,8 @@
 
 ## Fonctionnalités:
 
-* **Authentification universelle** JWT / modules d'authentificatopn Apache (CAS, Shibboleth, SAML, LDAP, SQL, ...)
+* **Authentification universelle** JWT / modules d'authentication Apache
+  * CAS, Shibboleth, SAML, LDAP, SQL, ...
 * **Réservation et planification** des réunions
 * Gestion des **invités**
 * Gestion des **modérateurs**
