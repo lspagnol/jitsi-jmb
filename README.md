@@ -36,27 +36,29 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 
 ## Fonctionnement:
   * Le GCI **booking.cgi**:
-    * est protégé par un module d'authentification Apache (par défaut: *auth_cas*),
-    * permet de planifier des réunions et de modifier ses réunions,
-    * affiche la liste des réunions planifiées (celles qu'il a créé et celles auxquelles il est invité en tant que participant ou modérateur),
-    * permet d'accéder aux réunions planifiées (redirection via **token.cgi** pour les propriétaires ou **join.cgi** pour les participants ou modérateurs),
+    * est **protégé par un module d'authentification Apache** (par défaut: *auth_cas*),
+    * permet à un utilisateur authentifié de planifier des réunions et de modifier celles qu'il a créé,
+    * affiche la liste des réunions planifiées (réunions créés par l'utilisateur et celles auxquelles il est invité en tant que participant ou modérateur),
+    * permet d'accéder aux réunions planifiées
+      * redirection via **token.cgi** pour les propriétaires,
+      * redirection **join.cgi** pour les participants ou modérateurs),
     * permet d'inviter des participants et/ou des modérateurs,
     * les participants et/ou des modérateurs peuvent être des *utilisateurs externes* (ne pouvant pas s'authentifier),
     * génère, pour une réunion donnée, un *hash individuel* pour chaque participants et/ou modérateur,
     * expédie un mail de notification à chaque participant.
   * Le CGI **token.cgi**:
-    * est protégé par un module d'authentification Apache (par défaut: *auth_cas*),
+    * est **protégé par un module d'authentification Apache** (par défaut: *auth_cas*),
     * n'est invoqué que par le propriétaire d'une réunion,
     * génère un jeton **JWT** et l'ajoute en paramètre lors de la redirection vers *Jitsi**.
   * Le CGI **join.cgi**:
     * n'est pas protégé par une authentification (chaque participant a un *hash individuel*),
     * est invoqué par les modérateurs et les invités,
-    * **modérateurs**: il génère un jeton **JWT** et l'ajoute en paramètre lors de la redirection vers *Jitsi**,
-    * **invités**: il redirige directement vers *Jitsi*.
+      * **modérateurs**: il génère un jeton **JWT** et l'ajoute en paramètre lors de la redirection vers *Jitsi**,
+      * **invités**: il redirige directement vers *Jitsi*.
   * Le CGI **ical.cgi**:
     * n'est pas protégé par une authentification (chaque utilisateur a un *hash individuel*),
     * génère un flux iCal permettant de synchroniser des agendas (Thunderbird, Smartphone, Nextcloud, ...),
-    * sont utilisateur est limitée aux utilisateurs qui peuvent accéder à **booking.cgi** (utilisateurs pouvant s'authentifier).
+    * son utilisation est implicitement limitée aux utilisateurs qui peuvent accéder à **booking.cgi** (utilisateurs pouvant s'authentifier).
 
 ## Prérequis:
 
