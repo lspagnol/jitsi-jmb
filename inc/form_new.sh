@@ -28,24 +28,26 @@ cat<<EOT
     <LABEL>Heure</LABEL>
     <INPUT type="time" name="conf_time" step="900" value="${conf_time}">
   </DIV>
-  <DIV>
+  <DIV title="Minutes">
     <LABEL>Dur&eacute;e</LABEL>
     <INPUT type="number" name="conf_duration" min="${JMB_MIN_MEETING_DURATION}" max="${JMB_MAX_MEETING_DURATION}" step="${JMB_STEP_MEETING_DURATION}" value="${JMB_DEFAULT_MEETING_DURATION}">
   </DIV>
-  <DIV>
+  <DIV title="Caract&egrave;res alphanum&eacute;riques uniquement">
     <LABEL>Objet</LABEL>
     <INPUT type="text" name="conf_object" value="${JMB_DEFAULT_OBJECT}">
   </DIV>
-  <DIV>
+  <DIV title="Adresse(s) mail, un mod&eacute;rateur peut &ecirc;tre un utilisateur externe">
     <LABEL>Mod&eacute;rateurs <I>max:${JMB_MAX_MODERATORS}</I></LABEL>
     <TEXTAREA id="moderators" name="conf_moderators"></TEXTAREA>
   </DIV>
-  <DIV>
+  <DIV title="Adresse(s) mail, un invit&eacute; peut &ecirc;tre un utilisateur externe">
     <LABEL>Invit&eacute;s <I>max:${JMB_MAX_GUESTS}</I></LABEL>
     <TEXTAREA id="guests" name="conf_guests"></TEXTAREA>
   </DIV>
   <DIV class="button">
-    <INPUT type="submit" value="Cr&eacute;er la r&eacute;union" onclick="javascript: form.action='?register_new';">
+    <DIV title="Les participants seront notifi&eacute;s par mail">
+      <INPUT type="submit" value="Cr&eacute;er la r&eacute;union" onclick="javascript: form.action='?register_new';">
+    </DIV>
     <P></P>
     <INPUT type="submit" value="R&eacute;initialiser le formulaire" onclick="javascript: form.action='?new';"> 
     <P></P>

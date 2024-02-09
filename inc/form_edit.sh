@@ -32,26 +32,30 @@ cat<<EOT
     <LABEL>Heure</LABEL>
     <INPUT type="time" name="conf_time" step="900" value="${conf_time}">
   </DIV>
-  <DIV>
+  <DIV title="Minutes">
     <LABEL>Dur&eacute;e</LABEL>
     <INPUT type="number" name="conf_duration" min="${JMB_MIN_MEETING_DURATION}" max="${JMB_MAX_MEETING_DURATION}" step="${JMB_STEP_MEETING_DURATION}" value="${conf_duration}">
   </DIV>
-  <DIV>
+  <DIV title="Caract&egrave;res alphanum&eacute;riques uniquement">
     <LABEL>Objet</LABEL>
     <INPUT type="text" name="conf_object" value="${conf_object}">
   </DIV>
-  <DIV>
+  <DIV title="Adresse(s) mail, un mod&eacute;rateur peut &ecirc;tre un utilisateur externe">
     <LABEL>Mod&eacute;rateurs <I>max:${JMB_MAX_MODERATORS}</I></LABEL>
     <TEXTAREA id="moderators" name="conf_moderators">${conf_moderators}</TEXTAREA>
   </DIV>
-  <DIV>
+  <DIV title="Adresse(s) mail, un invit&eacute; peut &ecirc;tre un utilisateur externe">
     <LABEL>Invit&eacute;s <I>max:${JMB_MAX_GUESTS}</I></LABEL>
     <TEXTAREA id="guests" name="conf_guests">${conf_guests}</TEXTAREA>
   </DIV>
   <DIV class="button">
-    <INPUT type="submit" value="Modifier la r&eacute;union" onclick="javascript: form.action='?register_edit';">
+    <DIV title="Les participants seront notifi&eacute;s par mail">
+      <INPUT type="submit" value="Modifier la r&eacute;union" onclick="javascript: form.action='?register_edit';">
+    </DIV>
     <P></P>
-    <INPUT type="submit" value="Supprimer la r&eacute;union" onclick="javascript: form.action='?del';"> 
+    <DIV title="Les participants seront notifi&eacute;s par mail">
+      <INPUT type="submit" value="Supprimer la r&eacute;union" onclick="javascript: form.action='?del';"> 
+    </DIV>
     <P></P>
     <INPUT type="submit" value="Retourner &agrave; la liste" onclick="javascript: form.action='?list';"> 
   </DIV>
