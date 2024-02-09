@@ -158,9 +158,11 @@ cat<<EOT
 EOT
 
 cat<<EOT
-  <A><I>Mon flux iCal (synchronisation d'agenda): </I></A><BR>
-  <A href=/ical.cgi?${ical_hash}>${JMB_SCHEME}://${JMB_SERVER_NAME}/ical.cgi?${ical_hash}</A>
-  <P></P>
+  <DIV title="Ce lien permet de synchroniser vos agendas (Thunderbird, Smartphones, Nextcloud, ...)">
+    <A><I>Mon flux iCal: </I></A><BR>
+    <A href=/ical.cgi?${ical_hash}>${JMB_SCHEME}://${JMB_SERVER_NAME}/ical.cgi?${ical_hash}</A>
+  </DIV>
+    <P></P>
 EOT
 
 cat<<EOT
