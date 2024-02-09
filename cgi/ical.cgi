@@ -118,14 +118,8 @@ EOT
 
 			dtstamp=$(date -d@${create} "+%Y%m%dT%H%M00")
 
-			echo " ${owner} " |egrep -q " (${mails}) "
-			if [ ${?} -eq 0 ] ; then
-				is_owner=1
-				for mail in ${mails//|/ } ; do
-					get_meeting_hash ${f} ${mail} owner
-				done
-				location="${JMB_SCHEME}://${JMB_SERVER_NAME}/token.cgi?room=${name}"
-			fi
+			# Au cas ou le participant serait enregistré plusieurs fois (avec des rôles différents),
+			# c'est le rôle le plus élevé qui sera sélectionné pour le flux iCal.
 
 			echo " ${guests} " |egrep -q " (${mails}) "
 			if [ ${?} -eq 0 ] ; then
@@ -143,6 +137,15 @@ EOT
 					get_meeting_hash ${f} ${mail} moderator
 				done
 				location="${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}"
+			fi
+
+			echo " ${owner} " |egrep -q " (${mails}) "
+			if [ ${?} -eq 0 ] ; then
+				is_owner=1
+				for mail in ${mails//|/ } ; do
+					get_meeting_hash ${f} ${mail} owner
+				done
+				location="${JMB_SCHEME}://${JMB_SERVER_NAME}/token.cgi?room=${name}"
 			fi
 
 			if [ "${is_owner}" = "1" ] || [ "${is_guest}" = "1" ] || [ "${is_moderator}" = "1" ] ; then
