@@ -18,7 +18,7 @@
 **JBM** a été écrit en quelques jours au début du premier confinement de la crise Covid pour proposer une solution de visioconférence souveraine et peu coûteuse à nos utilisateurs.
 L'idée de départ était de fournir un outil de planification simple à utiliser: seuls les utilisateurs authentifiés pouvaient planifier, démarrer et modérer les réunions.
 L'authentification était assurée par Shibboleth et la planification par l'API de réservation de Jicofo.
-JMB a intégré, dès le départ, un mécanisme de rappels par mail et un flux iCal pour la synchronisation des agendas.
+**JMB** a intégré, dès le départ, un mécanisme de rappels par mail et un flux iCal pour la synchronisation des agendas.
 Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibboleth et (ce qui est probablement lié) l'API de réservation a été migrée de Jicofo à Prosody (ce qui la rend inutilisable).
 **Jitsi Meet** évolue très rapidement, l'authentification par Shibboleth n'étant plus supportée, il était indispensable de modifier **JMB** pour passer à **JWT**.
 
