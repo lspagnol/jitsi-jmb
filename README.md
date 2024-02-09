@@ -71,7 +71,7 @@ bash install.sh
 reboot
 ```
 
-* Si vous avez un logo, copiez-le dans */opt/jitsi-jmb/etc/logo.png* et décommentez les lignes correspondantes dans la configuration d'Apache.
+* Si vous avez un logo, copiez-le dans */opt/jitsi-jmb/etc/logo.png*.
 
 ## TODO
 
