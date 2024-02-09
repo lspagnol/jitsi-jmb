@@ -56,6 +56,7 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 
 ## Prérequis:
 
+* Testé sur **Ubuntu 22.04**, *devrait fonctionner* sur **Debian 12**
 * Le serveur *Jisti Meet* **DOIT** être installé, configuré et fonctionnel avec l'authentication JWT.
 * -> voir [README-install_jitsi-meet-tokens.md](README-install_jitsi-meet-tokens.md)
 
