@@ -171,7 +171,7 @@ EOT
 
 if [ "${is_allowed}" = "1" ] ; then
 cat<<EOT
-    <INPUT type="submit" value="Nouvelle R&eacute;union" onclick="javascript: form.action='?new';"> 
+    <INPUT type="submit" value="Nouvelle r&eacute;union" onclick="javascript: form.action='?new';"> 
     <P></P>
 EOT
 fi

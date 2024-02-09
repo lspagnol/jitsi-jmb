@@ -42,8 +42,8 @@ function import_tsn {
 
 # Table "meetings"
 cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
-INSERT INTO meetings (meeting_id,meeting_name,meeting_object,meeting_begin,meeting_duration,meeting_end,meeting_date) 
-VALUES ('${tsn}','${name}','${object}','${begin}','${duration}','${end}','${begin}');
+INSERT INTO meetings (meeting_id,meeting_name,meeting_object,meeting_begin,meeting_duration,meeting_end,meeting_create) 
+VALUES ('${tsn}','${name}','${object}','${begin}','${duration}','${end}','$(( ${begin} - 86400))';
 EOT
 
 # Table attendees (owner)
