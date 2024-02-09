@@ -57,7 +57,7 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 ## Prérequis:
 
 * Testé sur **Ubuntu 22.04**, *devrait fonctionner* sur **Debian 12**.
-* Un compte permettant d'accéder à l'annuaire LDAP de votre entité.
+* Un compte permettant d'accéder à l'annuaire LDAP de votre organisation.
 * Un SSO fonctionnel (par défaut: serveur **CAS**).
 * Le serveur *Jisti Meet* **DOIT** être installé, configuré et fonctionnel avec l'authentication JWT.
 * -> voir [README-install_jitsi-meet-tokens.md](README-install_jitsi-meet-tokens.md)
