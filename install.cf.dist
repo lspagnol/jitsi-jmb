@@ -1,5 +1,10 @@
-#JITSI_NAME="${JITSI_NAME}"
-#CAS_SERVER="${CAS_SERVER}"
-#CASLoginURL="${CASLoginURL}"
-#CASValidateURL="${CASValidateURL}"
-#CASRootProxiedAs="${CASRootProxiedAs}"
+DOMAIN="${DOMAIN}"
+JITSI_FQDN="${JITSI_FQDN}"
+
+LDAP_BASE="${LDAP_BASE}"
+LDAP_USER="${LDAP_USER}"
+LDAP_SERVER="${LDAP_SERVER}"
+
+CASLoginURL="${CASLoginURL}"
+CASValidateURL="${CASValidateURL}"
+CASRootProxiedAs="${CASRootProxiedAs}"
