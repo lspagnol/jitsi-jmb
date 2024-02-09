@@ -13,7 +13,7 @@ EOT
 # -> Accès direct via "token.cgi"
 cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)
-VALUES ('${tsn}','','owner','${auth_mail}');
+VALUES ('${tsn}',NULL,'owner','${auth_mail}');
 EOT
 
 # Table attendees (moderator)

@@ -88,6 +88,6 @@ for f in $(\
 	done
 
 	# Reminder "consommé" -> on le désactive
-	echo "UPDATE mail_reminder SET mail_reminder_done='1' WHERE mail_reminder_meeting_id='${f}' AND mail_reminder_date < '${now}';" |sqlite3 ${JMB_DB}
+	sqlite3 ${JMB_DB} "UPDATE mail_reminder SET mail_reminder_done='1' WHERE mail_reminder_meeting_id='${f}' AND mail_reminder_date < '${now}';"
 
 done
