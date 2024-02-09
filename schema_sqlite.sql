@@ -4,7 +4,8 @@ CREATE TABLE meetings (
 	meeting_object TEXT NOT NULL,
 	meeting_begin INTEGER NOT NULL,
 	meeting_duration INTEGER NOT NULL,
-	meeting_end INTEGER NOT NULL
+	meeting_end INTEGER NOT NULL,
+	meeting_create INTEGER NOT NULL
 );
 
 CREATE TABLE attendees (

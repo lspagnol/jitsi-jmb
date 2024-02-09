@@ -29,7 +29,7 @@ UID:${f}
 ORGANIZER:MAILTO:${owner}
 STATUS:CONFIRMED
 SUMMARY:${object}
-LOCATION:${JMB_SCHEME}://${JMB_SERVER_NAME}/${name}
+LOCATION:${location}
 DTSTART;TZID=Europe/Paris:${dtstart}
 DTEND;TZID=Europe/Paris:${dtend}
 EOT
@@ -62,8 +62,11 @@ echo "${QUERY_STRING}"\
 ical_hash=$(<${JMB_CGI_TMP}/query.${tsn})
 rm ${JMB_CGI_TMP}/query.${tsn}
 
-# Paramètres du flux iCal
-cat<<EOT |awk -v ORS='\r\n' 1 > ${out}
+# Hash dans l'URL ?
+if [ ! -z "${ical_hash}" ] ; then
+
+	# Paramètres du flux iCal
+	cat<<EOT |awk -v ORS='\r\n' 1 > ${out}
 BEGIN:VCALENDAR
 PRODID:-//Jisti-jmb
 VERSION:2.0
@@ -91,9 +94,6 @@ END:STANDARD
 END:VTIMEZONE
 EOT
 
-# Hash dans l'URL ?
-if [ ! -z "${ical_hash}" ] ; then
-
 	# Chercher l'identifiant correspondant au hash
 	uid=$(sqlite3 ${JMB_DB} "SELECT ical_owner FROM ical WHERE ical_hash='${ical_hash}';")
 
@@ -110,28 +110,39 @@ if [ ! -z "${ical_hash}" ] ; then
 				SELECT DISTINCT meetings.meeting_id FROM meetings
 				INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
 				WHERE meetings.meeting_end > '${now}';") ; do
-	
-			unset name owner begin duration end object guests moderators is_guest is_owner is_moderator
 
-			dtstamp=$(stat -c "%Y" ${JMB_BOOKING_DATA}/${f})
-			dtstamp=$(date -d@${dtstamp} "+%Y%m%dT%H%M00")
+			unset name owner begin duration end object guests moderators is_guest is_owner is_moderator mail hash location
 
 			# Récupérer les infos de la réunion
 			get_meeting_infos ${f}
 
+			dtstamp=$(date -d@${create} "+%Y%m%dT%H%M00")
+
 			echo " ${owner} " |egrep -q " (${mails}) "
 			if [ ${?} -eq 0 ] ; then
 				is_owner=1
+				for mail in ${mails//|/ } ; do
+					get_meeting_hash ${f} ${mail} owner
+				done
+				location="${JMB_SCHEME}://${JMB_SERVER_NAME}/token.cgi?room=${name}"
 			fi
 
 			echo " ${guests} " |egrep -q " (${mails}) "
 			if [ ${?} -eq 0 ] ; then
 				is_guest=1
+				for mail in ${mails//|/ } ; do
+					get_meeting_hash ${f} ${mail} guest
+				done
+				location="${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}"
 			fi
 
 			echo " ${moderators} " |egrep -q " (${mails}) "
 			if [ ${?} -eq 0 ] ; then
-				is_guest=1
+				is_moderator=1
+				for mail in ${mails//|/ } ; do
+					get_meeting_hash ${f} ${mail} moderator
+				done
+				location="${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}"
 			fi
 
 			if [ "${is_owner}" = "1" ] || [ "${is_guest}" = "1" ] || [ "${is_moderator}" = "1" ] ; then

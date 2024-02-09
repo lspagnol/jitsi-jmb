@@ -414,7 +414,7 @@ function get_meeting_infos {
 local r
 
 # Table "meetings"
-r=$(sqlite3 -list ${JMB_DB} "SELECT meeting_name, meeting_object, meeting_begin, meeting_duration, meeting_end FROM meetings WHERE meeting_id='${1}';")
+r=$(sqlite3 -list ${JMB_DB} "SELECT meeting_name, meeting_object, meeting_begin, meeting_duration, meeting_end,meeting_create FROM meetings WHERE meeting_id='${1}';")
 old_ifs="${IFS}" ; IFS="|"
 r=(${r}) ; IFS="${old_ifs}"
 name=${r[0]}
@@ -422,6 +422,7 @@ object=${r[1]}
 begin=${r[2]}
 duration=${r[3]}
 end=${r[4]}
+create=${r[5]}
 
 # Table "attendees"
 owner=$(sqlite3 ${JMB_DB} "SELECT attendee_email FROM attendees WHERE attendee_meeting_id='${1}' AND attendee_role='owner';")

@@ -96,8 +96,8 @@ JMB_SLEEP_REDIRECT="5"
 # URL de redirection par défaut
 JMB_DEFAULT_URL_REDIRECT="/booking.cgi?list"
 
-# URL de redirection en fin de conférence pour les utilisateurs qui ne
-# sont pas passé par l'interface de réservation
+# URL de redirection pour les accès qui ne sont pas passé par l'interface
+# de réservation
 JMB_REDIRECT_CLOSE="https://jitsi.org/"
 
 # Durée par défaut des réunions (secondes)

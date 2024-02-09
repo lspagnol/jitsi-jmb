@@ -13,8 +13,12 @@ JMB_SERVER_NAME="##_JITSI_FQDN_##"
 # Domaine de messagerie (on supprime la partie "host" du FQDN)
 JMB_MAIL_DOMAIN="##_DOMAIN_##"
 
+# URL de redirection pour les accès qui ne sont pas passé par l'interface
+# de réservation
+JMB_REDIRECT_CLOSE="https://jitsi.org/"
+
 # Commande de requête LDAP
-JMB_LDAPSEARCH="/usr/bin/ldapsearch -o ldif-wrap=no -H ldap://##_LDAP_SERVER_## -x -LLL -b ou=##_LDAP_BASE_## -D ##_LDAP_USER_## -y /etc/ldap/ldap.secret"
+JMB_LDAPSEARCH="/usr/bin/ldapsearch -o ldif-wrap=no -H ldap://##_LDAP_SERVER_## -x -LLL -b ##_LDAP_BASE_## -D ##_LDAP_USER_## -y /etc/ldap/ldap.secret"
 
 # Filtre LDAP: comptes autorisés à créer/éditer les réunions
 JMB_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"

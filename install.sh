@@ -342,6 +342,7 @@ cat<<EOT
 
 * Pensez à enregistrer le mot de passe du compte de lecture LDAP dans
   "/etc/ldap/ldap.secret" puis à régler ses droits d'accès:
+  echo -n "SuperMDPldap" > /etc/ldap/ldap.secret
   chown root:www-data /etc/ldap/ldap.secret
   chmod 640 /etc/ldap/ldap.secret
 
