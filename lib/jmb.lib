@@ -351,7 +351,7 @@ echo "=?UTF-8?B?${b64}?="
 
 }
 
-function set_is_allowed {
+function set_is_editor {
 # Vérifier si un utilisateur est autorisé à créer / éditer une réunion
 # -> utilise le filtre définit dans JMB_LDAP_FILTER
 
@@ -359,11 +359,11 @@ $JMB_LDAPSEARCH "(&(uid=${auth_uid})(${JMB_LDAP_FILTER}))" uid |grep -q '^uid: '
 
 if [ ${?} = 0 ] ; then
 
-	is_allowed=1
+	is_editor=1
 
 else
 
-	is_allowed=0
+	is_editor=0
 
 fi
 

@@ -21,8 +21,8 @@ EOT
 [ -f ${JMB_PATH}/modules/${JMB_IDENTITY_MODULE}.sh ] && source ${JMB_PATH}/modules/${JMB_IDENTITY_MODULE}.sh
 
 # Vérifier si l'utilisateur est autorisé à créer/editer une réunion
-# Résultat: variable "is_allowed=0" -> non, "is_allowed=1" -> oui
-set_is_allowed
+# Résultat: variable "is_editor=0" -> non, "is_editor=1" -> oui
+set_is_editor
 
 # Flux iCal
 ical_hash=$(sqlite3 ${JMB_DB} "SELECT ical_hash FROM ical WHERE ical_owner='${auth_uid}';")
@@ -47,7 +47,7 @@ cat<<EOT
   <P></P>
 EOT
 
-if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_allowed}" = "1" ] ; then
+if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_editor}" = "1" ] ; then
 
 	self=$(grep "^${auth_uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
 	cat<<EOT
@@ -137,7 +137,7 @@ for f in $(\
 		[ ! -z "${duration}" ] && form_duration=$(( ${duration} / 60 ))
 		[ ! -z "${owner}" ] && form_owner=${owner}
 
-		if [ "${is_allowed}" = "1" ] && [ "${is_owner}" = "1" ] && [ ${now} -lt ${begin} ] ; then
+		if [ "${is_editor}" = "1" ] && [ "${is_owner}" = "1" ] && [ ${now} -lt ${begin} ] ; then
 			form_action="${form_action}<A> </A><A href=/booking.cgi?edit&id=${f}>Editer</A>"
 		fi
 
@@ -169,7 +169,7 @@ cat<<EOT
   <FORM method="POST">
 EOT
 
-if [ "${is_allowed}" = "1" ] ; then
+if [ "${is_editor}" = "1" ] ; then
 cat<<EOT
     <INPUT type="submit" value="Nouvelle r&eacute;union" onclick="javascript: form.action='?new';"> 
     <P></P>
