@@ -14,6 +14,9 @@
 #auth_name="${HTTP_CAS_GIVENNAME^^} ${HTTP_CAS_SN^^}"
 #auth_mail="${HTTP_CAS_MAIL,,}"
 
+# Les variables retournées par le serveur CAS peuvent être encodées en
+# base64 !
+
 if [[ "${HTTP_CAS_UID}" =~ ==$ ]] ; then
 	auth_uid=$(echo -n "${HTTP_CAS_UID}" |base64 -d)
 else
@@ -38,6 +41,7 @@ else
 	auth_sn="${HTTP_CAS_SN}"
 fi
 
+# LOWCASE pour auth_uid et auth_mail, UPPERCASE pour auth_name
 auth_uid="${auth_uid,,}"
 auth_mail="${auth_mail,,}"
 auth_name="${auth_givenname^^} ${auth_sn^^}"
