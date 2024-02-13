@@ -6,7 +6,7 @@ cat<<EOT
 <HTML>
   <HEAD>
     <TITLE>${JMB_NAME}</TITLE>
-    <META http-equiv="refresh" content="${JMB_SLEEP_REDIRECT};url=${url_redirect}">
+    <META http-equiv="refresh" content="${JMB_SLEEP_REDIRECT};url=/booking.cgi?list">
   </HEAD>
   <BODY>
     <DIV><STRONG>R&eacute;union supprim&eacute;e !</STRONG></DIV>
