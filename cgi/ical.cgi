@@ -101,17 +101,17 @@ EOT
 	if [ ! -z "${uid}" ] ; then
 
 		# Récupérer la liste des adresses mail de l'utilisateur
-		mails=$($JMB_LDAPSEARCH uid=${uid} mail mailAlternateAddress |egrep '^(mail|mailAlternateAddress):' |awk '{print $2}')
-		mails=$(echo ${mails} |sed 's/ /|/g')
+		auth_mail=$($JMB_LDAPSEARCH uid=${uid} mail |grep '^mail:')
+		auth_mail=${auth_mail#* }
 
 		# Générer la liste des évènements
 		for f in $(\
 			sqlite3 ${JMB_DB} "\
 				SELECT DISTINCT meetings.meeting_id FROM meetings
 				INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
-				WHERE meetings.meeting_end > '${now}';") ; do
+				WHERE meetings.meeting_end > '${now}' AND attendees.attendee_email='${auth_mail}';") ; do
 
-			unset name owner begin duration end object guests moderators is_guest is_owner is_moderator mail hash location
+			unset name owner begin duration end object guests moderators is_guest is_owner is_moderator hash location
 
 			# Récupérer les infos de la réunion
 			get_meeting_infos ${f}
@@ -121,34 +121,25 @@ EOT
 			# Au cas ou le participant serait enregistré plusieurs fois (avec des rôles différents),
 			# c'est le rôle le plus élevé qui sera sélectionné pour le flux iCal.
 
-			echo " ${guests} " |egrep -q " (${mails}) "
+			echo " ${guests} " |grep -q " ${auth_mail} "
 			if [ ${?} -eq 0 ] ; then
-				is_guest=1
-				for mail in ${mails//|/ } ; do
-					get_meeting_hash ${f} ${mail} guest
-				done
+				get_meeting_hash ${f} ${auth_mail} guest
 				location="${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}"
 			fi
 
-			echo " ${moderators} " |egrep -q " (${mails}) "
+			echo " ${moderators} " |grep -q " ${auth_mail} "
 			if [ ${?} -eq 0 ] ; then
-				is_moderator=1
-				for mail in ${mails//|/ } ; do
-					get_meeting_hash ${f} ${mail} moderator
-				done
+				get_meeting_hash ${f} ${auth_mail} moderator
 				location="${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}"
 			fi
 
-			echo " ${owner} " |egrep -q " (${mails}) "
+			echo " ${owner} " |grep -q " ${auth_mail} "
 			if [ ${?} -eq 0 ] ; then
-				is_owner=1
-				for mail in ${mails//|/ } ; do
-					get_meeting_hash ${f} ${mail} owner
-				done
+				get_meeting_hash ${f} ${auth_mail} owner
 				location="${JMB_SCHEME}://${JMB_SERVER_NAME}/token.cgi?room=${name}"
 			fi
 
-			if [ "${is_owner}" = "1" ] || [ "${is_guest}" = "1" ] || [ "${is_moderator}" = "1" ] ; then
+			if [ ! -z "${location}" ]  ;then
 
 				if [ ! -z "${begin}" ] ; then
 					dtstart=$(date -d@${begin} "+%Y%m%dT%H%M00")

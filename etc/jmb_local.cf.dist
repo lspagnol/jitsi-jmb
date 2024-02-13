@@ -31,6 +31,7 @@ JMB_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(
 #JMB_LISTS_SUBSCRIBERS="/var/lib/tsync-get/listes.lists_subscribers_mails.txt"
 
 # Vérif LDAP: remplacer les adresses secondaires par les adresses principales
+# Ne fonctionne que pour les adresses connues du référentiel LDAP
 JMB_FIX_MAIL_ALIASES="1"
 
 # Adresse mail d'expéditeur pour les notifications

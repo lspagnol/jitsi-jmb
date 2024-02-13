@@ -117,6 +117,7 @@ JMB_DAEMONS="jicofo prosody"
 ########################################################################
 
 # Vérif LDAP: remplacer les adresses secondaires par les adresses principales
+# Ne fonctionne que pour les adresses connues du référentiel LDAP
 JMB_FIX_MAIL_ALIASES="1"
 
 # Adresse mail d'expéditeur pour les notifications
