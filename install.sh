@@ -6,7 +6,7 @@
 
 JMB_PATH=/opt/jitsi-jmb
 JMB_DATA=/var/www/jitsi-jmb
-DEBS="sqlite3 bc postfix mailutils ldap-utils recode pwgen rsync wget curl sendxmpp jq apache2 libapache2-mod-auth-cas"
+DEBS="sqlite3 bc postfix mailutils ldap-utils recode pwgen rsync wget curl jq mcabber apache2 libapache2-mod-auth-cas"
 
 ########################################################################
 
@@ -215,7 +215,7 @@ if [ $? -ne 0 ] ; then
 	pwd=$(pwgen 16 1)
 	cat<<EOT > /opt/jitsi-jmb/etc/jmb_xmpp.cf
 JMB_XMPP_USER="jitsi-bot@localhost"
-KMB_XMPP_PASS="${pwd}"
+JMB_XMPP_PASS="${pwd}"
 EOT
 	chown root:www-data /opt/jitsi-jmb/etc/jmb_xmpp.cf
 	chmod 640 /opt/jitsi-jmb/etc/jmb_xmpp.cf
