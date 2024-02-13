@@ -208,6 +208,20 @@ VirtualHost "guest.${JITSI_FQDN}"
 EOT
 fi
 
+# Conf Prosody:
+# Créer un utilisateur local pour les notifications / XMPP
+prosodyctl shell "user:list('localhost')" |grep -q '^jitsi-bot@localhost$'
+if [ $? -ne 0 ] ; then
+	pwd=$(pwgen 16 1)
+	cat<<EOT > /opt/jitsi-jmb/etc/jmb_xmpp.cf
+JMB_XMPP_USER="jitsi-bot@localhost"
+KMB_XMPP_PASS="${pwd}"
+EOT
+	chown root:www-data /opt/jitsi-jmb/etc/jmb_xmpp.cf
+	chmod 640 /opt/jitsi-jmb/etc/jmb_xmpp.cf
+	prosodyctl shell "user:create('jitsi-bot@localhost','${pwd}')"
+fi
+
 # Conf JWT / Jicofo:
 # Accès direct à la réunion si elle est déjà active, sinon affiche la
 # page d'attente "Je suis l'hôte"
