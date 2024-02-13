@@ -83,7 +83,7 @@ EOT
 # Liste des réunions planifiées
 for f in $(\
 	sqlite3 ${JMB_DB} "\
-		SELECT meetings.meeting_id FROM meetings
+		SELECT DISTINCT meetings.meeting_id FROM meetings
 		INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
 		WHERE attendees.attendee_email='${auth_mail}' AND meetings.meeting_end > '${now}';") ; do
 
