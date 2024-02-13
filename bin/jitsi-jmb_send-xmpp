@@ -57,10 +57,10 @@ echo "/quit" > /tmp/${room}.mcabber.fifo
 rm /tmp/${room}.mcabberrc
 reset
 
-#root@ssds-jitsi:~# prosodyctl shell "user:list('localhost')"
+#root@host:~# prosodyctl shell "user:list('localhost')"
 #jitsi-bot@localhost
 #OK: Showing all 1 users
 
-#root@ssds-jitsi:~# prosodyctl shell "muc:list('conference.ssds-jitsi.univ-reims.fr')"
-#xxxxx1@conference.ssds-jitsi.univ-reims.fr
+#root@host:~# prosodyctl shell "muc:list('conference.host.domain.tld')"
+#xxxxx1@conference.host.domain.tld
 #OK: 1 rooms
