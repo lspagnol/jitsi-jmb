@@ -87,8 +87,8 @@ case ${role} in
 
 			# Création du JWT
 
-			# Période de validité du jeton (-5 secondes, + 15 minutes)
-			exp=$(( ${now} + 900 ))
+			# Période de validité du jeton (-5 secondes, + 30 minutes)
+			exp=$(( ${now} + 1800 ))
 			nbf=$(( ${now} - 5 ))
 
 			# Préparation du jeton
