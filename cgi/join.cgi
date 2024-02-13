@@ -45,23 +45,23 @@ fi
 log "join.cgi: meeting_name='${room}', meeting_hash='${id}', email='${email}', role='${role}', auth_uid=''"
 
 # Incrémentation et MAJ du compteur de connexion
-count=${count:-0}
-((count++))
+count=${count:-0} ; ((count++))
 echo "UPDATE attendees SET attendee_count='${count}' WHERE attendee_meeting_hash='${id}';" |sqlite3 ${JMB_DB}
 
 case ${role} in
+
+	owner)
+
+		# Propriétaire -> redirection vers le CGI d'authentification
+		# Normalent pas utile ici -> pas de hash pour les proprios !
+		http_302 "/token.cgi?room=${room}"
+
+	;;
 
 	guest)
 
 		# Invité -> redirection vers la salle
 		http_302 "/${room}"
-
-	;;
-
-	owner)
-
-		# Propriétaire -> redirection vers le CGI d'authentification
-		http_302 "/token.cgi?room=${room}"
 
 	;;
 
