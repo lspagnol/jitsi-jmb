@@ -1,0 +1,66 @@
+#!/bin/bash
+
+########################################################################
+# Envoyer un message XMPP à une salle de réunion
+########################################################################
+
+room="${1}"
+if [ -z "${room}" ] ; then
+	echo "Room name is mandatory"
+	exit
+fi
+
+shift
+msg="${@}"
+if [ -z "${msg}" ] ; then
+	echo "Message is mandatory"
+	exit
+fi
+
+########################################################################
+
+# Charger la configuration
+JMB_PATH=/opt/jitsi-jmb
+source ${JMB_PATH}/etc/jmb.cf
+source ${JMB_PATH}/etc/jmb_local.cf
+
+if [ -f ${JMB_PATH}/etc/jmb_xmpp.cf ] ; then
+	source ${JMB_PATH}/etc/jmb_xmpp.cf
+else
+	echo "Missing file '${JMB_PATH}/etc/jmb_xmpp.cf'"
+	exit
+fi
+
+# Création du fichier de conf temporaire
+cat<<EOT>/tmp/${room}.mcabberrc
+module load fifo
+set fifo_name = /tmp/${room}.mcabber.fifo
+set jid = ${JMB_XMPP_USER}
+set password = ${JMB_XMPP_PASS}
+set ssl_ignore_checks = 1
+set nickname = Jitsi-Bot
+EOT
+
+# Creation du FIFO pour l'envoi des commandes à mcabber
+mkfifo /tmp/${room}.mcabber.fifo
+
+# Démarrage de mcabber
+mcabber -f /tmp/${room}.mcabberrc & 2>/dev/null >/dev/null
+
+# Envoi des commandes -> mcabber
+echo "/connect ${JMB_SERVER_NAME}" > /tmp/${room}.mcabber.fifo ; sleep 1
+echo "/room join ${room}@conference.${JMB_SERVER_NAME}" > /tmp/${room}.mcabber.fifo ; sleep 1
+echo "/say_to ${room}@conference.${JMB_SERVER_NAME} ${msg}" > /tmp/${room}.mcabber.fifo ; sleep 1
+echo "/quit" > /tmp/${room}.mcabber.fifo
+
+# Fin
+rm /tmp/${room}.mcabberrc
+reset
+
+#root@ssds-jitsi:~# prosodyctl shell "user:list('localhost')"
+#jitsi-bot@localhost
+#OK: Showing all 1 users
+
+#root@ssds-jitsi:~# prosodyctl shell "muc:list('conference.ssds-jitsi.univ-reims.fr')"
+#xxxxx1@conference.ssds-jitsi.univ-reims.fr
+#OK: 1 rooms
