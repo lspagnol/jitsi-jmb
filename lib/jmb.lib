@@ -372,7 +372,7 @@ fi
 function expand_list_subscribers {
 # Remplacer les adresses mail de type liste par les abonnés de la liste
 
-local mail mails list n
+local mail mails list
 
 if [ -z "${JMB_LISTS_SUBSCRIBERS}" ] ; then
 	echo ${@}
@@ -397,6 +397,43 @@ list=$(echo "${list}" |egrep "@.*\.")
 echo ${list}
 
 }
+
+function fix_mailAliases {
+# Remplacer les adresses secondaires par les adresses principales
+
+local list mail
+
+if [ "${JMB_FIX_MAIL_ALIASES}" = "1" ] || "${JMB_FIX_MAIL_ALIASES}" = "yes" ] ; then
+
+	while [ "${1}" != "" ] ; do
+
+		mail=$($JMB_LDAPSEARCH mailAlternateAddress=${1} mail |grep '^mail: ')
+		if [ -z "${mail}" ] ; then
+			mail=${1}
+		else
+			mail=${mail#* }
+		fi
+	
+		list="${list} ${mail}"
+	
+		shift
+	
+	done
+
+else
+
+	echo "${@}"
+	return
+
+fi
+
+list=(${list})
+list=${list[@]}
+
+echo ${list}
+
+}
+
 
 function get_meeting_infos {
 # Récupérer toutes les infos d'une réunion planifiée

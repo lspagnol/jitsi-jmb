@@ -40,11 +40,17 @@ fi
 
 end=$(( ${begin} + ${duration} ))
 
+# Remplacer les adresses secondaires par les adresses principales
+conf_moderators=$(fix_mailAliases ${conf_moderators})
+
 # On vérifie le nombre de modérateurs
 n=$(echo ${conf_moderators} |wc -w)
 if [ ${n} -gt ${JMB_MAX_MODERATORS} ] ; then
 	http_403 "Données non enregistrées: vous avez indiqué ${n} modérateurs (le maximum est ${JMB_MAX_MODERATORS})"
 fi
+
+# Remplacer les adresses secondaires par les adresses principales
+conf_guests=$(fix_mailAliases ${conf_guests})
 
 # Expansion liste invités abonnés à liste de diffusion
 conf_guests=$(expand_list_subscribers ${conf_guests})

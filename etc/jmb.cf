@@ -116,8 +116,11 @@ JMB_DAEMONS="jicofo prosody"
 # Mails
 ########################################################################
 
+# Vérif LDAP: remplacer les adresses secondaires par les adresses principales
+JMB_FIX_MAIL_ALIASES="1"
+
 # Adresse mail d'expéditeur pour les notifications
-JMB_MAIL_FROM_NOTIFICATION="Jitsi Meet <noreply@univ-reims.fr>"
+JMB_MAIL_FROM_NOTIFICATION="Jitsi Meet <noreply@domain.fr>"
 
 # Sujets des mails de notification
 JMB_SUBJECT_NEW_OWNER="Réservation visioconférence"
