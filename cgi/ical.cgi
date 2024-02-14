@@ -101,6 +101,9 @@ EOT
 	if [ ! -z "${uid}" ] ; then
 
 		# Récupérer la liste des adresses mail de l'utilisateur
+		# FIXME -> les identifiants ne fonctionnent que pour les utilisateurs
+		#          présents dans le référentiel LDAP, il faudrait passer
+		#          à un autre attribut pour les utilisteurs d'une fédération d'identité
 		auth_mail=$($JMB_LDAPSEARCH uid=${uid} mail |grep '^mail:')
 		auth_mail=${auth_mail#* }
 
