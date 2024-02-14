@@ -19,8 +19,9 @@
 L'idée de départ était de fournir un outil de planification simple à utiliser: seuls les utilisateurs authentifiés pouvaient planifier, démarrer et modérer les réunions.
 L'authentification était assurée par Shibboleth et la planification par l'API de réservation de Jicofo.
 **JMB** a intégré, dès le départ, un mécanisme de rappels par mail et un flux iCal pour la synchronisation des agendas.
-Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibboleth et (ce qui est probablement lié) l'API de réservation a été migrée de Jicofo à Prosody (ce qui la rend inutilisable).
+Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibboleth et modifié l'API de réservation.
 **Jitsi Meet** évolue très rapidement, l'authentification par Shibboleth n'étant plus supportée, il était indispensable de modifier **JMB** pour passer à **JWT**.
+Ces modifications exploitent le comportement de Jitsi (les utilisateurs authentifiés sont modérateurs, les utilisateurs non authentifiés ne le sont pas) pour contourner l'API de réservation.
 
 **JMB** a donc été modifié en profondeur:
 * Authentification **JWT** / modules auth Apache,
