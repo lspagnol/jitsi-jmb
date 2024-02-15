@@ -79,7 +79,10 @@ JMB_GEN_NAME="pwgen -A -0 14 1"
 # Commande de requête LDAP
 JMB_LDAPSEARCH="/usr/bin/ldapsearch -x -LLL -o ldif-wrap=no -h ssds-ldap -b ou=people,dc=mydomain,dc=fr"
 
-# Filtre LDAP: comptes autorisés à créer et éditer les réunions
+# Module destiné à vérifier le rôle "éditeur" de l'utilisateur
+JMB_IS_EDITOR_MODULE="editor_role-ldap"
+
+# Filtre LDAP utilisé par JMB_IS_EDITOR_MODULE: comptes autorisés à créer et éditer les réunions
 JMB_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
 
 # Identité / authentification: module à appeler pour récupérer les infos utilisateur

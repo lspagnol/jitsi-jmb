@@ -353,19 +353,39 @@ echo "=?UTF-8?B?${b64}?="
 
 function set_is_editor {
 # Vérifier si un utilisateur est autorisé à créer / éditer une réunion
-# -> utilise le filtre définit dans JMB_LDAP_FILTER
+# -> "include" du module défini dans la variable "JMB_IS_EDITOR_MODULE"
 
-$JMB_LDAPSEARCH "(&(uid=${auth_uid})(${JMB_LDAP_FILTER}))" uid |grep -q '^uid: '
+if [ -z "${JMB_IS_EDITOR_MODULE}" ] ; then
 
-if [ ${?} = 0 ] ; then
-
+	# Le module n'est pas défini -> rôle éditeur par défaut
 	is_editor=1
 
 else
 
-	is_editor=0
+	if [ -f ${JMB_PATH}/modules/${JMB_IS_EDITOR_MODULE}.sh ] ; then
+
+		source ${JMB_PATH}/modules/${JMB_IS_EDITOR_MODULE}.sh
+
+	else
+
+		# Le module n'est pas présent -> rôle éditeur par défaut
+		is_editor=1
+	
+	fi
 
 fi
+
+#$JMB_LDAPSEARCH "(&(uid=${auth_uid})(${JMB_LDAP_FILTER}))" uid |grep -q '^uid: '
+
+#if [ ${?} = 0 ] ; then
+
+	#is_editor=1
+
+#else
+
+	#is_editor=0
+
+#fi
 
 }
 

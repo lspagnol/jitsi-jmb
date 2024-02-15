@@ -20,7 +20,11 @@ JMB_REDIRECT_CLOSE="https://jitsi.org/"
 # Commande de requête LDAP
 JMB_LDAPSEARCH="/usr/bin/ldapsearch -o ldif-wrap=no -H ldap://##_LDAP_SERVER_## -x -LLL -b ##_LDAP_BASE_## -D ##_LDAP_USER_## -y /etc/ldap/ldap.secret"
 
-# Filtre LDAP: comptes autorisés à créer/éditer les réunions
+# Module destiné à vérifier le rôle "éditeur" de l'utilisateur
+JMB_IS_EDITOR_MODULE="editor_role-ldap"
+
+# Filtre LDAP utilisé par JMB_IS_EDITOR_MODULE: comptes autorisés à créer et éditer les réunions
+# JMB_LDAP_FILTER="|(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)"
 JMB_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
 
 # Fichier d'abonnement aux listes de diffusion
