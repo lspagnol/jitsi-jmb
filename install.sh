@@ -168,11 +168,17 @@ cp etc/jmb-nginx.conf  /etc/jitsi/meet/jaas
 # Apache écoute sur 127.0.0.1:81, il est utilisé pour exécuter les CGI
 # et assurer l'authentification
 # Il n'est joignable qu'au travers de Nginx
-a2enmod cgid
-a2dissite 000-default
+if [ ! -f /etc/apache2/mods-enabled/cgid.load ] ; then
+	a2enmod cgid
+fi
+if [ -f /etc/apache2/sites-enabled/000-default.conf ] ; then
+	a2dissite 000-default
+fi
 if [ -f /etc/apache2/mods-enabled/auth_cas.conf ] ; then
 	cp etc/jmb-apache-auth_cas.conf /etc/apache2/sites-available
-	a2ensite jmb-apache-auth_cas
+	if [ ! -f /etc/apache2/sites-enabled/jmb-apache-auth_cas.conf ] ; then
+		a2ensite jmb-apache-auth_cas
+	fi
 fi
 
 # Conf Apache:
@@ -251,13 +257,19 @@ if [ $? -ne 0 ] ; then
 fi
 
 # Client Jitsi:
-# Traduction noms par défaut (local/remote)
-sed -i "s/\/\/ defaultLocalDisplayName:.*/defaultLocalDisplayName: 'Moi',/g" /etc/jitsi/meet/${JITSI_FQDN}-config.js
-sed -i "s/\/\/ defaultRemoteDisplayName:.*/defaultRemoteDisplayName: 'Inconnu',/g" /etc/jitsi/meet/${JITSI_FQDN}-config.js
-
-# Client Jitsi:
 # Le nom du participant est obligatoire pour accéder à une réunion
 sed -i "s/\/\/ requireDisplayName:.*/requireDisplayName: true,/g" /etc/jitsi/meet/${JITSI_FQDN}-config.js
+
+# Client Jitsi:
+# Traduction noms par défaut (local/remote)
+# "defaultRemoteDisplayName" -> le nom du participant est obligatoire, le "remote" ne peut donc
+# pas être anonyme, on détourne ce nom pour les notifications envoyées via XMPP
+sed -i "s/\/\/ defaultLocalDisplayName:.*/defaultLocalDisplayName: 'Moi',/g" /etc/jitsi/meet/${JITSI_FQDN}-config.js
+sed -i "s/\/\/ defaultRemoteDisplayName:.*/defaultRemoteDisplayName: 'Jitsi Bot',/g" /etc/jitsi/meet/${JITSI_FQDN}-config.js
+
+# Client Jitsi:
+# Désactiver la rotation de la vidéo/locale (mirroir)
+sed -i "s/\/\/ doNotFlipLocalVideo:.*/doNotFlipLocalVideo: true,/g" /etc/jitsi/meet/${JITSI_FQDN}-config.js
 
 # Client Jitsi:
 # Activer la page "pre-join" (réglages avant d'accéder à la réunion)
@@ -336,8 +348,8 @@ cat<<EOT>/etc/cron.d/jitsi-jmb
 # Envoi des rappels par mail (début réunion)
 */5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_mail-reminder
 
-# Envoi des notification XMPP (fin réunion) -> **FIXME** (sendxmpp ne fonctionne plus avec Prosody)
-#*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_xmpp-reminder
+# Envoi des notification XMPP (fin réunion)
+*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_xmpp-reminder
 
 #
 EOT
