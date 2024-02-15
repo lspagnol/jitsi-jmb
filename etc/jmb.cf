@@ -186,7 +186,7 @@ JMB_LIST_HIGHLIGHT_GUEST="300"
 JMB_MAX_MODERATORS=2
 
 # Nombre maximum d'invités
-JMB_MAX_GUESTS=100
+JMB_MAX_GUESTS=50
 
 ########################################################################
 
