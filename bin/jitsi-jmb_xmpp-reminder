@@ -22,25 +22,28 @@ now=$(date +%s)
 # Charger la configuration
 JMB_PATH=/opt/jitsi-jmb
 source ${JMB_PATH}/etc/jmb.cf
+source ${JMB_PATH}/lib/jmb.lib
 
 ########################################################################
 
-for f in $(ls -1 ${JMB_XMPP_REMINDER_DATA}/ 2>/dev/null) ; do
+# Récupérer les IDs des réunions pour lesquelles un rappel doit être envoyé -> variable "${tsn}"
+for f in $(\
+	sqlite3 ${JMB_DB} "\
+	SELECT xmpp_reminder_meeting_id FROM xmpp_reminder
+	WHERE '${now}' >= xmpp_reminder_date AND xmpp_reminder_done = '0';") ; do
 
-	source ${JMB_XMPP_REMINDER_DATA}/${f}
+	# Lire les données de la réunion
+	get_meeting_infos ${f}
 
-	if [ ${now} -ge ${reminder} ] ; then
+	grace=$(( ( ${end} - ${now} ) / 60 ))
 
-		# Lire les données de la réunion
-		source ${JMB_BOOKING_DATA}/${booking_tsn}
-
-		cat<<EOT |sendxmpp -t -n -r "Jitsi Meet" -j ${JMB_SERVER_NAME} -c ${name}@conference.${JMB_SERVER_NAME} 2>/dev/null>/dev/null
-RAPPEL: la réunion se termine dans ${grace} minutes !!
-EOT
-
-		# Suppression du reminder
-		rm ${JMB_XMPP_REMINDER_DATA}/${f}
-
+	if [ ${grace} -gt 0 ] ; then
+		${JMB_PATH}/bin/jitsi-jmb_send-xmpp ${name} "NOTIFICATION: la réunion se termine dans ${grace} minutes !!"
+	else
+		${JMB_PATH}/bin/jitsi-jmb_send-xmpp ${name} "NOTIFICATION: La réunion est terminée !!"
 	fi
+
+	# Reminder "consommé" -> on le désactive
+	sqlite3 ${JMB_DB} "UPDATE xmpp_reminder SET xmpp_reminder_done='1' WHERE xmpp_reminder_meeting_id='${f}' AND xmpp_reminder_date < '${now}';"
 
 done

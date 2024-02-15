@@ -96,7 +96,7 @@ if [ ! -z "${JMB_XMPP_REMINDER_DATA}" ] ; then
 UPDATE xmpp_reminder SET xmpp_reminder_done='1' WHERE xmpp_reminder_meeting_id='${tsn}';
 EOT
 
-	for r in ${JMB_MAIL_REMINDER} ; do
+	for r in ${JMB_XMPP_REMINDER} ; do
 		reminder=$(( ${end} - ( ${r} * 60 ) ))
 		if [ ${reminder} -gt ${now} ] ; then
 			cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql

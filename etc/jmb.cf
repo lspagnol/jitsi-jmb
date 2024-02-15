@@ -110,7 +110,7 @@ JMB_DEFAULT_DURATION=7200
 JMB_MAIL_REMINDER="10080 1440 60 10"
 
 # Rappels fin réunion via XMPP (minutes)
-JMB_XMPP_REMINDER="15 5"
+JMB_XMPP_REMINDER="15 5 0"
 
 # Démons à redémarrer (commande "jitsi-restart")
 JMB_DAEMONS="jicofo prosody"
