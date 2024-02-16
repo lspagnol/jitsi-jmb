@@ -29,8 +29,7 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 * Authentification **JWT** / modules auth Apache,
 * le stockage des données passe d'une arborescence de fichiers plats à une base SQLite,
 * ajout du rôle de *modérateur* (un modérateur n'étant pas nécessairement un utilisateur qui peut s'authentifier),
-* amélioration du flux iCal (il contient l'état accepté/décliné des invitations de chaque participant),
-* 
+* amélioration du flux iCal (il contient l'état accepté/décliné des invitations de chaque participant).
 
 ## Fonctionnement:
 * Le GCI **booking.cgi**:
