@@ -80,8 +80,9 @@ reboot
 * Adapter *jitsi-jmb_show* au stockage SQLite
 * ~~Corriger les rappels *xmpp*~~
 * ~~Ajout -r ${mailfrom} à la commande mail si l'organisateur n'est pas sur le domaine du serveur Jitsi (fixer l'expéditeur d'enveloppe pour passer les contrôles SPF)~~
-* Créer un CGI "invitation.cgi" -> "accept" / "decline" + lien ajouté au mail de notification -> info ajoutée au flux iCal + notification par mail à l'organisateur ?
-* Gérer le status "accept" / "decline" dans le CGI "ical.cgi"
+* ~~Créer un CGI "invitation.cgi" -> "accept" / "decline" + lien ajouté au mail de notification -> info ajoutée au flux iCal~~ + notification par mail à l'organisateur ?
+* ~~Gérer le status "accept" / "decline" dans le CGI "ical.cgi"~~
+* Préciser le status "accepté" / "décliné" des invitations dans le mail de rappel à l'organisateur
 * Générer et ajouter un contenu ICS aux notifications envoyés par mail
 
 ## Divers:
