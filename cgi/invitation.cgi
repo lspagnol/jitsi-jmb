@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ########################################################################
-# CGI authentification JWT + autorisation pour l'activation des réunions
+# CGI de gestion des invitations
 ########################################################################
 
 # Timestamps
@@ -24,3 +24,5 @@ out=${JMB_CGI_TMP}/http_${tsn}.message
 getdecode
 
 ########################################################################
+
+set > ${JMB_DEBUG}
