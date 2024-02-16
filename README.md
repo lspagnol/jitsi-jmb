@@ -72,14 +72,16 @@ Ces modifications exploitent le comportement de Jitsi (les utilisateurs authenti
 * Un SSO fonctionnel (par défaut: serveur **CAS**).
 * Un MTA (Postfix) configuré pour relayer les mails.
 * Le serveur *Jisti Meet* **DOIT** être installé, configuré et fonctionnel avec l'authentication JWT.
-* -> voir [README-install_jitsi-meet-tokens.md](README-install_jitsi-meet-tokens.md)
+  * -> voir [README-install_jitsi-meet-tokens.md](README-install_jitsi-meet-tokens.md)
+* Synchronisation iCal dans *Nextcloud*: votre instance Nextcloud doit pouvoir joindre votre serveur Jitsi
+  * -> tcp/443 ouvert en sortie sur le serveur Nextcloud vers le serveur Jitsi
 
 ## Installation:
 
 * Lancez le script d'installation et suivez les indications: `cd jitsi-jmb ; bash install.sh`
 * 1ère exécution du script d'installation: redémarrez le serveur.
 * **JMB** est déjà installé (mise à jour): le redémarrage n'est pas nécessaire.
-* Vous avez un logo à afficher dans l'interface ? -> copiez-le dans */opt/jitsi-jmb/etc/logo.png*.
+* Vous avez un logo à afficher dans l'interface ? -> copiez-le dans */opt/jitsi-jmb/etc/logo.png*
 
 ## TODO
 
