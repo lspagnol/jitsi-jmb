@@ -39,25 +39,30 @@ Ces modifications exploitent le comportement de Jitsi (les utilisateurs authenti
   * permet d'inviter des participants et/ou des modérateurs,
   * les participants et/ou des modérateurs peuvent être des *utilisateurs externes* (ne pouvant pas s'authentifier),
   * génère, pour une réunion donnée, un *hash individuel* pour chaque participants et/ou modérateur,
-  * expédie un mail de notification à chaque participant.
+  * expédie un mail de notification à chaque participant,
+  * le mail de notification contient des liens qui permettent d'accepter/rejeter l'invitation.
+
 * Le CGI **token.cgi**:
   * est **protégé par un module d'authentification Apache** (par défaut: *auth_cas*),
   * n'est invoqué que par le propriétaire d'une réunion,
   * génère un jeton **JWT** et l'ajoute en paramètre lors de la redirection vers *Jitsi*.
+
 * Le CGI **join.cgi**:
   * n'est pas protégé par une authentification (chaque participant a un *hash individuel*),
   * est invoqué par les modérateurs et les invités,
     * **modérateurs**: il génère un jeton **JWT** et l'ajoute en paramètre lors de la redirection vers *Jitsi*,
     * **invités**: il redirige directement vers *Jitsi*.
+
 * Le CGI **ical.cgi**:
   * n'est pas protégé par une authentification (chaque utilisateur a un *hash individuel*),
   * génère un flux iCal permettant de synchroniser des agendas (Thunderbird, Smartphone, Nextcloud, ...),
   * le flux iCal contient le status des invités (invitation accptée/déclinée),
   * son utilisation est implicitement limitée aux utilisateurs qui peuvent accéder à **booking.cgi** (utilisateurs pouvant s'authentifier).
-* le CGI **invitation.cgi**:
+
+* Le CGI **invitation.cgi**:
   * n'est pas protégé par une authentification (chaque utilisateur a un *hash individuel*),
-  * permet aux invités d'indiquer leur présence à l'organisateur d'une réunion (accepter/décliner l'invitation);
-  * les liens correspondants sont ajoutés dans les mails de notification envoyés aux participants et aux modérateurs.
+  * permet aux invités d'indiquer leur présence à l'organisateur d'une réunion (accepter/décliner l'invitation).
+
 * *Les CGI en Bash, c'est moche, mais j'ai pas le temps de tout ré-écrire en Python ... avis aux volontaires ! ;)*
 
 ## Prérequis:
