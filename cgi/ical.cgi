@@ -23,6 +23,12 @@ out=${JMB_CGI_TMP}/http_${tsn}.message
 
 function out_ical {
 
+# Note: le CN est obligatoire pour Thunderbird !
+local cn
+cn=${owner%@*}
+cn=${cn//./ }
+cn=${cn^^}
+
 cat<<EOT
 BEGIN:VEVENT
 DTSTAMP:${dtstamp}
@@ -32,7 +38,7 @@ SUMMARY:${object}
 LOCATION:${location}
 DTSTART;TZID=Europe/Paris:${dtstart}
 DTEND;TZID=Europe/Paris:${dtend}
-ORGANIZER;MAILTO:${owner}
+ORGANIZER;CN=${cn};MAILTO:${owner}
 EOT
 
 # PARTSTAT=NEEDS-ACTION -> attendee_partstat=0
@@ -54,7 +60,10 @@ if [ "${is_owner}" = "1" ] ; then
 				partstat="DECLINED"
 			;;
 		esac
-		echo "ATTENDEE;CUTYPE=INDIVIDUAL;PARTSTAT=${partstat};ROLE=REQ-PARTICIPANT;RSVP=TRUE;SCHEDULE-STATUS=1.1;MAILTO:${attendee}"
+		cn=${attendee%@*}
+		cn=${cn//./ }
+		cn=${cn^^}
+		echo "ATTENDEE;CUTYPE=INDIVIDUAL;PARTSTAT=${partstat};ROLE=REQ-PARTICIPANT;RSVP=TRUE;SCHEDULE-STATUS=1.1;CN=${cn};MAILTO:${attendee}"
 	done
 fi
 
