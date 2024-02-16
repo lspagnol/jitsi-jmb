@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# sendxmpp ne fonctionne plus !
-exit 0
-
 ########################################################################
 # Archivage des réservation expirées
 ########################################################################
@@ -38,9 +35,9 @@ for f in $(\
 	grace=$(( ( ${end} - ${now} ) / 60 ))
 
 	if [ ${grace} -gt 0 ] ; then
-		${JMB_PATH}/bin/jitsi-jmb_send-xmpp ${name} "NOTIFICATION: la réunion se termine dans ${grace} minutes !!"
+		${JMB_PATH}/bin/jitsi-jmb_send-xmpp ${name} "La réunion se termine dans ${grace} minutes ..."
 	else
-		${JMB_PATH}/bin/jitsi-jmb_send-xmpp ${name} "NOTIFICATION: La réunion est terminée !!"
+		${JMB_PATH}/bin/jitsi-jmb_send-xmpp ${name} "La réunion est terminée !!"
 	fi
 
 	# Reminder "consommé" -> on le désactive
