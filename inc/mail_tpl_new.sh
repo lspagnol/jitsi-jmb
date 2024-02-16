@@ -18,7 +18,9 @@ Heure.........: $(date -d @${begin} +%H:%M)
 Durée.........: ${conf_duration} minutes
 Adresse.......: ${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}
 
-Merci de confirmer votre présence.
+Merci d'indiquer votre présence en cliquant sur un des liens suivants:
+Accepter l'invitation: ${JMB_SCHEME}://${JMB_SERVER_NAME}/invitation.cgi?accept&id=${hash}
+Décliner l'invitation: ${JMB_SCHEME}://${JMB_SERVER_NAME}/invitation.cgi?decline&id=${hash}
 EOT
 	;;
 
@@ -38,7 +40,9 @@ Adresse.......: ${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}
 Modérateurs...: ${conf_moderators:-aucun}
 Invités.......: ${conf_guests:-aucun}
 
-Merci de confirmer votre présence.
+Merci d'indiquer votre présence en cliquant sur un des liens suivants:
+Accepter l'invitation: ${JMB_SCHEME}://${JMB_SERVER_NAME}/invitation.cgi?accept&id=${hash}
+Décliner l'invitation: ${JMB_SCHEME}://${JMB_SERVER_NAME}/invitation.cgi?decline&id=${hash}
 EOT
 	;;
 
