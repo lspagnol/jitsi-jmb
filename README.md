@@ -2,15 +2,17 @@
 
 ## Fonctionnalités:
 
-* **Authentification universelle** JWT / modules d'authentication Apache
+* **Authentification universelle** JWT / modules d'authentication Apache.
   * CAS, Shibboleth, SAML, LDAP, SQL, ...
-* **Réservation et planification** des réunions
-* Gestion des **invités**
-* Gestion des **modérateurs**
-* Un **modérateur peut être un utilisateur externe** (ne pouvant pas s'authentifier)
-* **Rappels par mail** (début des réunions)
-* **Rappels par XMPP** (fin des réunions)
-* **Flux iCal** pour la synchronisation des agendas
+* **Réservation et planification** des réunions.
+* Gestion des **invités**.
+* Gestion des **modérateurs**.
+* Les invités peuvent accepter/décliner les invitations.
+* Un **modérateur peut être un utilisateur externe** (ne pouvant pas s'authentifier).
+* **Rappels par mail** (début des réunions).
+* **Rappels par XMPP** (fin des réunions).
+* **Flux iCal** pour la synchronisation des agendas.
+* Le status "accepté/décliné" des invités est disponible dans le flux iCal et **TODO** l'interface de gestion.
 
 <img src="screenshot1.png" alt="Screenshot1: liste des réunions" width="350"/><img src="screenshot2.png" alt="Screenshot2: édition d'une réunion" width="350"/>
 
@@ -21,12 +23,14 @@ L'authentification était assurée par Shibboleth et la planification par l'API 
 **JMB** a intégré, dès le départ, un mécanisme de rappels par mail et un flux iCal pour la synchronisation des agendas.
 Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibboleth et modifié l'API de réservation.
 **Jitsi Meet** évolue très rapidement, l'authentification par Shibboleth n'étant plus supportée, il était indispensable de modifier **JMB** pour passer à **JWT**.
-Ces modifications exploitent le comportement de Jitsi (les utilisateurs authentifiés sont modérateurs, les utilisateurs non authentifiés ne le sont pas) pour contourner l'API de réservation.
+**JMB** exploite le comportement de Jitsi (les utilisateurs authentifiés sont modérateurs, les utilisateurs non authentifiés ne le sont pas) pour contourner l'API de réservation.
 
 **JMB** a donc été modifié en profondeur:
 * Authentification **JWT** / modules auth Apache,
 * le stockage des données passe d'une arborescence de fichiers plats à une base SQLite,
-* ajout du rôle de *modérateur* (un modérateur n'étant pas nécessairement un utilisateur qui peut s'authentifier).
+* ajout du rôle de *modérateur* (un modérateur n'étant pas nécessairement un utilisateur qui peut s'authentifier),
+* amélioration du flux iCal (il contient l'état accepté/décliné des invitations de chaque participant),
+* 
 
 ## Fonctionnement:
 * Le GCI **booking.cgi**:
