@@ -52,7 +52,12 @@ Ces modifications exploitent le comportement de Jitsi (les utilisateurs authenti
 * Le CGI **ical.cgi**:
   * n'est pas protégé par une authentification (chaque utilisateur a un *hash individuel*),
   * génère un flux iCal permettant de synchroniser des agendas (Thunderbird, Smartphone, Nextcloud, ...),
+  * le flux iCal contient le status des invités (invitation accptée/déclinée),
   * son utilisation est implicitement limitée aux utilisateurs qui peuvent accéder à **booking.cgi** (utilisateurs pouvant s'authentifier).
+* le CGI **invitation.cgi**:
+  * n'est pas protégé par une authentification (chaque utilisateur a un *hash individuel*),
+  * permet aux invités d'indiquer leur présence à l'organisateur d'une réunion (accepter/décliner l'invitation);
+  * les liens correspondants sont ajoutés dans les mails de notification envoyés aux participants et aux modérateurs.
 * *Les CGI en Bash, c'est moche, mais j'ai pas le temps de tout ré-écrire en Python ... avis aux volontaires ! ;)*
 
 ## Prérequis:
