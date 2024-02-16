@@ -2,6 +2,7 @@
 
 ########################################################################
 # CGI du flux iCal
+# Définition attributs -> https://www.kanzaki.com/docs/ical/
 ########################################################################
 
 # Timestamps
@@ -26,13 +27,36 @@ cat<<EOT
 BEGIN:VEVENT
 DTSTAMP:${dtstamp}
 UID:${f}
-ORGANIZER:MAILTO:${owner}
 STATUS:CONFIRMED
 SUMMARY:${object}
 LOCATION:${location}
 DTSTART;TZID=Europe/Paris:${dtstart}
 DTEND;TZID=Europe/Paris:${dtend}
+ORGANIZER;MAILTO:${owner}
 EOT
+
+# PARTSTAT=NEEDS-ACTION -> attendee_partstat=0
+# PARTSTAT=ACCEPTED     -> attendee_partstat=1
+# PARTSTAT=DECLINED     -> attendee_partstat=2
+
+if [ "${is_owner}" = "1" ] ; then
+	# Proprio de la réunion -> ajouter la liste des invités et des modérateurs
+	for attendee in ${moderators} ${guests} ; do
+		partstat=$(sqlite3 ${JMB_DB} "SELECT DISTINCT attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_email='${attendee}';")
+		case ${partstat} in
+			0|"")
+				partstat="NEEDS-ACTION"
+			;;
+			1)
+				partstat="ACCEPTED"
+			;;
+			2)
+				partstat="DECLINED"
+			;;
+		esac
+		echo "ATTENDEE;CUTYPE=INDIVIDUAL;PARTSTAT=${partstat};ROLE=REQ-PARTICIPANT;RSVP=TRUE;SCHEDULE-STATUS=1.1;MAILTO:${attendee}"
+	done
+fi
 
 for reminder in ${JMB_MAIL_REMINDER} ; do
 	# ICSx5 ne supporte pas les "reminders dans le passé"
@@ -138,6 +162,7 @@ EOT
 
 			echo " ${owner} " |grep -q " ${auth_mail} "
 			if [ ${?} -eq 0 ] ; then
+				is_owner=1
 				get_meeting_hash ${f} ${auth_mail} owner
 				location="${JMB_SCHEME}://${JMB_SERVER_NAME}/token.cgi?room=${name}"
 			fi

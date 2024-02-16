@@ -17,7 +17,8 @@ CREATE TABLE attendees (
 	attendee_meeting_hash TEXT,
 	attendee_role TEXT NOT NULL,
 	attendee_email TEXT NOT NULL,
-	attendee_count INTEGER DEFAULT 0
+	attendee_count INTEGER DEFAULT 0,
+	attendee_partstat INTEGER DEFAULT 0
 );
 CREATE INDEX idx_attendee_meeting_id ON attendees(attendee_meeting_id);
 CREATE INDEX idx_attendee_meeting_hash ON attendees(attendee_meeting_hash);
