@@ -88,6 +88,7 @@ reboot
 * ~~Créer un CGI "invitation.cgi" -> "accept" / "decline" + lien ajouté au mail de notification -> info ajoutée au flux iCal~~ + notification par mail à l'organisateur ?
 * ~~Gérer le status "accept" / "decline" dans le CGI "ical.cgi"~~
 * Préciser le status "accepté" / "décliné" des invitations dans le mail de rappel à l'organisateur
+* *jitsi-jmb_mail-reminder* ne doit pas envoyer de rappel aux participants qui ont décliné l'invitation
 * Générer et ajouter un contenu ICS aux notifications envoyés par mail
 
 ## Divers:
