@@ -58,7 +58,7 @@ Modérateurs...: ${moderators:-aucun}
 Invités.......: ${guests:-aucun}
 
 * Vous pourrez rejoindre la réunion en cliquant sur le lien suivant:
-https://${JMB_SERVER_NAME}/token.cgi?room=${conf_name}
+https://${JMB_SERVER_NAME}/token.cgi?room=${name}
 EOT
 	;;
 

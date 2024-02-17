@@ -71,7 +71,7 @@ fi
 if [ ! -z "${JMB_MAIL_REMINDER}" ] ; then
 
 	cat<<EOT > ${JMB_CGI_TMP}/${tsn}.sql
-UPDATE mail_reminder SET mail_reminder_done='1' WHERE mail_reminder_meeting_id='${tsn}';
+DELETE FROM mail_reminder WHERE mail_reminder_meeting_id='${tsn}';
 EOT
 
 	for r in ${JMB_MAIL_REMINDER} ; do
@@ -90,10 +90,10 @@ fi
 
 # Préparation des rappels / XMPP
 
-if [ ! -z "${JMB_XMPP_REMINDER_DATA}" ] ; then
+if [ ! -z "${JMB_XMPP_REMINDER}" ] ; then
 
 	cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
-UPDATE xmpp_reminder SET xmpp_reminder_done='1' WHERE xmpp_reminder_meeting_id='${tsn}';
+DELETE FROM xmpp_reminder WHERE xmpp_reminder_meeting_id='${tsn}';
 EOT
 
 	for r in ${JMB_XMPP_REMINDER} ; do
