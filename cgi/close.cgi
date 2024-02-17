@@ -21,7 +21,7 @@ out=${JMB_CGI_TMP}/http_${tsn}.message
 ########################################################################
 
 # On vérifie le referer
-set |egrep -q "^HTTP_REFERER=${JMB_SCHEME}://${JMB_SERVER_NAME//./\\.}/"
+set |egrep -q "^HTTP_REFERER=https://${JMB_SERVER_NAME//./\\.}/"
 if [ $? -ne 0 ] ; then
 	# L'appel au CGI n'est pas fait par la fin d'une session Jitsi ?
 	# -> redirection vers le CGI de l'interface de gestion

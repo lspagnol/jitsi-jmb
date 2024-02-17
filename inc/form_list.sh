@@ -18,18 +18,14 @@ EOT
 ########################################################################
 
 # Récupérer les infos utilisateur
-[ -f ${JMB_PATH}/modules/${JMB_IDENTITY_MODULE}.sh ] && source ${JMB_PATH}/modules/${JMB_IDENTITY_MODULE}.sh
+[ -f ${JMB_PATH}/modules/${JMB_MODULE_GET_AUTH_IDENTITY} ] && source ${JMB_PATH}/modules/${JMB_MODULE_GET_AUTH_IDENTITY}
 
 # Vérifier si l'utilisateur est autorisé à créer/editer une réunion
 # Résultat: variable "is_editor=0" -> non, "is_editor=1" -> oui
-set_is_editor
+check_is_editor
 
-# Flux iCal
-ical_hash=$(sqlite3 ${JMB_DB} "SELECT ical_hash FROM ical WHERE ical_owner='${auth_uid}';")
-if [ -z "${ical_hash}" ] ; then
-	ical_hash=$(pwgen 16 1)
-	echo "INSERT INTO ical (ical_owner,ical_hash) values ('${auth_uid}','${ical_hash}');" |sqlite3 ${JMB_DB}
-fi
+# Récupérer le hash iCal de l'utilisateur
+ical_hash=$(get_ical_hash ${auth_uid})
 
 cat<<EOT
 <CENTER>
@@ -55,7 +51,7 @@ if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_editor}" = "1" ] ; then
  <I><A href=token.cgi?room=${self}>Ma r&eacute;union priv&eacute;e</A>, disponible &agrave; tout moment:</I>
 </DIV>
 <DIV title="Donnez ce lien &agrave; votre/vos correspondant(s)">
- <A href=${self}>${JMB_SCHEME}://${JMB_SERVER_NAME}/${self}</A>
+ <A href=${self}>https://${JMB_SERVER_NAME}/${self}</A>
 </DIV>
 <P></P>
 EOT
@@ -160,7 +156,7 @@ EOT
 cat<<EOT
   <DIV title="Ce lien permet de synchroniser vos agendas (Thunderbird, smartphones, Nextcloud, ... )">
     <A><I>Mon flux iCal: </I></A><BR>
-    <A href=/ical.cgi?${ical_hash}>${JMB_SCHEME}://${JMB_SERVER_NAME}/ical.cgi?${ical_hash}</A>
+    <A href=/ical.cgi?${ical_hash}>https://${JMB_SERVER_NAME}/ical.cgi?${ical_hash}</A>
   </DIV>
     <P></P>
 EOT

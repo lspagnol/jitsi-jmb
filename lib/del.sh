@@ -6,7 +6,7 @@
 
 # Vérifier si l'utilisateur est autorisé à créer/editer une réunion
 # Résultat: variable "is_editor=0" -> non, "is_editor=1" -> oui
-set_is_editor
+check_is_editor
 
 if [ "${is_editor}" = "0" ] ; then
 	http_403 "Vous n'êtes pas autorisé à supprimer une réunion"

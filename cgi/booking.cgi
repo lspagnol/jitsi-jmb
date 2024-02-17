@@ -25,7 +25,7 @@ getdecode
 setcookie=1
 
 # Récupérer les infos utilisateur à partir de l'authentification
-source ${JMB_PATH}/modules/${JMB_IDENTITY_MODULE}.sh
+source ${JMB_PATH}/modules/${JMB_MODULE_GET_AUTH_IDENTITY}
 
 ########################################################################
 

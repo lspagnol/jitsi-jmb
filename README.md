@@ -94,7 +94,7 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 * ~~Créer un CGI "invitation.cgi" -> "accept" / "decline" + lien ajouté au mail de notification -> info ajoutée au flux iCal~~ + notification par mail à l'organisateur ?
 * ~~Gérer le status "accept" / "decline" dans le CGI "ical.cgi"~~
 * Préciser le status "accepté" / "décliné" des invitations dans le mail de rappel à l'organisateur
-* *jitsi-jmb_mail-reminder* ne doit pas envoyer de rappel aux participants qui ont décliné l'invitation
+* ~~*jitsi-jmb_mail-reminder* ne doit pas envoyer de rappel aux participants qui ont décliné l'invitation~~
 * Générer un hash iCal (si nécéssaire) pour les utilisateurs qui peuvent s'identifier lors de l'envoi des notifications, ajouter le lien vers le flux iCal dans les mails
 * Ajouter un lien *Consulter* pour les proprios des réunions -> afficher le "accept" / "decline" des participants
 * Générer et ajouter un contenu ICS aux notifications envoyés par mail

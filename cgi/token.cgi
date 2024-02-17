@@ -24,12 +24,9 @@ out=${JMB_CGI_TMP}/http_${tsn}.message
 getdecode
 
 # Récupérer les infos utilisateur à partir de l'authentification
-source ${JMB_PATH}/modules/${JMB_IDENTITY_MODULE}.sh
+source ${JMB_PATH}/modules/${JMB_MODULE_GET_AUTH_IDENTITY}
 
 ########################################################################
-
-# Durée par défaut des conférences
-duration=${JMB_DEFAULT_DURATION}
 
 # Période de validité du jeton (-5 secondes, + 15 minutes)
 exp=$(( ${now} + 900 ))
@@ -51,12 +48,13 @@ signature=$(echo "${header_payload}" | jwt_hmacsha256_sign | jwt_base64_encode)
 url_redirect="/${room}"
 
 # Modules de vérification
-for check_module in ${JMB_CHECK_MODULES} ; do
-	[ -f ${JMB_PATH}/modules/${check_module}.cf ] && source ${JMB_PATH}/modules/${check_module}.cf
-	[ -f ${JMB_PATH}/modules/${check_module}.sh ] && source ${JMB_PATH}/modules/${check_module}.sh
+for check_module in ${JMB_MODULE_CHECK_MODERATOR} ; do
+	if [ -f ${JMB_PATH}/modules/${check_module} ] ; then
+		source ${JMB_PATH}/modules/${check_module}
+	fi
 done
 
-log "token.cgi: meeting_name='${room}', meeting_hash='', email='${auth_mail}', role='owner', auth_uid='${auth_uid}'"
+log "token.cgi: meeting_name='${room}', meeting_hash='', email='${auth_mail}', role='owner', auth_uid='${auth_uid}': ALLOWED"
 
 # Récupérer les infos de la réunion
 r=$(sqlite3 -list ${JMB_DB} "\

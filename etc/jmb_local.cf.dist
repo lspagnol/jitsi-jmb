@@ -3,6 +3,9 @@
 # Lu après /opt/jitsi-jmb/etc/jmb.cf et /opt/jitsi-jmb/etc/jmb_jwt.cf
 ########################################################################
 
+#-----------------------------------------------------------------------
+# Identité du service
+
 # Nom du service, il sera affiché dans les onglets du navigateur et la
 # liste des réunions (booking.cgi)
 JMB_NAME="Jitsi Meet"
@@ -10,42 +13,63 @@ JMB_NAME="Jitsi Meet"
 # FQDN du service
 JMB_SERVER_NAME="##_JITSI_FQDN_##"
 
-# Domaine de messagerie (on supprime la partie "host" du FQDN)
+# Domaine de messagerie
 JMB_MAIL_DOMAIN="##_DOMAIN_##"
 
-# URL de redirection pour les accès qui ne sont pas passé par l'interface
-# de réservation
-JMB_REDIRECT_CLOSE="https://jitsi.org/"
+# Adresse mail d'expéditeur pour les notifications
+JMB_MAIL_FROM_NOTIFICATION="${JMB_NAME} <noreply@${JMB_MAIL_DOMAIN}>"
+
+# Flux iCal
+JMB_ICAL_NAME="Visio ${JMB_NAME}"
+JMB_ICAL_DESC="Visio ${JMB_NAME}"
+
+#-----------------------------------------------------------------------
+# Redirections HTTP
+
+# Redirection par défaut pour les utilisateurs authentifiés
+JMB_DEFAULT_URL_REDIRECT="/booking.cgi?list"
+
+# Pour les accès qui ne sont pas passé par l'interface de réservation
+# Correspond généralement aux invités "externes" qui ne peuvent pas
+# s'authentifier
+JMB_REDIRECT_CLOSE="https://www.##_DOMAIN_##"
+
+#-----------------------------------------------------------------------
+# Identité utilisateur
 
 # Commande de requête LDAP
 JMB_LDAPSEARCH="/usr/bin/ldapsearch -o ldif-wrap=no -H ldap://##_LDAP_SERVER_## -x -LLL -b ##_LDAP_BASE_## -D ##_LDAP_USER_## -y /etc/ldap/ldap.secret"
 
-# Module destiné à vérifier le rôle "éditeur" de l'utilisateur
-JMB_IS_EDITOR_MODULE="editor_role-ldap"
+# Récupération des infos utilisateur à partir des données d'authentification d'Apache
+JMB_MODULE_GET_AUTH_IDENTITY="identity-cas.sh"
 
-# Filtre LDAP utilisé par JMB_IS_EDITOR_MODULE: comptes autorisés à créer et éditer les réunions
-# JMB_LDAP_FILTER="|(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)"
-JMB_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
+# Vérification du rôle rôle "modérateur" (liste de modules)
+JMB_MODULE_CHECK_MODERATOR="ldap-filter.sh private-room.sh booking.sh"
+
+# Vérification du rôle "éditeur"
+JMB_MODULE_CHECK_EDITOR="editor_role-ldap.sh"
+
+# Filtre LDAP utilisé par JMB_MODULE_CHECK_EDITOR
+JMB_MODULE_CHECK_EDITOR_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
+
+#-----------------------------------------------------------------------
+# Divers / mail
+
+# Remplacer les adresses secondaires par les adresses principales
+# Ne fonctionne que pour les adresses connues du référentiel LDAP
+# 0 -> non
+# 1 -> oui
+JMB_FIX_MAIL_ALIASES="1"
 
 # Fichier d'abonnement aux listes de diffusion
+# Si l'adresse d'un invité est une liste de diffusion, elle sera remplacée
+# par les adresses des abonnés
+# -> Permet de savoir exactement qui est invité depuis l'interface JMB
+# -> Permet d'abonder le flux iCal des invités
 # Format:
 # adresse_mail_liste adresse_mail_abonné1
 # adresse_mail_liste adresse_mail_abonné2
 # ...
 #JMB_LISTS_SUBSCRIBERS="/var/lib/tsync-get/listes.lists_subscribers_mails.txt"
 
-# Vérif LDAP: remplacer les adresses secondaires par les adresses principales
-# Ne fonctionne que pour les adresses connues du référentiel LDAP
-JMB_FIX_MAIL_ALIASES="1"
 
-# Adresse mail d'expéditeur pour les notifications
-JMB_MAIL_FROM_NOTIFICATION="Jitsi Meet <noreply@domain.fr>"
-
-# Réservations:
-# -> modules de vérification
-# -> Voir /opt/jitsi-jmb/modules/LISEZMOI.txt
-JMB_CHECK_MODULES="ldap-filter private-room booking"
-
-# iCal:
-JMB_ICAL_NAME="Visio Rendez-vous"
-JMB_ICAL_DESC="Visio Rendez-vous"

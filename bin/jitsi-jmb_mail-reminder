@@ -34,11 +34,11 @@ else
 	envelope_from="${JMB_MAIL_FROM_NOTIFICATION}"
 fi
 
-# Récupérer les IDs des réunions pour lesquelles un rappel doit être envoyé -> variable "${tsn}"
+# Récupérer les IDs des réunions pour lesquelles un rappel doit être envoyé
 for f in $(\
 	sqlite3 ${JMB_DB} "\
 	SELECT mail_reminder_meeting_id FROM mail_reminder
-	WHERE '${now}' >= mail_reminder_date AND mail_reminder_done = '0';") ; do
+	WHERE '${now}' >= mail_reminder.mail_reminder_date AND mail_reminder.mail_reminder_done = '0';") ; do
 
 	# Lire les données de la réunion
 	get_meeting_infos ${f}
@@ -57,34 +57,63 @@ for f in $(\
 		-a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_OWNER})"\
 		${mailto}
 
+	# Invités et modérateurs: envoyer les rappels uniquement à ceux qui
+	# n'ont pas décliné l'invitation
+
 	# Rappel aux invités
 	role="guest"
 	for mailto in ${guests} ; do
-		get_meeting_hash ${f} ${mailto} ${role}
-		# Mail de notification
-		source ${mail_tpl} |mail\
-			-r "${envelope_from}"\
-			-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
-			-a "Content-Transfer-Encoding: 8bit"\
-			-a "Content-Language: fr"\
-			-a "from: ${owner}"\
-			-a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_GUEST})"\
-			${mailto}
+
+		# On recupère le "partstat" de l'invité pour cette réunion
+		r=$(sqlite3 ${JMB_DB} "\
+		SELECT attendees.attendee_partstat FROM attendees
+		INNER JOIN mail_reminder ON mail_reminder.mail_reminder_meeting_id = attendees.attendee_meeting_id
+		WHERE mail_reminder.mail_reminder_meeting_id='${f}'
+		 AND attendees.attendee_email='${mailto}'
+		 AND attendees.attendee_role='${role}'
+		LIMIT 1;")
+
+		if [ "${r}" != "2" ] ; then
+			# L'invité n'a pas décliné l'invitation
+			get_meeting_hash ${f} ${mailto} ${role}
+			# Mail de notification
+			source ${mail_tpl} |mail\
+				-r "${envelope_from}"\
+				-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+				-a "Content-Transfer-Encoding: 8bit"\
+				-a "Content-Language: fr"\
+				-a "from: ${owner}"\
+				-a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_GUEST})"\
+				${mailto}
+		fi
 	done
 
 	# Rappel aux modérateurs
 	role="moderator"
 	for mailto in ${moderators} ; do
-		get_meeting_hash ${f} ${mailto} ${role}
-		# Mail de notification
-		source ${mail_tpl} |mail\
-			-r "${envelope_from}"\
-			-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
-			-a "Content-Transfer-Encoding: 8bit"\
-			-a "Content-Language: fr"\
-			-a "from: ${owner}"\
-			-a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_MODERATOR})"\
-			${mailto}
+
+		# On recupère le "partstat" de l'invité pour cette réunion
+		r=$(sqlite3 ${JMB_DB} "\
+		SELECT attendees.attendee_partstat FROM attendees
+		INNER JOIN mail_reminder ON mail_reminder.mail_reminder_meeting_id = attendees.attendee_meeting_id
+		WHERE mail_reminder.mail_reminder_meeting_id='${f}'
+		 AND attendees.attendee_email='${mailto}'
+		 AND attendees.attendee_role='${role}'
+		LIMIT 1;")
+
+		if [ "${r}" != "2" ] ; then
+			# Le modérateur n'a pas décliné l'invitation
+			get_meeting_hash ${f} ${mailto} ${role}
+			# Mail de notification
+			source ${mail_tpl} |mail\
+				-r "${envelope_from}"\
+				-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+				-a "Content-Transfer-Encoding: 8bit"\
+				-a "Content-Language: fr"\
+				-a "from: ${owner}"\
+				-a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_MODERATOR})"\
+				${mailto}
+		fi
 	done
 
 	# Reminder "consommé" -> on le désactive

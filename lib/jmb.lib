@@ -47,30 +47,6 @@ http_send
 
 }
 
-# Réponse HTTP JSON "OK" , pas de paramètre
-function http_200_json {
-
-echo "Status: 200 OK" > ${JMB_CGI_TMP}/http_${tsn}.header
-echo "Content-Type: application/json; charset=utf-8" >> ${JMB_CGI_TMP}/http_${tsn}.header
-
-message_200_json
-
-http_send
-
-}
-
-# Réponse HTTP JSON "Forbidden", paramètre: message d'erreur
-function http_403_json {
-
-echo "Status: 403 Forbidden" > ${JMB_CGI_TMP}/http_${tsn}.header
-echo "Content-Type: application/json; charset=utf-8" >> ${JMB_CGI_TMP}/http_${tsn}.header
-
-message_403_json "${@}"
-
-http_send
-
-}
-
 # Réponse HTTP iCal "OK", pas de paramètre
 function http_200_ical {
 
@@ -99,28 +75,6 @@ rm ${JMB_CGI_TMP}/http_${tsn}.response
 
 exit 0
 
-}
-
-########################################################################
-# Contenus JSON pour Jicofo -> OBSOLETE !! (auth via JWT / Prosody)
-
-function message_200_json {
-cat<<EOT > ${JMB_CGI_TMP}/http_${tsn}.message
-{
- "name": "${name}",
- "owner": "${owner}",
- "start_time": "${start_time}",
- "duration": ${duration}
-}
-EOT
-}
-
-function message_403_json {
-cat<<EOT > ${JMB_CGI_TMP}/http_${tsn}.message
-{
-  "message": "${@}"
-}
-EOT
 }
 
 ########################################################################
@@ -328,8 +282,8 @@ echo "${@}" |recode UTF-8..HTML_4.0
 
 }
 
-function utf8_to_mime {
 # Convertir la chaine passée en argument (utf8) en mime/base64
+function utf8_to_mime {
 # -> base 64 pour le sujet du mail
 
 # https://web.maths.unsw.edu.au/~lafaye/CCM/courrier-electronique/mime.htm
@@ -351,20 +305,22 @@ echo "=?UTF-8?B?${b64}?="
 
 }
 
-function set_is_editor {
 # Vérifier si un utilisateur est autorisé à créer / éditer une réunion
-# -> "include" du module défini dans la variable "JMB_IS_EDITOR_MODULE"
+function check_is_editor {
+# -> "include" du module défini dans la variable "JMB_MODULE_CHECK_EDITOR"
 
-if [ -z "${JMB_IS_EDITOR_MODULE}" ] ; then
+is_editor=0
+
+if [ -z "${JMB_MODULE_CHECK_EDITOR}" ] ; then
 
 	# Le module n'est pas défini -> rôle éditeur par défaut
 	is_editor=1
 
 else
 
-	if [ -f ${JMB_PATH}/modules/${JMB_IS_EDITOR_MODULE}.sh ] ; then
+	if [ -f ${JMB_PATH}/modules/${JMB_MODULE_CHECK_EDITOR} ] ; then
 
-		source ${JMB_PATH}/modules/${JMB_IS_EDITOR_MODULE}.sh
+		source ${JMB_PATH}/modules/${JMB_MODULE_CHECK_EDITOR}
 
 	else
 
@@ -375,22 +331,10 @@ else
 
 fi
 
-#$JMB_LDAPSEARCH "(&(uid=${auth_uid})(${JMB_LDAP_FILTER}))" uid |grep -q '^uid: '
-
-#if [ ${?} = 0 ] ; then
-
-	#is_editor=1
-
-#else
-
-	#is_editor=0
-
-#fi
-
 }
 
-function expand_list_subscribers {
 # Remplacer les adresses mail de type liste par les abonnés de la liste
+function expand_list_subscribers {
 
 local mail mails list
 
@@ -418,62 +362,84 @@ echo ${list}
 
 }
 
+# Remplacer les adresses secondaires d'une liste d'adresse par leur adresse principale
 function fix_mailAliases {
-# Remplacer les adresses secondaires par les adresses principales
+# ENTREE  : argument $@ -> liste d'adresses mail
+# SORTIE  : affiche les adresses mail principales
 
 local list mail
 
-if [ "${JMB_FIX_MAIL_ALIASES}" = "1" ] || "${JMB_FIX_MAIL_ALIASES}" = "yes" ] ; then
+if [ "${JMB_FIX_MAIL_ALIASES}" = "1" ] ; then
 
+	# La configuration indique qu'il faut vérifier/substituer les adresses secondaires
+
+	# On vérifie chaque adresse passée en argument
 	while [ "${1}" != "" ] ; do
 
+		# On cherche l'adresse principale correspondant à l'adresse indiquée
 		mail=$($JMB_LDAPSEARCH mailAlternateAddress=${1} mail |grep '^mail: ')
 		if [ -z "${mail}" ] ; then
+			# Pas de résultat -> c'est une adresse principale
 			mail=${1}
 		else
+			# Il y a un résultat -> c'est une adresse secondaire
+			# on la remplace par le résultat en ne conservant que sa valeur
 			mail=${mail#* }
 		fi
-	
+
+		# On ajoute le résultat à la liste
 		list="${list} ${mail}"
-	
+
 		shift
-	
+
 	done
 
 else
 
+	# La configuration ne demande pas la vérification/substitution des adresses secondaires
+
+	# On affiche la liste d'origine et on quitte la fonction
 	echo "${@}"
 	return
 
 fi
 
+# On transforme la liste en tableau
 list=(${list})
 list=${list[@]}
 
+# On affiche la liste modifiée
 echo ${list}
 
 }
 
-
-function get_meeting_infos {
 # Récupérer toutes les infos d'une réunion planifiée
-# Arguments: $1 -> identifiant de la réunion dans la DB ("${tsn}")
-# Variables en retour:
-# name
-# object
-# begin
-# duration
-# end
-# owner
-# guests (liste sur 1 seule ligne)
-# moderators (liste sur 1 seule ligne)
+function get_meeting_infos {
+# ENTREE  : argument $1 -> identifiant de la réunion dans la DB (variable "tsn")
+# SORTIE  : initialise les variables suivantes
+# name          -> nom de la réunion (hash)
+# object        -> objet de la réunion
+# begin         -> début (timestamp / secondes)
+# duration      -> durée (secondes)
+# end           -> fin (timestamp / secondes)
+# owner         -> adresse mail du propriétaire/organisateur
+# moderators    -> adresses mail des mondérateurs
+# guests        -> adresses mail des invités
 
-local r
+local r old_ifs
 
-# Table "meetings"
+# RAZ des variables
+unset name object begin duration end owner moderators guests
+
+# Récupérer les infos de la table "meetings"
 r=$(sqlite3 -list ${JMB_DB} "SELECT meeting_name, meeting_object, meeting_begin, meeting_duration, meeting_end,meeting_create FROM meetings WHERE meeting_id='${1}';")
-old_ifs="${IFS}" ; IFS="|"
-r=(${r}) ; IFS="${old_ifs}"
+
+# Le séparateur de champs SQLite est "|", on transforme le résultat en tableau 
+old_ifs="${IFS}"
+IFS="|"
+r=(${r})
+IFS="${old_ifs}"
+
 name=${r[0]}
 object=${r[1]}
 begin=${r[2]}
@@ -481,19 +447,19 @@ duration=${r[3]}
 end=${r[4]}
 create=${r[5]}
 
-# Table "attendees"
+# Récupérer les infos de la table "attendees"
 owner=$(sqlite3 ${JMB_DB} "SELECT attendee_email FROM attendees WHERE attendee_meeting_id='${1}' AND attendee_role='owner';")
 guests=$(sqlite3 ${JMB_DB} "SELECT attendee_email FROM attendees WHERE attendee_meeting_id='${1}' AND attendee_role='guest';")
 moderators=$(sqlite3 ${JMB_DB} "SELECT attendee_email FROM attendees WHERE attendee_meeting_id='${1}' AND attendee_role='moderator';")
 
-# Passer la liste des modérateurs et invités sur une seule ligne
+# Transformer la liste des modérateurs et invités en tableaux
 guests=(${guests}) ; guests=${guests[@]}
 moderators=(${moderators}) ; moderators=${moderators[@]}
 
 }
 
-function gen_meeting_hash {
 # Générer un hash de réunion
+function gen_meeting_hash {
 # Variable en retour:
 # hash
 
@@ -501,8 +467,8 @@ hash=$(pwgen -s -0 16 1)
 
 }
 
-function get_meeting_hash {
 # Récupérer le hash d'une réunion
+function get_meeting_hash {
 # Arguments: $1 -> identifiant de la réunion dans la DB ("${tsn}")
 #            $2 -> adresse mail du participant
 #            $3 -> role du participant
@@ -516,6 +482,24 @@ hash=$(sqlite3 ${JMB_DB} "\
 
 }
 
+# Récupérer/générer/enregistrer le hash iCal d'un utilisateur
+function get_ical_hash {
+# ENTREE  : argument $1 -> identifiant de l'utilisateur
+# SORTIE  : affiche le hash, création automatique et enregistrement s'il n'existe pas
+
+local hash
+
+hash=$(sqlite3 ${JMB_DB} "SELECT ical_hash FROM ical WHERE ical_owner='${1}';")
+if [ -z "${hash}" ] ; then
+	hash=$(pwgen 16 1)
+	sqlite3 ${JMB_DB} "INSERT INTO ical (ical_owner,ical_hash) values ('${1}','${hash}');"
+fi
+
+echo ${hash}
+
+}
+
+# Envoyer la chaine passée en argument à SYSLOG
 function log {
 echo "${@}" |logger -t jitsi-jmb
 }

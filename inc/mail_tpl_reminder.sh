@@ -16,7 +16,9 @@ Objet.........: ${object}
 Date..........: $(date -d @${begin} +"%d/%m/%Y")
 Heure.........: $(date -d @${begin} +%H:%M)
 Durée.........: ${duration} minutes
-Adresse.......: ${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}
+
+* Vous pourrez rejoindre la réunion en cliquant sur le lien suivant:
+https://${JMB_SERVER_NAME}/join.cgi?id=${hash}
 EOT
 	;;
 
@@ -32,9 +34,11 @@ Objet.........: ${object}
 Date..........: $(date -d @${begin} +"%d/%m/%Y")
 Heure.........: $(date -d @${begin} +%H:%M)
 Durée.........: ${duration} minutes
-Adresse.......: ${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}
 Modérateurs...: ${moderators:-aucun}
 Invités.......: ${guests:-aucun}
+
+* Vous pourrez rejoindre la réunion en cliquant sur le lien suivant:
+https://${JMB_SERVER_NAME}/join.cgi?id=${hash}
 EOT
 	;;
 
@@ -50,9 +54,11 @@ Objet.........: ${object}
 Date..........: $(date -d @${begin} +"%d/%m/%Y")
 Heure.........: $(date -d @${begin} +%H:%M)
 Durée.........: ${duration} minutes
-Adresse.......: ${JMB_SCHEME}://${JMB_SERVER_NAME}/token.cgi?room=${name}
 Modérateurs...: ${moderators:-aucun}
 Invités.......: ${guests:-aucun}
+
+* Vous pourrez rejoindre la réunion en cliquant sur le lien suivant:
+https://${JMB_SERVER_NAME}/token.cgi?room=${conf_name}
 EOT
 	;;
 

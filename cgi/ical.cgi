@@ -38,7 +38,7 @@ SUMMARY:${object}
 LOCATION:${location}
 DTSTART;TZID=Europe/Paris:${dtstart}
 DTEND;TZID=Europe/Paris:${dtend}
-ORGANIZER;CN=${cn};MAILTO:${owner}
+ORGANIZER;PARTSTAT=ACCEPTED;CN=${cn};MAILTO:${owner}
 EOT
 
 # PARTSTAT=NEEDS-ACTION -> attendee_partstat=0
@@ -136,7 +136,7 @@ EOT
 		# Récupérer la liste des adresses mail de l'utilisateur
 		# FIXME -> les identifiants ne fonctionnent que pour les utilisateurs
 		#          présents dans le référentiel LDAP, il faudrait passer
-		#          à un autre attribut pour les utilisteurs d'une fédération d'identité
+		#          à un autre attribut pour les utilisateurs d'une fédération d'identité
 		auth_mail=$($JMB_LDAPSEARCH uid=${uid} mail |grep '^mail:')
 		auth_mail=${auth_mail#* }
 
@@ -160,20 +160,20 @@ EOT
 			echo " ${guests} " |grep -q " ${auth_mail} "
 			if [ ${?} -eq 0 ] ; then
 				get_meeting_hash ${f} ${auth_mail} guest
-				location="${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}"
+				location="https://${JMB_SERVER_NAME}/join.cgi?id=${hash}"
 			fi
 
 			echo " ${moderators} " |grep -q " ${auth_mail} "
 			if [ ${?} -eq 0 ] ; then
 				get_meeting_hash ${f} ${auth_mail} moderator
-				location="${JMB_SCHEME}://${JMB_SERVER_NAME}/join.cgi?id=${hash}"
+				location="https://${JMB_SERVER_NAME}/join.cgi?id=${hash}"
 			fi
 
 			echo " ${owner} " |grep -q " ${auth_mail} "
 			if [ ${?} -eq 0 ] ; then
 				is_owner=1
 				get_meeting_hash ${f} ${auth_mail} owner
-				location="${JMB_SCHEME}://${JMB_SERVER_NAME}/token.cgi?room=${name}"
+				location="https://${JMB_SERVER_NAME}/token.cgi?room=${name}"
 			fi
 
 			if [ ! -z "${location}" ]  ;then

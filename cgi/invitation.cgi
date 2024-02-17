@@ -25,13 +25,15 @@ out=${JMB_CGI_TMP}/http_${tsn}.message
 getdecode
 
 ########################################################################
-set>${JMB_DEBUG}
+
 case ${query} in
 	accept)
 		partstat=1
+		resp="pr&eacute;sence"
 	;;
 	decline)
 		partstat=2
+		resp="absence"
 	;;
 esac
 
@@ -43,7 +45,7 @@ cat<<EOT>${out}
     <TITLE>${JMB_NAME}</TITLE>
   </HEAD>
   <BODY>
-    <DIV><STRONG>L'organisateur de la r&eacute;union sera notifi&eacute; de votre r&eacute;ponse.</STRONG></DIV>
+    <DIV><STRONG>L'organisateur de la r&eacute;union sera inform&eacute; de votre ${resp}.</STRONG></DIV>
     <P>Vous pouvez fermer cet onglet.</P>
   </BODY>
 </HTML>

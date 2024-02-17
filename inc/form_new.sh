@@ -15,7 +15,7 @@ fi
 
 cat<<EOT
   <H2>Nouvelle r&eacute;union</H2>
-  <P>${JMB_SCHEME}://${JMB_SERVER_NAME}/${conf_name}</P>
+  <P>https://${JMB_SERVER_NAME}/${conf_name}</P>
 </CENTER>
 <FORM method="POST">
   <INPUT type="hidden" name="conf_tsn" value="${tsn}">

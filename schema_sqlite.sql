@@ -24,6 +24,7 @@ CREATE INDEX idx_attendee_meeting_id ON attendees(attendee_meeting_id);
 CREATE INDEX idx_attendee_meeting_hash ON attendees(attendee_meeting_hash);
 CREATE INDEX idx_attendee_role ON attendees(attendee_role);
 CREATE INDEX idx_attendee_email ON attendees(attendee_email);
+CREATE INDEX idx_attendee_partstat ON attendees(attendee_partstat);
 
 CREATE TABLE mail_reminder (
 	mail_reminder_id INTEGER PRIMARY KEY AUTOINCREMENT,

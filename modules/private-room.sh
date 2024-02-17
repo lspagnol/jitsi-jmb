@@ -15,6 +15,9 @@ uid=$(grep " ${room}$" ${JMB_DATA}/private_rooms |awk '{print $1}')
 
 if [ ! -z "${uid}" ] ; then
 	if [ "${uid}" != "${auth_uid}" ] ; then
+		log "token.cgi: meeting_name='${room}', meeting_hash='', email='${auth_mail}', role='owner', auth_uid='${auth_uid}', check_module='private-room.sh': DENIED (not owner)"
 		http_403 "Vous n'êtes pas le proprétaire de la réunion '${room}'"
 	fi
 fi
+
+log "token.cgi: meeting_name='${room}', meeting_hash='', email='${auth_mail}', role='owner', auth_uid='${auth_uid}', check_module='private-room.sh': ok"

@@ -33,12 +33,12 @@ JMB_ICAL_DATA="${JMB_DATA}/ical"
 function import_tsn {
 
 #name=jeuquoovaith
-#mail_owner=ophelie.petiot@univ-reims.fr
+#mail_owner=xxxxxx@xxxxxx
 #begin=1707386400
 #duration=3600
 #end=1707390000
-#object="Mémoire Koleti"
-#guests="koletivaitanaki@gmail.com"
+#object="Mémoire qqqqq"
+#guests="yyyy@yyyyy"
 
 # Table "meetings"
 cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql

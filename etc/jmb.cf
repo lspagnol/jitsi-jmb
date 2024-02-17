@@ -6,44 +6,28 @@
 #                                                                      #
 ########################################################################
 
-########################################################################
-# Répertoires: *** NE PAS MODIFIER !!! ***
-########################################################################
-
-# Répertoire d'installation
+# Répertoire d'installation *** NE PAS MODIFIER !!! ***
 JMB_PATH="/opt/jitsi-jmb"
 
-# Stockage des données
+# Stockage des données *** NE PAS MODIFIER !!! ***
 JMB_DATA="/var/www/jitsi-jmb"
 
-# Stockage des données temporaires des CGIs
+# Stockage des données temporaires des CGIs *** NE PAS MODIFIER !!! ***
 JMB_CGI_TMP="${JMB_DATA}/tmp"
 
-# Stockage des données (SQLite)
+# Stockage des données (SQLite) *** NE PAS MODIFIER !!! ***
 JMB_DB="${JMB_DATA}/data/jitsi-jmb.db"
-
-# Stockage des données de réservation
-JMB_BOOKING_DATA=${JMB_DATA}/booking
-
-# Destination d'archivage des données de réservation
-JMB_BOOKING_ARCHIVE=${JMB_DATA}/booking_archive
-
-# Stockage des reminders / mail
-JMB_MAIL_REMINDER_DATA="${JMB_DATA}/mail_reminder"
-
-# Stockage des reminders / XMPP
-JMB_XMPP_REMINDER_DATA="${JMB_DATA}/xmpp_reminder"
-
-# Stockage des données iCal
-JMB_ICAL_DATA="${JMB_DATA}/ical"
 
 ########################################################################
 # A partir d'ici, vous pouvez tout personnaliser en recopiant les lignes
 # à modifier dans "jmb_local.cf"
 ########################################################################
 
-# Chemin du fichier DEBUG
+# Fichier DEBUG
 JMB_DEBUG=${JMB_CGI_TMP}/debug.${now}
+
+#-----------------------------------------------------------------------
+# Identité du service
 
 # Nom du service, il sera affiché dans les onglets du navigateur et la
 # liste des réunions (booking.cgi)
@@ -55,112 +39,105 @@ JMB_SERVER_NAME="$(hostname -f)"
 # Domaine de messagerie
 JMB_MAIL_DOMAIN="${JMB_SERVER_NAME#*.}"
 
-# Scheme du serveur HTTP http ou https
-# ... ça existe encore "HTTP" sans "S" ? ... ;)
-JMB_SCHEME="https"
+# Adresse mail d'expéditeur pour les notifications
+JMB_MAIL_FROM_NOTIFICATION="${JMB_NAME} <noreply@${JMB_MAIL_DOMAIN}>"
 
-# JWT -> "Application ID"
-# -> voir /etc/prosody/conf.avail/**FQDN**.fr.cfg.lua
-# Identique à la variable "app_id" dans la section "VirtualHost" du FQDN
-# Variable inscrite automatiquement dans /opt/jitsi-jmb/etc/jmb_jwt.cf
-# lors de l'installation
-JMB_JWT_ISS=""
+# Flux iCal
+JMB_ICAL_NAME="Visio ${JMB_NAME}"
+JMB_ICAL_DESC="Visio ${JMB_NAME}"
 
-# JWT -> clé partagée pour la signature des jetons
-# -> voir /etc/prosody/conf.avail/**FQDN**.fr.cfg.lua
-# Identique à la variable "app_secret" dans la section "VirtualHost" du FQDN
-# Variable inscrite automatiquement  dans /opt/jitsi-jmb/etc/jmb_jwt.cf
-# lors de l'installation
-JMB_JWT_SECRET=""
+#-----------------------------------------------------------------------
+# Redirections HTTP
 
-# Commande de génération des noms de réunion
-JMB_GEN_NAME="pwgen -A -0 14 1"
+# Redirection par défaut pour les utilisateurs authentifiés
+JMB_DEFAULT_URL_REDIRECT="/booking.cgi?list"
 
-# Commande de requête LDAP
-JMB_LDAPSEARCH="/usr/bin/ldapsearch -x -LLL -o ldif-wrap=no -h ssds-ldap -b ou=people,dc=mydomain,dc=fr"
-
-# Module destiné à vérifier le rôle "éditeur" de l'utilisateur
-JMB_IS_EDITOR_MODULE="editor_role-ldap"
-
-# Filtre LDAP utilisé par JMB_IS_EDITOR_MODULE: comptes autorisés à créer et éditer les réunions
-JMB_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
-
-# Identité / authentification: module à appeler pour récupérer les infos utilisateur
-# -> Voir /opt/jitsi-jmb/modules/LISEZMOI.txt
-JMB_IDENTITY_MODULE="identity-cas"
-
-# Réservations: modules de vérification à exécuter
-# -> Voir /opt/jitsi-jmb/modules/LISEZMOI.txt
-JMB_CHECK_MODULES="ldap-filter private-room booking"
+# Pour les accès qui ne sont pas passé par l'interface de réservation
+# Correspond généralement aux invités "externes" qui ne peuvent pas
+# s'authentifier
+JMB_REDIRECT_CLOSE="https://jitsi.org/"
 
 # Durée d'attente avant redirection du navigateur (secondes)
 JMB_SLEEP_REDIRECT="5"
 
-# URL de redirection par défaut
-JMB_DEFAULT_URL_REDIRECT="/booking.cgi?list"
+#-----------------------------------------------------------------------
+# Jetons JWT
 
-# URL de redirection pour les accès qui ne sont pas passé par l'interface
-# de réservation
-JMB_REDIRECT_CLOSE="https://jitsi.org/"
+# Variables inscrites automatiquement dans /opt/jitsi-jmb/etc/jmb_jwt.cf
+# lors de l'installation. Les valeurs sont récupérés dans la section
+# "VirtualHost" du FQDN depuis le fichier de configuration Prosody
+# -> /etc/prosody/conf.avail/**FQDN**.fr.cfg.lua.
 
-# Durée par défaut des réunions (secondes)
-JMB_DEFAULT_DURATION=7200
+# Cette section est donc inutile dans ce fichier, elle est présente
+# uniquement pour information !!
+
+# JWT -> "Application ID"
+# -> variable "app_id" de Prosody
+JMB_JWT_ISS=""
+
+# JWT -> clé partagée pour la signature des jetons
+# -> variable "app_secret" de Prosody
+JMB_JWT_SECRET=""
+
+#-----------------------------------------------------------------------
+# Identité utilisateur
+
+# Commande de requête LDAP
+JMB_LDAPSEARCH="/usr/bin/ldapsearch -x -LLL -o ldif-wrap=no -h ssds-ldap -b ou=people,dc=mydomain,dc=fr"
+
+# Récupération des infos utilisateur à partir des données d'authentification d'Apache
+JMB_MODULE_GET_AUTH_IDENTITY="identity-cas.sh"
+
+# Vérification du rôle rôle "modérateur" (liste de modules)
+JMB_MODULE_CHECK_MODERATOR="ldap-filter.sh private-room.sh booking.sh"
+
+# Vérification du rôle "éditeur"
+JMB_MODULE_CHECK_EDITOR="editor_role-ldap.sh"
+
+# Filtre LDAP utilisé par JMB_MODULE_CHECK_EDITOR
+JMB_MODULE_CHECK_EDITOR_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
+
+#-----------------------------------------------------------------------
+# Planification des rappels
+
+# Les rappels sont planifiés lors de la création ou de la modification
+# des réunions
 
 # Rappels début réunion via mail (minutes)
+# 1 semaine, 24 heures, 1 heure, 10 minutes avant le début de la réunion
 JMB_MAIL_REMINDER="10080 1440 60 10"
 
 # Rappels fin réunion via XMPP (minutes)
+# 15 minutes, 5 minutes avant la fin de la réunion puis un rappel quand
+# la réunion est terminée
 JMB_XMPP_REMINDER="15 5 0"
 
-# Démons à redémarrer (commande "jitsi-restart")
-JMB_DAEMONS="jicofo prosody"
+#-----------------------------------------------------------------------
+# Sujets des mails de notification
 
-########################################################################
-# Mails
-########################################################################
-
-# Vérif LDAP: remplacer les adresses secondaires par les adresses principales
-# Ne fonctionne que pour les adresses connues du référentiel LDAP
-JMB_FIX_MAIL_ALIASES="1"
-
-# Adresse mail d'expéditeur pour les notifications
-JMB_MAIL_FROM_NOTIFICATION="Jitsi Meet <noreply@domain.fr>"
-
-# Sujets des mails de notification
+# Nouvelle réunion
 JMB_SUBJECT_NEW_OWNER="Réservation visioconférence"
 JMB_SUBJECT_NEW_GUEST="Invitation visioconférence"
 JMB_SUBJECT_NEW_MODERATOR="Invitation visioconférence"
 
+# Modification d'une réunion
 JMB_SUBJECT_EDIT_OWNER="Réservation visioconférence (mise à jour)"
 JMB_SUBJECT_EDIT_GUEST="Invitation visioconférence (mise à jour)"
 JMB_SUBJECT_EDIT_MODERATOR="Invitation visioconférence (mise à jour)"
 
+# Annulation d'une réunion
 JMB_SUBJECT_DEL_OWNER="Réservation visioconférence annulée"
 JMB_SUBJECT_DEL_GUEST="Invitation visioconférence annulée"
 JMB_SUBJECT_DEL_MODERATOR="Invitation visioconférence annulée"
 
+# Rappels
 JMB_SUBJECT_MAIL_REMINDER_OWNER="Rappel: vous organisez une visioconférence"
 JMB_SUBJECT_MAIL_REMINDER_GUEST="Rappel: vous participez à une visioconférence"
 JMB_SUBJECT_MAIL_REMINDER_MODERATOR="Rappel: vous animez une visioconférence"
 
-# Fichier d'abonnement aux listes de diffusion
-# Format:
-# adresse_mail_liste adresse_mail_abonné1
-# adresse_mail_liste adresse_mail_abonné2
-# ...
-JMB_LISTS_SUBSCRIBERS=""
-
-########################################################################
-# iCal
-########################################################################
-
-JMB_ICAL_NAME="Visio Jitsi Meet"
-JMB_ICAL_DESC="Visio Jitsi Meet"
-JMB_ICAL_TZID="Europe/Paris"
-
-########################################################################
-# Paramètres du formulaire réservation
-########################################################################
+#-----------------------------------------------------------------------
+# Formulaire de réservation
+# -> booking.cgi?new ou booking.cgi?edit
 
 # Objet par défaut des réunions
 JMB_DEFAULT_OBJECT="R&eacute;union sans objet"
@@ -177,30 +154,69 @@ JMB_MAX_MEETING_DURATION="480"
 # Incrément durée réunion (minutes)
 JMB_STEP_MEETING_DURATION="30"
 
-# Mise en évidence des réunions (fond vert) dans la liste  N secondes
-# avant leur date de début, fond orange si la date de début est atteinte
-JMB_LIST_HIGHLIGHT_OWNER="900"
-JMB_LIST_HIGHLIGHT_GUEST="300"
-
 # Nombre maximum de modérateurs
 JMB_MAX_MODERATORS=2
 
 # Nombre maximum d'invités
 JMB_MAX_GUESTS=50
 
+#-----------------------------------------------------------------------
+# Liste des réunions dans l'interface principale
+# -> booking.cgi?list
+
+# Mise en évidence des réunions (fond vert) dans la liste  N secondes
+# avant leur date de début, fond orange si la date de début est atteinte
+JMB_LIST_HIGHLIGHT_OWNER="900"
+JMB_LIST_HIGHLIGHT_GUEST="300"
+
+#-----------------------------------------------------------------------
+# Divers / mail
+
+# Remplacer les adresses secondaires par les adresses principales
+# Ne fonctionne que pour les adresses connues du référentiel LDAP
+# 0 -> non
+# 1 -> oui
+JMB_FIX_MAIL_ALIASES=""
+
+# Fichier d'abonnement aux listes de diffusion
+# Si l'adresse d'un invité est une liste de diffusion, elle sera remplacée
+# par les adresses des abonnés
+# -> Permet de savoir exactement qui est invité depuis l'interface JMB
+# -> Permet d'abonder le flux iCal des invités
+# Format:
+# adresse_mail_liste adresse_mail_abonné1
+# adresse_mail_liste adresse_mail_abonné2
+# ...
+JMB_LISTS_SUBSCRIBERS=""
+
+#-----------------------------------------------------------------------
+# Divers / iCal
+
+# Timezone du flux iCal
+JMB_ICAL_TZID="Europe/Paris"
+
+#-----------------------------------------------------------------------
+# Divers
+
+# Démons à redémarrer par la commande "jitsi-restart"
+JMB_DAEMONS="jicofo prosody"
+
+# Génération des noms de réunion
+JMB_GEN_NAME="pwgen -A -0 16 1"
+
+########################################################################
+# Charger les fichiers de conf locaux
 ########################################################################
 
-# Charger le fichier de conf pour JWT
-# Ce fichier est généré renseigné automatiquement pendant l'installation
+# Configuration JWT
+# -> fichier renseigné automatiquement pendant l'installation
 if [ -f ${JMB_PATH}/etc/jmb_jwt.cf ] ; then
 	source ${JMB_PATH}/etc/jmb_jwt.cf
 fi
 
-# Charger le fichier de configuration personnalisé
+# Configuration locale/personnalisée
 if [ -f ${JMB_PATH}/etc/jmb_local.cf ] ; then
 	source ${JMB_PATH}/etc/jmb_local.cf
 fi
 
 ########################################################################
-
-
