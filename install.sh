@@ -116,6 +116,7 @@ chmod +x ${JMB_PATH}/cgi/*
 chmod +x ${JMB_PATH}/bin/*
 ln -fs ${JMB_PATH}/bin/jitsi-jmb_send-xmpp /usr/local/bin
 ln -fs ${JMB_PATH}/bin/jitsi-jmb_send-xmpp /usr/local/sbin
+ln -fs ${JMB_PATH}/bin/jitsi-jmb_show-rooms /usr/local/sbin
 ln -fs ${JMB_PATH}/bin/jitsi-jmb_show /usr/local/bin
 ln -fs ${JMB_PATH}/bin/jitsi-restart /usr/local/sbin
 

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+########################################################################
+# Afficher la liste des réunions actives
+########################################################################
+
+# Charger la configuration
+JMB_PATH=/opt/jitsi-jmb
+source ${JMB_PATH}/etc/jmb.cf
+source ${JMB_PATH}/etc/jmb_local.cf
+
+if [ -f ${JMB_PATH}/etc/jmb_xmpp.cf ] ; then
+	source ${JMB_PATH}/etc/jmb_xmpp.cf
+else
+	echo "Missing file '${JMB_PATH}/etc/jmb_xmpp.cf'"
+	exit
+fi
+
+prosodyctl shell "muc:list('conference.${JMB_SERVER_NAME}')" |grep '@'
