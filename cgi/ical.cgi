@@ -159,20 +159,20 @@ EOT
 
 			echo " ${guests} " |grep -q " ${auth_mail} "
 			if [ ${?} -eq 0 ] ; then
-				get_meeting_hash ${f} ${auth_mail} guest
+				hash=$(get_meeting_hash ${f} ${auth_mail} guest)
 				location="https://${JMB_SERVER_NAME}/join.cgi?id=${hash}"
 			fi
 
 			echo " ${moderators} " |grep -q " ${auth_mail} "
 			if [ ${?} -eq 0 ] ; then
-				get_meeting_hash ${f} ${auth_mail} moderator
+				hash=$(get_meeting_hash ${f} ${auth_mail} moderator)
 				location="https://${JMB_SERVER_NAME}/join.cgi?id=${hash}"
 			fi
 
 			echo " ${owner} " |grep -q " ${auth_mail} "
 			if [ ${?} -eq 0 ] ; then
 				is_owner=1
-				get_meeting_hash ${f} ${auth_mail} owner
+				hash=$(get_meeting_hash ${f} ${auth_mail} owner)
 				location="https://${JMB_SERVER_NAME}/token.cgi?room=${name}"
 			fi
 

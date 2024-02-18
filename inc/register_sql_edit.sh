@@ -22,7 +22,7 @@ diff ${JMB_CGI_TMP}/${tsn}_guests.old ${JMB_CGI_TMP}/${tsn}_guests.new |egrep '^
 	case ${L[0]} in
 		">")
 			# Ajout
-			gen_meeting_hash
+			hash=$(gen_meeting_hash)
 			cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)
 VALUES ('${tsn}','${hash}','guest','${L[1]}');
@@ -55,7 +55,7 @@ diff ${JMB_CGI_TMP}/${tsn}_moderators.old ${JMB_CGI_TMP}/${tsn}_moderators.new |
 
 		">")
 			# Ajout
-			gen_meeting_hash
+			hash=$(gen_meeting_hash)
 			cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)
 VALUES ('${tsn}','${hash}','moderator','${L[1]}');

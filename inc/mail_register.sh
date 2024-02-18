@@ -30,7 +30,7 @@ if [ "${conf_date}" != "${old_conf_date}" ] || [ "${conf_time}" != "${old_conf_t
 	role="guest"
 	for mailto in ${conf_guests} ; do
 
-		get_meeting_hash ${tsn} ${mailto} ${role}
+		hash=$(get_meeting_hash ${tsn} ${mailto} ${role})
 
 		echo " ${old_conf_guests} " | grep -q " ${mailto} "
 		if [ ${?} -eq 0 ] ; then
@@ -57,7 +57,7 @@ if [ "${conf_date}" != "${old_conf_date}" ] || [ "${conf_time}" != "${old_conf_t
 	role="moderator"
 	for mailto in ${conf_moderators} ; do
 
-		get_meeting_hash ${tsn} ${mailto} ${role}
+		hash=$(get_meeting_hash ${tsn} ${mailto} ${role})
 
 		echo " ${old_conf_moderators} " | grep -q " ${mailto} "
 		if [ ${?} -eq 0 ] ; then

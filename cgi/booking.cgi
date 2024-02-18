@@ -27,6 +27,10 @@ setcookie=1
 # Récupérer les infos utilisateur à partir de l'authentification
 source ${JMB_PATH}/modules/${JMB_MODULE_GET_AUTH_IDENTITY}
 
+# Vérifier si l'utilisateur est autorisé à créer/editer une réunion
+# Résultat: variable "is_editor=0" -> non, "is_editor=1" -> oui
+check_is_editor
+
 ########################################################################
 
 case ${query} in
@@ -46,6 +50,14 @@ case ${query} in
 	edit)
 		source ${JMB_PATH}/lib/edit.sh
 	;;
+
+#	invitations)
+#		source ${JMB_PATH}/lib/invitations.sh
+#	;;
+
+#	archives)
+#		source ${JMB_PATH}/lib/archives.sh
+#	;;
 
 	register_new)
 		source ${JMB_PATH}/lib/register_new.sh

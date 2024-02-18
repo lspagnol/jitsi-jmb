@@ -4,16 +4,12 @@
 # GCI (booking.cgi): création d'une réunion
 ########################################################################
 
-# Vérifier si l'utilisateur est autorisé à créer/editer une réunion
-# Résultat: variable "is_editor=0" -> non, "is_editor=1" -> oui
-check_is_editor
-
 if [ "${is_editor}" = "0" ] ; then
 	http_403 "Vous n'êtes pas autorisé à créer une réunion"
 fi
 
 # Générer un nom de réunion aléatoire
-conf_name=$(${JMB_GEN_NAME})
+conf_name=$(gen_meeting_name)
 
 # Arrondir la date de début au 1/4 d'heure suivant la date actuelle
 now=$(( ${now} / 60 / 15 ))

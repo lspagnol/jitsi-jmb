@@ -307,6 +307,8 @@ echo "=?UTF-8?B?${b64}?="
 
 # Vérifier si un utilisateur est autorisé à créer / éditer une réunion
 function check_is_editor {
+# ENTREE: contenu de la variable "auth_uid"
+# SORTIE: variable is_editor=0 ou is_editor=1
 # -> "include" du module défini dans la variable "JMB_MODULE_CHECK_EDITOR"
 
 is_editor=0
@@ -335,6 +337,8 @@ fi
 
 # Remplacer les adresses mail de type liste par les abonnés de la liste
 function expand_list_subscribers {
+# ENTREE  : ${1} -> adresse mail
+# SORTIE  : adresse mail ou adresses des abonnés si celle passée en argument était une list
 
 local mail mails list
 
@@ -365,7 +369,7 @@ echo ${list}
 # Remplacer les adresses secondaires d'une liste d'adresse par leur adresse principale
 function fix_mailAliases {
 # ENTREE  : argument $@ -> liste d'adresses mail
-# SORTIE  : affiche les adresses mail principales
+# SORTIE  : liste d'adresses mail, adresses secondaires remplacées par adresses principales
 
 local list mail
 
@@ -398,9 +402,8 @@ else
 
 	# La configuration ne demande pas la vérification/substitution des adresses secondaires
 
-	# On affiche la liste d'origine et on quitte la fonction
-	echo "${@}"
-	return
+	# On conserve la liste d'origine
+	list="${@}"
 
 fi
 
@@ -458,40 +461,49 @@ moderators=(${moderators}) ; moderators=${moderators[@]}
 
 }
 
+# Générer un nom de réunion
+function gen_meeting_name {
+# ENTREE  : -
+# SORTIE  : affiche un hash (caractères [a-z] uniquement)
+
+pwgen -s -0 -A 16 1
+
+}
+
 # Générer un hash de réunion
 function gen_meeting_hash {
-# Variable en retour:
-# hash
+# ENTREE  : -
+# SORTIE  : affiche un hash
 
-hash=$(pwgen -s -0 16 1)
+pwgen -s 16 1
 
 }
 
 # Récupérer le hash d'une réunion
 function get_meeting_hash {
-# Arguments: $1 -> identifiant de la réunion dans la DB ("${tsn}")
-#            $2 -> adresse mail du participant
-#            $3 -> role du participant
-# Variable en retour:
-# hash
+# ENTREE  : $1 -> identifiant de la réunion dans la DB ("${tsn}")
+#           $2 -> adresse mail du participant
+#           $3 -> role du participant
+# SORTIE  : affiche le hash correspondant
 
-hash=$(sqlite3 ${JMB_DB} "\
+sqlite3 ${JMB_DB} "\
 	SELECT attendee_meeting_hash FROM attendees
 	WHERE attendee_meeting_id='${1}' AND attendee_email='${2}' AND attendee_role='${3}';
-")
+"
 
 }
 
 # Récupérer/générer/enregistrer le hash iCal d'un utilisateur
 function get_ical_hash {
 # ENTREE  : argument $1 -> identifiant de l'utilisateur
-# SORTIE  : affiche le hash, création automatique et enregistrement s'il n'existe pas
+# SORTIE  : affiche le hash correspondant
+#           création automatique et enregistrement s'il n'existe pas
 
 local hash
 
 hash=$(sqlite3 ${JMB_DB} "SELECT ical_hash FROM ical WHERE ical_owner='${1}';")
 if [ -z "${hash}" ] ; then
-	hash=$(pwgen 16 1)
+	hash=$(pwgen -s 16 1)
 	sqlite3 ${JMB_DB} "INSERT INTO ical (ical_owner,ical_hash) values ('${1}','${hash}');"
 fi
 

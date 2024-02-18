@@ -47,6 +47,7 @@ JMB_MODULE_GET_AUTH_IDENTITY="identity-cas.sh"
 JMB_MODULE_CHECK_MODERATOR="ldap-filter.sh private-room.sh booking.sh"
 
 # Vérification du rôle "éditeur"
+# Si la variable est vide -> éditeur par défaut
 JMB_MODULE_CHECK_EDITOR="editor_role-ldap.sh"
 
 # Filtre LDAP utilisé par JMB_MODULE_CHECK_EDITOR

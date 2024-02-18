@@ -6,7 +6,7 @@ en argmument.
 
 # Les variables disponibles:
 
-check_module     nom du module sans ".sh"
+check_module     nom du module
 duration         durée, normalement toujours "-1"
 owner            adresse mail récupérée de l'auth Shibboleth
 name             nom de la conférence

@@ -32,11 +32,13 @@ for f in $(\
 	# Lire les données de la réunion
 	get_meeting_infos ${f}
 
-	grace=$(( ( ${end} - ${now} ) / 60 ))
-
-	if [ ${grace} -gt 0 ] ; then
-		${JMB_PATH}/bin/jitsi-jmb_send-xmpp ${name} "La réunion se termine dans ${grace} minutes ..."
+	# Temps restant avant la fin de la réunion
+	delta=$(( ( ${end} - ${now} ) / 60 ))
+	if [ ${delta} -gt 0 ] ; then
+		# Delta positif
+		${JMB_PATH}/bin/jitsi-jmb_send-xmpp ${name} "La réunion se termine dans ${delta} minutes ..."
 	else
+		# Delta inférieur ou égal à zéro -> fin de la réunion
 		${JMB_PATH}/bin/jitsi-jmb_send-xmpp ${name} "La réunion est terminée !!"
 	fi
 

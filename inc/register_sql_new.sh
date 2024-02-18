@@ -21,7 +21,7 @@ EOT
 # -> Accès via "join.cgi" / hash propre à chaque participant
 for moderator in ${conf_moderators} ; do
 
-	gen_meeting_hash
+	hash=$(gen_meeting_hash)
 
 	cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)
@@ -35,7 +35,7 @@ done
 # -> Accès via "join.cgi" / hash propre à chaque participant
 for guest in ${conf_guests} ; do
 
-	gen_meeting_hash
+	hash=$(gen_meeting_hash)
 
 	cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)

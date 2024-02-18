@@ -75,7 +75,7 @@ for f in $(\
 
 		if [ "${r}" != "2" ] ; then
 			# L'invité n'a pas décliné l'invitation
-			get_meeting_hash ${f} ${mailto} ${role}
+			hash=$(get_meeting_hash ${f} ${mailto} ${role})
 			# Mail de notification
 			source ${mail_tpl} |mail\
 				-r "${envelope_from}"\
@@ -103,7 +103,7 @@ for f in $(\
 
 		if [ "${r}" != "2" ] ; then
 			# Le modérateur n'a pas décliné l'invitation
-			get_meeting_hash ${f} ${mailto} ${role}
+			hash=$(get_meeting_hash ${f} ${mailto} ${role})
 			# Mail de notification
 			source ${mail_tpl} |mail\
 				-r "${envelope_from}"\
