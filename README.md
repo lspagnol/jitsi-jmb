@@ -12,7 +12,7 @@
 * **Rappels par mail** (début des réunions).
 * **Rappels par XMPP** (fin des réunions).
 * **Flux iCal** pour la synchronisation des agendas.
-* Le status "accepté/décliné" des invités est disponible dans le flux iCal et **TODO** l'interface de gestion.
+* Suivi des invitations (acceptées/déclinées) dans l'interface et le flux iCal.
 
 <img src="screenshot1.png" alt="Screenshot1: liste des réunions" width="350"/><img src="screenshot2.png" alt="Screenshot2: édition d'une réunion" width="350"/>
 
