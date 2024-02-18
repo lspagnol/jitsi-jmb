@@ -3,10 +3,43 @@
 ########################################################################
 
 function out_table {
+
+# Récupérer les infos de la table "participants"
+r=$(sqlite3 ${JMB_DB} "\
+	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_role != 'owner';
+	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_role != 'owner' AND attendee_partstat='0';
+	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_role != 'owner' AND attendee_partstat='1';
+	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_role != 'owner' AND attendee_partstat='2'"
+)
+
+# On transforme le résulat en tableau
+# ${r[0]} -> total
+# ${r[1]} -> pas de réponse
+# ${r[2]} -> acceptés
+# ${r[3]} -> déclinés
+r=(${r})
+
 cat<<EOT
     <TR>
       <TD${onair}>${form_object}</TD>
       <TD${onair}>${form_owner}</TD>
+EOT
+
+if [ "${is_owner}" = "1" ] ; then
+cat<<EOT
+      <TD${onair}><CENTER>
+        <DIV title="En attente: ${r[1]}, accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}">
+          <A href=/booking.cgi?invitations&id=${f}>${r[2]}/${r[0]}</A>
+        </DIV>
+      </CENTER></TD>
+EOT
+else
+cat<<EOT
+      <TD${onair}><CENTER>${r[0]}</CENTER></TD>
+EOT
+fi
+
+cat<<EOT
       <TD${onair}><CENTER>${form_date}</CENTER></TD>
       <TD${onair}><CENTER>${form_time}</CENTER></TD>
       <TD${onair}><CENTER>${form_duration}</CENTER></TD>
@@ -16,13 +49,6 @@ EOT
 }
 
 ########################################################################
-
-# Récupérer les infos utilisateur
-[ -f ${JMB_PATH}/modules/${JMB_MODULE_GET_AUTH_IDENTITY} ] && source ${JMB_PATH}/modules/${JMB_MODULE_GET_AUTH_IDENTITY}
-
-# Vérifier si l'utilisateur est autorisé à créer/editer une réunion
-# Résultat: variable "is_editor=0" -> non, "is_editor=1" -> oui
-check_is_editor
 
 # Récupérer le hash iCal de l'utilisateur
 ical_hash=$(get_ical_hash ${auth_uid})
@@ -48,10 +74,10 @@ if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_editor}" = "1" ] ; then
 	self=$(grep "^${auth_uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
 	cat<<EOT
 <DIV title="Cliquez sur ce lien pour ouvrir votre salle de r&eacute;union priv&eacute;e">
- <I><A href=token.cgi?room=${self}>Ma r&eacute;union priv&eacute;e</A>, disponible &agrave; tout moment:</I>
+ <I><A href=/token.cgi?room=${self}>Ma r&eacute;union priv&eacute;e</A>, disponible &agrave; tout moment:</I>
 </DIV>
 <DIV title="Donnez ce lien &agrave; votre/vos correspondant(s)">
- <A href=${self}>https://${JMB_SERVER_NAME}/${self}</A>
+ <A href=/${self}>https://${JMB_SERVER_NAME}/${self}</A>
 </DIV>
 <P></P>
 EOT
@@ -69,6 +95,7 @@ cat<<EOT
     <TR>
       <TD bgcolor="LightGray"><B>Objet</B></TD>
       <TD bgcolor="LightGray"><B>Organisateur</B></TD>
+      <TD bgcolor="LightGray"><B>Invitations</B></TD>
       <TD bgcolor="LightGray"><B><CENTER>Date</CENTER></B></TD>
       <TD bgcolor="LightGray"><B><CENTER>Heure</CENTER></B></TD>
       <TD bgcolor="LightGray"><B><CENTER>Dur&eacute;e</CENTER></B></TD>
@@ -83,7 +110,7 @@ for f in $(\
 		INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
 		WHERE attendees.attendee_email='${auth_mail}' AND meetings.meeting_end > '${now}';") ; do
 
-	unset name owner begin duration end object guests moderators
+	# RAZ des variables utilisées dans le tableau
 	unset form_object form_date form_time form_duration form_owner form_action
 	unset is_owner is_guest is_moderator
 	unset onair hash
@@ -104,7 +131,7 @@ for f in $(\
 	echo " ${guests} " |grep -q " ${auth_mail} "
 	if [ ${?} -eq 0 ] ; then
 		is_guest=1
-		get_meeting_hash ${f} ${auth_mail} guest
+		hash=$(get_meeting_hash ${f} ${auth_mail} guest)
 		# Mise en évidence anticipée réunions pour les invités
 		if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_GUEST} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
 			onair=" bgcolor=\"PaleGreen\""
@@ -115,7 +142,7 @@ for f in $(\
 	echo " ${moderators} " |grep -q " ${auth_mail} "
 	if [ ${?} -eq 0 ] ; then
 		is_moderator=1
-		get_meeting_hash ${f} ${auth_mail} moderator
+		hash=$(get_meeting_hash ${f} ${auth_mail} moderator)
 		# Mise en évidence anticipée réunions pour les modérateurs
 		if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_OWNER} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
 			onair=" bgcolor=\"PaleGreen\""
