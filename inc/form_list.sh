@@ -20,14 +20,14 @@ r=$(sqlite3 ${JMB_DB} "\
 r=(${r})
 
 cat<<EOT
-    <TR>
-      <TD${onair}>${form_object}</TD>
-      <TD${onair}>${form_owner}</TD>
+    <TR${onair}>
+      <TD>${form_object}</TD>
+      <TD>${form_owner}</TD>
 EOT
 
 if [ "${is_owner}" = "1" ] ; then
 cat<<EOT
-      <TD${onair}><CENTER>
+      <TD><CENTER>
         <DIV title="Invitations accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}, sans r&eacute;ponse: ${r[1]}, ">
           <A href=/booking.cgi?attendees&id=${f}>${r[2]}/${r[0]}</A>
         </DIV>
@@ -35,15 +35,15 @@ cat<<EOT
 EOT
 else
 cat<<EOT
-      <TD${onair}><CENTER>${r[0]}</CENTER></TD>
+      <TD><CENTER>${r[0]}</CENTER></TD>
 EOT
 fi
 
 cat<<EOT
-      <TD${onair}><CENTER>${form_date}</CENTER></TD>
-      <TD${onair}><CENTER>${form_time}</CENTER></TD>
-      <TD${onair}><CENTER>${form_duration}</CENTER></TD>
-      <TD${onair}>${form_action}</TD>
+      <TD><CENTER>${form_date}</CENTER></TD>
+      <TD><CENTER>${form_time}</CENTER></TD>
+      <TD><CENTER>${form_duration}</CENTER></TD>
+      <TD>${form_action}</TD>
     </TR>
 EOT
 }
@@ -92,14 +92,14 @@ cat<<EOT
       border-collapse: collapse;
       }
     </STYLE>
-    <TR>
-      <TD bgcolor="LightGray"><B>Objet</B></TD>
-      <TD bgcolor="LightGray"><B>Organisateur</B></TD>
-      <TD bgcolor="LightGray"><B>Participants</B></TD>
-      <TD bgcolor="LightGray"><B><CENTER>Date</CENTER></B></TD>
-      <TD bgcolor="LightGray"><B><CENTER>Heure</CENTER></B></TD>
-      <TD bgcolor="LightGray"><B><CENTER>Dur&eacute;e</CENTER></B></TD>
-      <TD bgcolor="LightGray"><B>Action</B></TD>
+    <TR bgcolor="LightGray">
+      <TD><B>Objet</B></TD>
+      <TD><B>Organisateur</B></TD>
+      <TD><B>Participants</B></TD>
+      <TD><B><CENTER>Date</CENTER></B></TD>
+      <TD><B><CENTER>Heure</CENTER></B></TD>
+      <TD><B><CENTER>Dur&eacute;e</CENTER></B></TD>
+      <TD><B>Action</B></TD>
     </TR>
 EOT
 

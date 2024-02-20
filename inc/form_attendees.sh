@@ -98,36 +98,36 @@ cat<<EOT
       border-collapse: collapse;
       }
     </STYLE>
-    <TR>
-      <TD bgcolor="LightGray"><B>Objet</B></TD>
-      <TD bgcolor="LightGray"><B>Organisateur</B></TD>
-      <TD bgcolor="LightGray"><B>Participants</B></TD>
-      <TD bgcolor="LightGray"><B><CENTER>Date</CENTER></B></TD>
-      <TD bgcolor="LightGray"><B><CENTER>Heure</CENTER></B></TD>
-      <TD bgcolor="LightGray"><B><CENTER>Dur&eacute;e</CENTER></B></TD>
-      <TD bgcolor="LightGray"><B>Action</B></TD>
+    <TR bgcolor="LightGray">
+      <TD><B>Objet</B></TD>
+      <TD><B>Organisateur</B></TD>
+      <TD><B>Participants</B></TD>
+      <TD><B><CENTER>Date</CENTER></B></TD>
+      <TD><B><CENTER>Heure</CENTER></B></TD>
+      <TD><B><CENTER>Dur&eacute;e</CENTER></B></TD>
+      <TD><B>Action</B></TD>
     </TR>
-    <TR>
-      <TD${onair}>${form_object}</TD>
-      <TD${onair}>${form_owner}</TD>
-      <TD${onair}><CENTER>
+    <TR${onair}>
+      <TD>${form_object}</TD>
+      <TD>${form_owner}</TD>
+      <TD><CENTER>
         <DIV title="Invitations accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}, sans r&eacute;ponse: ${r[1]}, ">
           <A>${r[2]}/${r[0]}</A>
         </DIV>
       </CENTER></TD>
-      <TD${onair}><CENTER>${form_date}</CENTER></TD>
-      <TD${onair}><CENTER>${form_time}</CENTER></TD>
-      <TD${onair}><CENTER>${form_duration}</CENTER></TD>
-      <TD${onair}>${form_action}</TD>
+      <TD><CENTER>${form_date}</CENTER></TD>
+      <TD><CENTER>${form_time}</CENTER></TD>
+      <TD><CENTER>${form_duration}</CENTER></TD>
+      <TD>${form_action}</TD>
     </TR>
    </TABLE>
   <P></P>
   <TABLE>
-    <TR>
-      <TD bgcolor="LightGray"><B>Participant</B></TD>
-      <TD bgcolor="LightGray"><B>R&ocirc;le</B></TD>
-      <TD bgcolor="LightGray"><B>Invitation</B></TD>
-      <TD bgcolor="LightGray"><B><CENTER>Cnxs</CENTER></B></TD>
+    <TR bgcolor="LightGray">
+      <TD><B>Participant</B></TD>
+      <TD><B>R&ocirc;le</B></TD>
+      <TD><B>Invitation</B></TD>
+      <TD><B><CENTER>Cnxs</CENTER></B></TD>
     </TR>
 EOT
 
@@ -166,11 +166,11 @@ case ${r[2]} in
 	;;
 	1)
 		partstat="Acctept&eacute;e"
-		bgcolor="bgcolor=\"PaleGreen\""
+		bgcolor=" bgcolor=\"PaleGreen\""
 	;;
 	2)
 		partstat="D&eacute;clin&eacute;e"
-		bgcolor="bgcolor=\"Red\""
+		bgcolor=" bgcolor=\"Red\""
 	;;
 	*)
 		partstat="Inconnu"
@@ -181,11 +181,11 @@ esac
 cnxs=${r[3]}
 
 cat<<EOT
-    <TR>
-      <TD ${bgcolor}>${mail}</TD>
-      <TD ${bgcolor}>${role}</TD>
-      <TD ${bgcolor}>${partstat}</TD>
-      <TD ${bgcolor}><CENTER>${cnxs}</CENTER></TD>
+    <TR${bgcolor}>
+      <TD>${mail}</TD>
+      <TD>${role}</TD>
+      <TD>${partstat}</TD>
+      <TD><CENTER>${cnxs}</CENTER></TD>
      </TR>
 EOT
 
