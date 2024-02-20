@@ -165,7 +165,7 @@ case ${r[2]} in
 		bgcolor=""
 	;;
 	1)
-		partstat="Acctept&eacute;e"
+		partstat="Accept&eacute;e"
 		bgcolor=" bgcolor=\"PaleGreen\""
 	;;
 	2)

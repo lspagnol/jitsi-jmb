@@ -26,7 +26,7 @@ cat<<EOT
 EOT
 
 if [ "${is_owner}" = "1" ] ; then
-cat<<EOT
+	cat<<EOT
       <TD><CENTER>
         <DIV title="Invitations accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}, sans r&eacute;ponse: ${r[1]}, ">
           <A href=/booking.cgi?attendees&id=${f}>${r[2]}/${r[0]}</A>
@@ -34,8 +34,8 @@ cat<<EOT
       </CENTER></TD>
 EOT
 else
-cat<<EOT
-      <TD><CENTER>${r[0]}</CENTER></TD>
+	cat<<EOT
+      <TD><CENTER>${r[2]}/${r[0]}</CENTER></TD>
 EOT
 fi
 
