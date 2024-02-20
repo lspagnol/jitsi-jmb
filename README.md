@@ -14,7 +14,7 @@
 * **Flux iCal** pour la synchronisation des agendas.
 * Suivi des invitations (acceptées/déclinées) dans l'interface et le flux iCal.
 
-<img src="liste-reunions.png" alt="liste-reunions.png:Liste des réunions" width="300"/><img src="edition-reunion.png.png" alt="edition-reunion.png:Edition d'une réunion" width="300"/><img src="suivi-participants.png" alt="suivi-participants.png:Suivi des participants" width="300"/>
+<img src="liste-reunions.png" alt="liste-reunions.png:Liste des réunions" width="250"/><img src="edition-reunion.png" alt="edition-reunion.png:Edition d'une réunion" width="250"/><img src="suivi-participants.png" alt="suivi-participants.png:Suivi des participants" width="250"/>
 
 ## Historique:
 **JBM** a été écrit en quelques jours au début du premier confinement de la crise Covid pour proposer une solution de visioconférence souveraine et peu coûteuse à nos utilisateurs.
