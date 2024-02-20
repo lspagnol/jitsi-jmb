@@ -51,9 +51,9 @@ case ${query} in
 		source ${JMB_PATH}/lib/edit.sh
 	;;
 
-#	invitations)
-#		source ${JMB_PATH}/lib/invitations.sh
-#	;;
+	attendees)
+		source ${JMB_PATH}/lib/attendees.sh
+	;;
 
 #	archives)
 #		source ${JMB_PATH}/lib/archives.sh

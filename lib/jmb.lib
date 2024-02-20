@@ -234,7 +234,7 @@ function getdecode {
 echo "${QUERY_STRING}"\
  |tr -d -c '[:alnum:]&=_%.\-\+'\
  |sed 's/&.*//g'\
- |egrep '^(|list|new|edit|del|register_new|register_edit|accept|decline)$'\
+ |egrep '^(|list|new|edit|del|register_new|register_edit|accept|decline|attendees)$'\
   > ${JMB_CGI_TMP}/query.${tsn}
 query=$(<${JMB_CGI_TMP}/query.${tsn})
 rm ${JMB_CGI_TMP}/query.${tsn}

@@ -96,7 +96,8 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 * Préciser le status "accepté" / "décliné" des invitations dans le mail de rappel à l'organisateur
 * ~~*jitsi-jmb_mail-reminder* ne doit pas envoyer de rappel aux participants qui ont décliné l'invitation~~
 * Générer un hash iCal (si nécéssaire) pour les utilisateurs qui peuvent s'identifier lors de l'envoi des notifications, ajouter le lien vers le flux iCal dans les mails
-* Ajouter un lien *Consulter* pour les proprios des réunions -> afficher le "accept" / "decline" des participants
+* ~~Formulaire de suivi des invitations ("accept" / "decline" des participants)~~
+* Correction: les participants supprimés d'une réunion ne sont pas notifiés par mail
 * Générer et ajouter un contenu ICS aux notifications envoyés par mail
 
 ## Divers:

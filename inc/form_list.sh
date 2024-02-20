@@ -6,10 +6,10 @@ function out_table {
 
 # Récupérer les infos de la table "participants"
 r=$(sqlite3 ${JMB_DB} "\
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_role != 'owner';
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_role != 'owner' AND attendee_partstat='0';
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_role != 'owner' AND attendee_partstat='1';
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_role != 'owner' AND attendee_partstat='2'"
+	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}';
+	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_partstat='0';
+	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_partstat='1';
+	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_partstat='2'"
 )
 
 # On transforme le résulat en tableau
@@ -28,8 +28,8 @@ EOT
 if [ "${is_owner}" = "1" ] ; then
 cat<<EOT
       <TD${onair}><CENTER>
-        <DIV title="En attente: ${r[1]}, accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}">
-          <A href=/booking.cgi?invitations&id=${f}>${r[2]}/${r[0]}</A>
+        <DIV title="Invitations accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}, sans r&eacute;ponse: ${r[1]}, ">
+          <A href=/booking.cgi?attendees&id=${f}>${r[2]}/${r[0]}</A>
         </DIV>
       </CENTER></TD>
 EOT
@@ -95,7 +95,7 @@ cat<<EOT
     <TR>
       <TD bgcolor="LightGray"><B>Objet</B></TD>
       <TD bgcolor="LightGray"><B>Organisateur</B></TD>
-      <TD bgcolor="LightGray"><B>Invitations</B></TD>
+      <TD bgcolor="LightGray"><B>Participants</B></TD>
       <TD bgcolor="LightGray"><B><CENTER>Date</CENTER></B></TD>
       <TD bgcolor="LightGray"><B><CENTER>Heure</CENTER></B></TD>
       <TD bgcolor="LightGray"><B><CENTER>Dur&eacute;e</CENTER></B></TD>
@@ -200,7 +200,7 @@ EOT
 fi
 
 cat<<EOT
-    <INPUT type="submit" value="Rafraichir la liste" onclick="javascript: form.action='?list';"> 
+    <INPUT type="submit" value="Rafraichir la page" onclick="javascript: form.action='?list';"> 
   </FORM>
   <BR>
   <BR>

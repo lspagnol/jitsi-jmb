@@ -93,6 +93,8 @@ else
 	subject="$(utf8_to_mime ${JMB_SUBJECT_NEW_GUEST})"
 	for mailto in ${conf_guests} ; do
 
+		hash=$(get_meeting_hash ${tsn} ${mailto} ${role})
+
 		echo " ${old_conf_guests} " | grep -q " ${mailto} "
 		if [ ${?} -ne 0 ] ; then
 
@@ -112,6 +114,8 @@ else
 	role="moderator"
 	subject="$(utf8_to_mime ${JMB_SUBJECT_NEW_MODERATOR})"
 	for mailto in ${conf_moderators} ; do
+
+		hash=$(get_meeting_hash ${tsn} ${mailto} ${role})
 
 		echo " ${old_conf_moderators} " | grep -q " ${mailto} "
 		if [ ${?} -ne 0 ] ; then
