@@ -89,17 +89,18 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 ## TODO
 
 * Adapter *jitsi-jmb_show* au stockage SQLite
-* ~~Corriger les rappels *xmpp*~~
-* ~~Ajout -r ${mailfrom} à la commande mail si l'organisateur n'est pas sur le domaine du serveur Jitsi (fixer l'expéditeur d'enveloppe pour passer les contrôles SPF)~~
-* ~~Créer un CGI "invitation.cgi" -> "accept" / "decline" + lien ajouté au mail de notification -> info ajoutée au flux iCal~~ + notification par mail à l'organisateur ?
-* ~~Gérer le status "accept" / "decline" dans le CGI "ical.cgi"~~
 * Préciser le status "accepté" / "décliné" des invitations dans le mail de rappel à l'organisateur
-* ~~Les utilisateurs peuvent gérer les invitations dans l'interface~~
-* ~~*jitsi-jmb_mail-reminder* ne doit pas envoyer de rappel aux participants qui ont décliné l'invitation~~
 * Générer un hash iCal (si nécéssaire) pour les utilisateurs qui peuvent s'identifier lors de l'envoi des notifications, ajouter le lien vers le flux iCal dans les mails
-* ~~Formulaire de suivi des invitations ("accept" / "decline" des participants)~~
 * Correction: les participants supprimés d'une réunion ne sont pas notifiés par mail
 * Générer et ajouter un contenu ICS aux notifications envoyés par mail
+* ~~Corriger les rappels *xmpp*~~
+* ~~Ajout -r ${mailfrom} à la commande mail si l'organisateur n'est pas sur le domaine du serveur Jitsi (fixer l'expéditeur d'enveloppe pour passer les contrôles SPF)~~
+* ~~Créer un CGI "invitation.cgi" -> "accept" / "decline" + lien ajouté au mail de notification -> info ajoutée au flux iCal~~
+* ~~Gérer le status "accept" / "decline" dans le CGI "ical.cgi"~~
+* ~~Les utilisateurs peuvent gérer les invitations dans l'interface~~
+* ~~*jitsi-jmb_mail-reminder* ne doit pas envoyer de rappel aux participants qui ont décliné l'invitation~~
+* ~~Formulaire de suivi des invitations ("accept" / "decline" des participants)~~
+
 
 ## Divers:
 
