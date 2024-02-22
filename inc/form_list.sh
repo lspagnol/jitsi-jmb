@@ -9,7 +9,8 @@ r=$(sqlite3 ${JMB_DB} "\
 	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}';
 	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_partstat='0';
 	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_partstat='1';
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_partstat='2'"
+	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_partstat='2';
+	SELECT attendee_partstat FROM attendees WHERE attendee_meeting_hash='${hash}';"
 )
 
 # On transforme le résulat en tableau
@@ -17,32 +18,49 @@ r=$(sqlite3 ${JMB_DB} "\
 # ${r[1]} -> pas de réponse
 # ${r[2]} -> acceptés
 # ${r[3]} -> déclinés
+# ${r[4]} -> partstat utilisateur
 r=(${r})
+
+case ${r[4]} in
+	0)
+		partstat="Sans r&eacute;ponse"
+	;;
+	1)
+		partstat="Accept&eacute;e"
+	;;
+	2)
+		partstat="D&eacute;clin&eacute;e"
+	;;
+	*)
+		partstat="Inconnu"
+	;;
+esac
 
 cat<<EOT
     <TR${onair}>
       <TD>${form_object}</TD>
       <TD>${form_owner}</TD>
+      <TD><CENTER>${form_date}</CENTER></TD>
+      <TD><CENTER>${form_time}</CENTER></TD>
+      <TD><CENTER>${form_duration}</CENTER></TD>
+      <TD><CENTER>
+        <DIV title="Invitations accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}, sans r&eacute;ponse: ${r[1]}, ">
 EOT
 
 if [ "${is_owner}" = "1" ] ; then
 	cat<<EOT
-      <TD><CENTER>
-        <DIV title="Invitations accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}, sans r&eacute;ponse: ${r[1]}, ">
           <A href=/booking.cgi?attendees&id=${f}>${r[2]}/${r[0]}</A>
-        </DIV>
-      </CENTER></TD>
 EOT
 else
 	cat<<EOT
-      <TD><CENTER>${r[2]}/${r[0]}</CENTER></TD>
+          ${r[2]}/${r[0]}
 EOT
 fi
 
 cat<<EOT
-      <TD><CENTER>${form_date}</CENTER></TD>
-      <TD><CENTER>${form_time}</CENTER></TD>
-      <TD><CENTER>${form_duration}</CENTER></TD>
+        </DIV>
+      </CENTER></TD>
+      <TD><CENTER>${partstat}</CENTER></TD>
       <TD>${form_action}</TD>
     </TR>
 EOT
@@ -69,6 +87,7 @@ cat<<EOT
   <P></P>
 EOT
 
+# Salle de conférence privée
 if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_editor}" = "1" ] ; then
 
 	self=$(grep "^${auth_uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
@@ -83,6 +102,7 @@ if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_editor}" = "1" ] ; then
 EOT
 fi
 
+# Liste des réunions planifiées
 cat<<EOT
   <TABLE>
     <STYLE>
@@ -95,15 +115,16 @@ cat<<EOT
     <TR bgcolor="LightGray">
       <TD><B>Objet</B></TD>
       <TD><B>Organisateur</B></TD>
-      <TD><B>Participants</B></TD>
       <TD><B><CENTER>Date</CENTER></B></TD>
       <TD><B><CENTER>Heure</CENTER></B></TD>
       <TD><B><CENTER>Dur&eacute;e</CENTER></B></TD>
+      <TD><B><CENTER>Participants</CENTER></B></TD>
+      <TD><B><CENTER>Invitation</CENTER></B></TD>
       <TD><B>Action</B></TD>
     </TR>
 EOT
 
-# Liste des réunions planifiées
+# Boucle principale (pour chaque réunion planifiée)
 for f in $(\
 	sqlite3 ${JMB_DB} "\
 		SELECT DISTINCT meetings.meeting_id FROM meetings
@@ -113,14 +134,34 @@ for f in $(\
 	# RAZ des variables utilisées dans le tableau
 	unset form_object form_date form_time form_duration form_owner form_action
 	unset is_owner is_guest is_moderator
-	unset onair hash
+	unset onair hash partstat
 
 	# Récupérer les infos de la réunion
 	get_meeting_infos ${f}
 
+	# Récupérer les infos de la table "participants" -> variable "r"
+	r=$(sqlite3 ${JMB_DB} "\
+		SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}';
+		SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_partstat='0';
+		SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_partstat='1';
+		SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_partstat='2';"
+	)
+
+	# On transforme la variable "r" en tableau
+	# ${r[0]} -> total
+	# ${r[1]} -> pas de réponse
+	# ${r[2]} -> acceptés
+	# ${r[3]} -> déclinés
+	# ${r[4]} -> partstat utilisateur
+	r=(${r})
+
 	if [ "${owner}" = "${auth_mail}" ] ; then
+		# Proprio
 		is_owner=1
-		# Mise en évidence anticipée réunions pour le proprio
+		hash=$(get_meeting_hash ${f} ${auth_mail} owner)
+		# L'invitation est implicitement acceptée pour le proprio
+		partstat="Accept&eacute;e"
+		# Mise en évidence anticipée de la réunion pour le proprio
 		if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_OWNER} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
 			# La réunion n'est plus modifiable
 			onair=" bgcolor=\"PaleGreen\""
@@ -130,23 +171,60 @@ for f in $(\
 
 	echo " ${guests} " |grep -q " ${auth_mail} "
 	if [ ${?} -eq 0 ] ; then
+		# Invité
 		is_guest=1
 		hash=$(get_meeting_hash ${f} ${auth_mail} guest)
-		# Mise en évidence anticipée réunions pour les invités
+		# Mise en évidence anticipée de la réunion pour les invités
 		if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_GUEST} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
 			onair=" bgcolor=\"PaleGreen\""
 			form_action="<A href=/join.cgi?id=${hash}>Rejoindre</A>"
+		else
+			# L'invité peut modifier le status de son invitation
+			p=$(sqlite3 ${JMB_DB} "SELECT attendee_partstat FROM attendees WHERE attendee_meeting_hash='${hash}';")
+			case ${p} in
+				0)
+					partstat="Sans r&eacute;ponse"
+					form_action="<A href=/invitation.cgi?accept&id=${hash}>Accepter</A> / <A href=/invitation.cgi?decline&id=${hash}>D&eacute;cliner</A>"
+				;;
+				1)
+					partstat="Accept&eacute;e"
+					form_action="<A href=/invitation.cgi?decline&id=${hash}>D&eacute;cliner</A>"
+				;;
+				2)
+					partstat="D&eacute;clin&eacute;e"
+					form_action="<A href=/invitation.cgi?accept&id=${hash}>Accepter</A>"
+				;;
+			esac
+			form_action="${form_action} l'invitation"
 		fi
 	fi
 
 	echo " ${moderators} " |grep -q " ${auth_mail} "
 	if [ ${?} -eq 0 ] ; then
+		# Modérateur
 		is_moderator=1
 		hash=$(get_meeting_hash ${f} ${auth_mail} moderator)
 		# Mise en évidence anticipée réunions pour les modérateurs
 		if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_OWNER} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
 			onair=" bgcolor=\"PaleGreen\""
 			form_action="<A href=/join.cgi?id=${hash}>Rejoindre</A>"
+		else
+			# Le modérateur peut modifier le status de son invitation
+			case ${p} in
+				0)
+					partstat="Sans r&eacute;ponse"
+					form_action="<A href=/invitation.cgi?accept&id=${hash}>Accepter</A> / <A href=/invitation.cgi?decline&id=${hash}>D&eacute;cliner</A>"
+				;;
+				1)
+					partstat="Accept&eacute;e"
+					form_action="<A href=/invitation.cgi?decline&id=${hash}>D&eacute;cliner</A>"
+				;;
+				2)
+					partstat="D&eacute;clin&eacute;e"
+					form_action="<A href=/invitation.cgi?accept&id=${hash}>Accepter</A>"
+				;;
+			esac
+			form_action="${form_action} l'invitation"
 		fi
 	fi
 
@@ -169,9 +247,37 @@ for f in $(\
 			onair=" bgcolor=\"orange\""
 		fi
 
-		out_table
-
 	fi
+#		out_table
+
+	cat<<EOT
+    <TR${onair}>
+      <TD>${form_object}</TD>
+      <TD>${form_owner}</TD>
+      <TD><CENTER>${form_date}</CENTER></TD>
+      <TD><CENTER>${form_time}</CENTER></TD>
+      <TD><CENTER>${form_duration}</CENTER></TD>
+      <TD><CENTER>
+        <DIV title="Invitations accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}, sans r&eacute;ponse: ${r[1]}, ">
+EOT
+
+	if [ "${is_owner}" = "1" ] ; then
+		cat<<EOT
+          <A href=/booking.cgi?attendees&id=${f}>${r[2]}/${r[0]}</A>
+EOT
+	else
+		cat<<EOT
+          ${r[2]}/${r[0]}
+EOT
+	fi
+
+	cat<<EOT
+        </DIV>
+      </CENTER></TD>
+      <TD><CENTER>${partstat}</CENTER></TD>
+      <TD>${form_action}</TD>
+    </TR>
+EOT
 
 done
 

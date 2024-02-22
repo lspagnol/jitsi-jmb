@@ -127,7 +127,11 @@ cat<<EOT
       <TD><B>Participant</B></TD>
       <TD><B>R&ocirc;le</B></TD>
       <TD><B>Invitation</B></TD>
-      <TD><B><CENTER>Cnxs</CENTER></B></TD>
+      <TD>
+        <DIV title="Nombre de clics sur le lien de connexion">
+          <B><CENTER>CXS</CENTER></B>
+        </DIV>
+      </TD>
     </TR>
 EOT
 

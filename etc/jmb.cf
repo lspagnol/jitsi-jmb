@@ -58,7 +58,7 @@ JMB_DEFAULT_URL_REDIRECT="/booking.cgi?list"
 JMB_REDIRECT_CLOSE="https://jitsi.org/"
 
 # Durée d'attente avant redirection du navigateur (secondes)
-JMB_SLEEP_REDIRECT="5"
+JMB_SLEEP_REDIRECT="2"
 
 #-----------------------------------------------------------------------
 # Jetons JWT

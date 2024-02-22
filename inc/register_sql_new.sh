@@ -9,20 +9,19 @@ VALUES ('${tsn}','${conf_name}','${object}','${begin}','${duration}','${end}','$
 EOT
 
 # Table attendees (owner)
-# Le hash est inutile car le propriétaire peut forcément s'authentifier
+# L'invitation est implicitement acceptée par le proprio (attendee_partstat=1)
 # -> Accès direct via "token.cgi"
+hash=$(gen_meeting_hash)
 cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email,attendee_partstat)
-VALUES ('${tsn}',NULL,'owner','${auth_mail}','1');
+VALUES ('${tsn}','${hash}','owner','${auth_mail}','1');
 EOT
 
 # Table attendees (moderator)
 # Un modérateur peut être un utilisateur externe
 # -> Accès via "join.cgi" / hash propre à chaque participant
 for moderator in ${conf_moderators} ; do
-
 	hash=$(gen_meeting_hash)
-
 	cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)
 VALUES ('${tsn}','${hash}','moderator','${moderator}');
@@ -34,9 +33,7 @@ done
 # Un invité ne doit pas s'authentifier même si c'est un utilisateur interne
 # -> Accès via "join.cgi" / hash propre à chaque participant
 for guest in ${conf_guests} ; do
-
 	hash=$(gen_meeting_hash)
-
 	cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)
 VALUES ('${tsn}','${hash}','guest','${guest}');
