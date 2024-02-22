@@ -36,10 +36,21 @@ case ${query} in
 		resp="absence"
 	;;
 esac
+set>${JMB_DEBUG}
 
+# MAJ du status de l'invitation
 sqlite3 ${JMB_DB} "UPDATE attendees SET attendee_partstat='${partstat}' WHERE attendee_meeting_hash='${id}';"
 
-cat<<EOT>${out}
+# On verifie le cookie
+set |egrep '^HTTP_COOKIE=' |grep -q 'viajmb=1'
+if [ ${?} -eq 0 ] ; then
+
+	# Le cookie "viajmb=1" est présent, redirection sur le CGI de l'interface de gestion
+	http_302 "${JMB_DEFAULT_URL_REDIRECT}"
+
+else
+
+	cat<<EOT>${out}
 <HTML>
   <HEAD>
     <TITLE>${JMB_NAME}</TITLE>
@@ -51,4 +62,6 @@ cat<<EOT>${out}
 </HTML>
 EOT
 
-http_200
+	http_200
+
+fi

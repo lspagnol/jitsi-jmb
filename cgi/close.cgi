@@ -29,7 +29,7 @@ if [ $? -ne 0 ] ; then
 fi
 
 # On verifie le cookie
-set |egrep '^HTTP_COOKIE=' |egrep -q '(^|;| )viajmb=1'
+set |egrep '^HTTP_COOKIE=' |grep -q 'viajmb=1'
 if [ ${?} -eq 0 ] ; then
 	# Le cookie "viajmb=1" est présent, redirection sur le CGI de l'interface de gestion
 	url_redirect=${JMB_DEFAULT_URL_REDIRECT}
