@@ -161,7 +161,9 @@ cat<<EOT
   </TABLE>
   <P></P>
   <FORM method="POST">
-    <INPUT type="submit" value="Retourner &agrave; la liste" onclick="javascript: form.action='?list';"> 
+    <INPUT type="submit" value="R&eacute;unions en attente" onclick="javascript: form.action='?list';"> 
+    <P></P>
+    <INPUT type="submit" value="R&eacute;unions archiv&eacute;es" onclick="javascript: form.action='?archives';"> 
     <P></P>
     <INPUT type="submit" value="Rafraichir la page" onclick="javascript: form.action='?attendees&id=${id}';">
   </FORM>

@@ -36,7 +36,6 @@ case ${query} in
 		resp="absence"
 	;;
 esac
-set>${JMB_DEBUG}
 
 # MAJ du status de l'invitation
 sqlite3 ${JMB_DB} "UPDATE attendees SET attendee_partstat='${partstat}' WHERE attendee_meeting_hash='${id}';"
