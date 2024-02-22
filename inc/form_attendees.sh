@@ -2,42 +2,6 @@
 # Formulaire de la liste des participants
 ########################################################################
 
-function out_table {
-
-# Récupérer les infos de la table "participants"
-r=$(sqlite3 ${JMB_DB} "\
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${id}';
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${id}' AND attendee_partstat='0';
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${id}' AND attendee_partstat='1';
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${id}' AND attendee_partstat='2'"
-)
-
-# On transforme le résulat en tableau
-# ${r[0]} -> total
-# ${r[1]} -> pas de réponse
-# ${r[2]} -> acceptés
-# ${r[3]} -> déclinés
-r=(${r})
-
-cat<<EOT
-    <TR>
-      <TD${onair}>${form_object}</TD>
-      <TD${onair}>${form_owner}</TD>
-      <TD${onair}><CENTER>
-        <DIV title="Invitations accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}, sans r&eacute;ponse: ${r[1]}, ">
-          <A>${r[2]}/${r[0]}</A>
-        </DIV>
-      </CENTER></TD>
-      <TD${onair}><CENTER>${form_date}</CENTER></TD>
-      <TD${onair}><CENTER>${form_time}</CENTER></TD>
-      <TD${onair}><CENTER>${form_duration}</CENTER></TD>
-      <TD${onair}>${form_action}</TD>
-    </TR>
-EOT
-}
-
-########################################################################
-
 [ ! -z "${object}" ] && form_object=$(utf8_to_html "${object}")
 [ ! -z "${duration}" ] && form_duration=$(( ${duration} / 60 ))
 [ ! -z "${owner}" ] && form_owner=${owner}
@@ -73,8 +37,6 @@ r=$(sqlite3 ${JMB_DB} "\
 # ${r[2]} -> acceptés
 # ${r[3]} -> déclinés
 r=(${r})
-
-# 1er tableau: résumé de la réunion
 
 cat<<EOT
 <CENTER>
@@ -140,57 +102,57 @@ sqlite3 -list ${JMB_DB} "\
  SELECT attendee_email,attendee_role,attendee_partstat,attendee_count FROM attendees
  WHERE attendee_meeting_id='${id}' AND attendee_role != 'owner';" |while read r ; do
 
-# On transforme le résulat en tableau
-old_ifs="${IFS}"
-IFS="|"
-r=(${r})
-IFS="${old_ifs}"
+	# On transforme le résulat en tableau
+	old_ifs="${IFS}"
+	IFS="|"
+	r=(${r})
+	IFS="${old_ifs}"
+	
+	mail=${r[0]}
+	
+	case ${r[1]} in
+		owner)
+			role="Propri&eacute;taire"
+		;;
+		moderator)
+			role="Mod&eacute;rateur"
+		;;
+		guest)
+			role="Invit&eacute;"
+		;;
+		*)
+			role="Inconnu"
+		;;
+	esac
+	
+	case ${r[2]} in
+		0)
+			partstat="Sans r&eacute;ponse"
+			bgcolor=""
+		;;
+		1)
+			partstat="Accept&eacute;e"
+			bgcolor=" bgcolor=\"PaleGreen\""
+		;;
+		2)
+			partstat="D&eacute;clin&eacute;e"
+			bgcolor=" bgcolor=\"Red\""
+		;;
+		*)
+			partstat="Inconnu"
+			bgcolor=""
+		;;
+	esac
+	
+	cnxs=${r[3]}
 
-mail=${r[0]}
-
-case ${r[1]} in
-	owner)
-		role="Propri&eacute;taire"
-	;;
-	moderator)
-		role="Mod&eacute;rateur"
-	;;
-	guest)
-		role="Invit&eacute;"
-	;;
-	*)
-		role="Inconnu"
-	;;
-esac
-
-case ${r[2]} in
-	0)
-		partstat="Sans r&eacute;ponse"
-		bgcolor=""
-	;;
-	1)
-		partstat="Accept&eacute;e"
-		bgcolor=" bgcolor=\"PaleGreen\""
-	;;
-	2)
-		partstat="D&eacute;clin&eacute;e"
-		bgcolor=" bgcolor=\"Red\""
-	;;
-	*)
-		partstat="Inconnu"
-		bgcolor=""
-	;;
-esac
-
-cnxs=${r[3]}
-
-cat<<EOT
+	cat<<EOT
     <TR${bgcolor}>
       <TD>${mail}</TD>
       <TD>${role}</TD>
       <TD>${partstat}</TD>
       <TD><CENTER>${cnxs}</CENTER></TD>
-     </TR>
+    </TR>
 EOT
 
 done
@@ -199,12 +161,9 @@ cat<<EOT
   </TABLE>
   <P></P>
   <FORM method="POST">
-EOT
-
-cat<<EOT
-    <INPUT type="submit" value="Rafraichir la page" onclick="javascript: form.action='?attendees&id=${id}';">
-    <P></P>
     <INPUT type="submit" value="Retourner &agrave; la liste" onclick="javascript: form.action='?list';"> 
+    <P></P>
+    <INPUT type="submit" value="Rafraichir la page" onclick="javascript: form.action='?attendees&id=${id}';">
   </FORM>
   <BR>
   <BR>

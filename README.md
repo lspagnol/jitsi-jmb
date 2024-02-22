@@ -93,6 +93,7 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 * Générer un hash iCal (si nécéssaire) pour les utilisateurs qui peuvent s'identifier lors de l'envoi des notifications, ajouter le lien vers le flux iCal dans les mails
 * **Correction**: les participants supprimés d'une réunion ne sont pas notifiés par mail
 * Générer et ajouter un contenu ICS aux notifications envoyés par mail
+* ~~Ajout de l'accès aux réunions archivées~~
 * ~~Corriger les rappels *xmpp*~~
 * ~~Ajout -r ${mailfrom} à la commande mail si l'organisateur n'est pas sur le domaine du serveur Jitsi (fixer l'expéditeur d'enveloppe pour passer les contrôles SPF)~~
 * ~~Créer un CGI "invitation.cgi" -> "accept" / "decline" + lien ajouté au mail de notification -> info ajoutée au flux iCal~~

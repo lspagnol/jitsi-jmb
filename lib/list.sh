@@ -26,6 +26,12 @@ cat<<EOT >> ${out}
 <BODY>
 EOT
 
+req_list="
+SELECT DISTINCT meetings.meeting_id FROM meetings
+INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
+WHERE attendees.attendee_email='${auth_mail}' AND meetings.meeting_end > '${now}' ORDER BY meetings.meeting_begin ASC;
+"
+
 # Insertion du formulaire
 source ${JMB_PATH}/inc/form_list.sh >> ${out}
 

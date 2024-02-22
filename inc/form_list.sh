@@ -1,71 +1,5 @@
 ########################################################################
-# Formulaire de la liste des réunions
-########################################################################
-
-function out_table {
-
-# Récupérer les infos de la table "participants"
-r=$(sqlite3 ${JMB_DB} "\
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}';
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_partstat='0';
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_partstat='1';
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${f}' AND attendee_partstat='2';
-	SELECT attendee_partstat FROM attendees WHERE attendee_meeting_hash='${hash}';"
-)
-
-# On transforme le résulat en tableau
-# ${r[0]} -> total
-# ${r[1]} -> pas de réponse
-# ${r[2]} -> acceptés
-# ${r[3]} -> déclinés
-# ${r[4]} -> partstat utilisateur
-r=(${r})
-
-case ${r[4]} in
-	0)
-		partstat="Sans r&eacute;ponse"
-	;;
-	1)
-		partstat="Accept&eacute;e"
-	;;
-	2)
-		partstat="D&eacute;clin&eacute;e"
-	;;
-	*)
-		partstat="Inconnu"
-	;;
-esac
-
-cat<<EOT
-    <TR${onair}>
-      <TD>${form_object}</TD>
-      <TD>${form_owner}</TD>
-      <TD><CENTER>${form_date}</CENTER></TD>
-      <TD><CENTER>${form_time}</CENTER></TD>
-      <TD><CENTER>${form_duration}</CENTER></TD>
-      <TD><CENTER>
-        <DIV title="Invitations accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}, sans r&eacute;ponse: ${r[1]}, ">
-EOT
-
-if [ "${is_owner}" = "1" ] ; then
-	cat<<EOT
-          <A href=/booking.cgi?attendees&id=${f}>${r[2]}/${r[0]}</A>
-EOT
-else
-	cat<<EOT
-          ${r[2]}/${r[0]}
-EOT
-fi
-
-cat<<EOT
-        </DIV>
-      </CENTER></TD>
-      <TD><CENTER>${partstat}</CENTER></TD>
-      <TD>${form_action}</TD>
-    </TR>
-EOT
-}
-
+# Formulaire de la liste des réunions + archives réunions
 ########################################################################
 
 # Récupérer le hash iCal de l'utilisateur
@@ -82,16 +16,25 @@ if [ -f ${JMB_PATH}/etc/logo.png ] ; then
 EOT
 fi
 
-cat<<EOT
+if [ "${archives}" = "1" ] ; then
+	# Mode "archives" -> pas d'affichage du lien de réunion privée
+	cat<<EOT
+  <H2>Mes r&eacute;unions (ARCHIVES)</H2>
+  <P></P>
+EOT
+
+else
+
+	cat<<EOT
   <H2>Mes r&eacute;unions</H2>
   <P></P>
 EOT
 
-# Salle de conférence privée
-if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_editor}" = "1" ] ; then
-
-	self=$(grep "^${auth_uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
-	cat<<EOT
+	# Salle de conférence privée
+	if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_editor}" = "1" ] ; then
+	
+		self=$(grep "^${auth_uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
+		cat<<EOT
 <DIV title="Cliquez sur ce lien pour ouvrir votre salle de r&eacute;union priv&eacute;e">
  <I><A href=/token.cgi?room=${self}>Ma r&eacute;union priv&eacute;e</A>, disponible &agrave; tout moment:</I>
 </DIV>
@@ -100,6 +43,8 @@ if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_editor}" = "1" ] ; then
 </DIV>
 <P></P>
 EOT
+	fi
+
 fi
 
 # Liste des réunions planifiées
@@ -125,11 +70,8 @@ cat<<EOT
 EOT
 
 # Boucle principale (pour chaque réunion planifiée)
-for f in $(\
-	sqlite3 ${JMB_DB} "\
-		SELECT DISTINCT meetings.meeting_id FROM meetings
-		INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
-		WHERE attendees.attendee_email='${auth_mail}' AND meetings.meeting_end > '${now}';") ; do
+# La requête SQL est déclarée dans "lib/list.sh" OU "lib/archives.sh"
+for f in $(sqlite3 ${JMB_DB} "${req_list}") ; do
 
 	# RAZ des variables utilisées dans le tableau
 	unset form_object form_date form_time form_duration form_owner form_action
@@ -195,7 +137,6 @@ for f in $(\
 					form_action="<A href=/invitation.cgi?accept&id=${hash}>Accepter</A>"
 				;;
 			esac
-			form_action="${form_action} l'invitation"
 		fi
 	fi
 
@@ -224,7 +165,6 @@ for f in $(\
 					form_action="<A href=/invitation.cgi?accept&id=${hash}>Accepter</A>"
 				;;
 			esac
-			form_action="${form_action} l'invitation"
 		fi
 	fi
 
@@ -248,7 +188,11 @@ for f in $(\
 		fi
 
 	fi
-#		out_table
+
+if [ "${archives}" = "1" ] ; then
+	# Pas d'action possible sur les réunions archivées, on repasse en fond blanc
+	unset form_action onair
+fi
 
 	cat<<EOT
     <TR${onair}>
@@ -286,28 +230,45 @@ cat<<EOT
   <P></P>
 EOT
 
-cat<<EOT
+if [ "${archives}" = "1" ] ; then
+	# Mode "archives" -> pas d'affichage du lien de création
+
+	cat<<EOT
+  <FORM method="POST">
+    <INPUT type="submit" value="R&eacute;unions en attente" onclick="javascript: form.action='?list';">
+    <P></P>
+    <INPUT type="submit" value="Rafraichir la page" onclick="javascript: form.action='?archives';"> 
+  </FORM>
+EOT
+
+else
+
+	cat<<EOT
   <DIV title="Ce lien permet de synchroniser vos agendas (Thunderbird, smartphones, Nextcloud, ... )">
     <A><I>Mon flux iCal: </I></A><BR>
     <A href=/ical.cgi?${ical_hash}>https://${JMB_SERVER_NAME}/ical.cgi?${ical_hash}</A>
   </DIV>
-    <P></P>
-EOT
-
-cat<<EOT
+  <P></P>
   <FORM method="POST">
 EOT
 
-if [ "${is_editor}" = "1" ] ; then
-cat<<EOT
+	if [ "${is_editor}" = "1" ] ; then
+		cat<<EOT
     <INPUT type="submit" value="Nouvelle r&eacute;union" onclick="javascript: form.action='?new';"> 
     <P></P>
 EOT
+	fi
+
+	cat<<EOT
+    <INPUT type="submit" value="R&eacute;unions archiv&eacute;es" onclick="javascript: form.action='?archives';">
+    <P></P>
+    <INPUT type="submit" value="Rafraichir la page" onclick="javascript: form.action='?list';"> 
+  </FORM>
+EOT
+
 fi
 
 cat<<EOT
-    <INPUT type="submit" value="Rafraichir la page" onclick="javascript: form.action='?list';"> 
-  </FORM>
   <BR>
   <BR>
   <A>

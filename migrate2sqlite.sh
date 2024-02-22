@@ -47,11 +47,11 @@ VALUES ('${tsn}','${name}','${object}','${begin}','${duration}','${end}','$(( ${
 EOT
 
 # Table attendees (owner)
-# Le hash est inutile car le propriétaire peut forcément s'authentifier
 # -> Accès direct via "token.cgi"
+gen_meeting_hash
 cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)
-VALUES ('${tsn}','','owner','${mail_owner}');
+VALUES ('${tsn}','${hash}','owner','${mail_owner}');
 EOT
 
 # Table attendees (guest)
@@ -79,7 +79,7 @@ function gen_meeting_hash {
 # Variable en retour:
 # hash
 
-hash=$(pwgen -s -0 16 1)
+hash=$(pwgen -s 16 1)
 
 }
 
