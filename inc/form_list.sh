@@ -116,24 +116,32 @@ for f in $(sqlite3 ${JMB_DB} "${req_list}") ; do
 		# Invité
 		is_guest=1
 		hash=$(get_meeting_hash ${f} ${auth_mail} guest)
+		p=$(sqlite3 ${JMB_DB} "SELECT attendee_partstat FROM attendees WHERE attendee_meeting_hash='${hash}';")
+		case ${p} in
+			0)
+				partstat="Sans r&eacute;ponse"
+			;;
+			1)
+				partstat="Accept&eacute;e"
+			;;
+			2)
+				partstat="D&eacute;clin&eacute;e"
+			;;
+		esac
 		# Mise en évidence anticipée de la réunion pour les invités
 		if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_GUEST} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
 			onair=" bgcolor=\"PaleGreen\""
 			form_action="<A href=/join.cgi?id=${hash}>Rejoindre</A>"
 		else
 			# L'invité peut modifier le status de son invitation
-			p=$(sqlite3 ${JMB_DB} "SELECT attendee_partstat FROM attendees WHERE attendee_meeting_hash='${hash}';")
 			case ${p} in
 				0)
-					partstat="Sans r&eacute;ponse"
 					form_action="<A href=/invitation.cgi?accept&id=${hash}>Accepter</A> / <A href=/invitation.cgi?decline&id=${hash}>D&eacute;cliner</A>"
 				;;
 				1)
-					partstat="Accept&eacute;e"
 					form_action="<A href=/invitation.cgi?decline&id=${hash}>D&eacute;cliner</A>"
 				;;
 				2)
-					partstat="D&eacute;clin&eacute;e"
 					form_action="<A href=/invitation.cgi?accept&id=${hash}>Accepter</A>"
 				;;
 			esac
@@ -145,6 +153,18 @@ for f in $(sqlite3 ${JMB_DB} "${req_list}") ; do
 		# Modérateur
 		is_moderator=1
 		hash=$(get_meeting_hash ${f} ${auth_mail} moderator)
+		p=$(sqlite3 ${JMB_DB} "SELECT attendee_partstat FROM attendees WHERE attendee_meeting_hash='${hash}';")
+		case ${p} in
+			0)
+				partstat="Sans r&eacute;ponse"
+			;;
+			1)
+				partstat="Accept&eacute;e"
+			;;
+			2)
+				partstat="D&eacute;clin&eacute;e"
+			;;
+		esac
 		# Mise en évidence anticipée réunions pour les modérateurs
 		if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_OWNER} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
 			onair=" bgcolor=\"PaleGreen\""
@@ -153,15 +173,12 @@ for f in $(sqlite3 ${JMB_DB} "${req_list}") ; do
 			# Le modérateur peut modifier le status de son invitation
 			case ${p} in
 				0)
-					partstat="Sans r&eacute;ponse"
 					form_action="<A href=/invitation.cgi?accept&id=${hash}>Accepter</A> / <A href=/invitation.cgi?decline&id=${hash}>D&eacute;cliner</A>"
 				;;
 				1)
-					partstat="Accept&eacute;e"
 					form_action="<A href=/invitation.cgi?decline&id=${hash}>D&eacute;cliner</A>"
 				;;
 				2)
-					partstat="D&eacute;clin&eacute;e"
 					form_action="<A href=/invitation.cgi?accept&id=${hash}>Accepter</A>"
 				;;
 			esac

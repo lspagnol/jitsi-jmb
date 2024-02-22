@@ -7,12 +7,13 @@
 * **Réservation et planification** des réunions.
 * Gestion des **invités**.
 * Gestion des **modérateurs**.
-* Les invités peuvent accepter/décliner les invitations.
 * Un **modérateur peut être un utilisateur externe** (ne pouvant pas s'authentifier).
+* Les invités et les modérateurs peuvent accepter/décliner les invitations.
+* Suivi des invitations (acceptées/déclinées) dans l'interface et le flux iCal.
+* Visualisation des réunions terminées (archives).
 * **Rappels par mail** (début des réunions).
 * **Rappels par XMPP** (fin des réunions).
 * **Flux iCal** pour la synchronisation des agendas.
-* Suivi des invitations (acceptées/déclinées) dans l'interface et le flux iCal.
 
 <img src="liste-reunions.png" alt="liste-reunions.png:Liste des réunions" width="250"/><img src="edition-reunion.png" alt="edition-reunion.png:Edition d'une réunion" width="250"/><img src="suivi-participants.png" alt="suivi-participants.png:Suivi des participants" width="250"/>
 
