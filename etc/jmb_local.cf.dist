@@ -73,5 +73,5 @@ JMB_FIX_MAIL_ALIASES="1"
 # ...
 #JMB_LISTS_SUBSCRIBERS="/var/lib/tsync-get/listes.lists_subscribers_mails.txt"
 
-# Affichage des réunions archivées (en jours, 0 ou vide pour désactiver)
+# Affichage des réunions archivées (en jours, 0 ou vide pour le désactiver)
 JMB_SHOW_ARCHIVES="30"

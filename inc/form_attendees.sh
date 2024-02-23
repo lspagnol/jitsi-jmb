@@ -16,9 +16,14 @@ if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_OWNER} )) -ge ${begin} ] && [ ${now} -le 
 	form_action="<A href=/token.cgi?room=${name}>Rejoindre</A>"
 fi
 
-# Si l'heure est dépassé
+# Si l'heure de début est dépassé
 if [ ${now} -ge ${begin} ] ; then
-	onair=" bgcolor=\"Green\""
+	form_action="<CENTER>-</CENTER>"
+	if [ ${now} -ge ${end} ] ; then
+		onair=" bgcolor=\"LightSalmon\""
+	else
+		onair=" bgcolor=\"Green\""
+	fi
 else
 	onair=" bgcolor=\"PaleGreen\""
 	form_action="${form_action}<A> </A><A href=/booking.cgi?edit&id=${id}>Editer</A>"
@@ -92,7 +97,7 @@ cat<<EOT
       <TD><B>Invitation</B></TD>
       <TD>
         <DIV title="Nombre de clics sur le lien de connexion">
-          <B><CENTER>CXS</CENTER></B>
+          <B><CENTER>C</CENTER></B>
         </DIV>
       </TD>
     </TR>

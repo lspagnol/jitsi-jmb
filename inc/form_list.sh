@@ -57,12 +57,6 @@ cat<<EOT
     </TR>
 EOT
 
-#req_list="
-#SELECT DISTINCT meetings.meeting_id FROM meetings
-#INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
-#WHERE attendees.attendee_email='${auth_mail}' AND meetings.meeting_end > '$(( ${now} - 31536000))' ORDER BY meetings.meeting_begin DESC;
-#"
-
 req_list="
 SELECT DISTINCT meetings.meeting_id FROM meetings
 INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
@@ -110,7 +104,7 @@ for f in $(sqlite3 ${JMB_DB} "${req_list}") ; do
 		is_owner=1
 		hash=$(get_meeting_hash ${f} ${auth_mail} owner)
 		# L'invitation est implicitement acceptée pour le proprio
-		partstat="Accept&eacute;e"
+		partstat="-"
 		# Mise en évidence anticipée de la réunion pour le proprio
 		if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_OWNER} )) -ge ${begin} ] && [ ${now} -le ${end} ] ; then
 			# La réunion n'est plus modifiable
@@ -207,18 +201,18 @@ for f in $(sqlite3 ${JMB_DB} "${req_list}") ; do
 			form_action="${form_action}<A> </A><A href=/booking.cgi?edit&id=${f}>Editer</A>"
 		fi
 
-		# Si l'heure est dépassé -> orange
+		# L'heure de début est dépassé
 		if [ ${now} -ge ${begin} ] ; then
 			onair=" bgcolor=\"Green\""
 		fi
 
 	fi
 
-if [ ${now} -gt ${end} ] ; then
-	# C'est une réunion "archivée"
-	unset form_action
-	onair=" bgcolor=\"LightSalmon\""
-fi
+	if [ ${now} -gt ${end} ] ; then
+		# C'est une réunion "archivée"
+		form_action="<CENTER>-</CENTER>"
+		onair=" bgcolor=\"LightSalmon\""
+	fi
 
 	cat<<EOT
     <TR${onair}>
