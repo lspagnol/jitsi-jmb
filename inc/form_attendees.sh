@@ -23,6 +23,7 @@ if [ ${now} -ge ${begin} ] ; then
 		onair=" bgcolor=\"LightSalmon\""
 	else
 		onair=" bgcolor=\"Green\""
+		form_action="<A href=/token.cgi?room=${name}>Rejoindre</A>"
 	fi
 else
 	onair=" bgcolor=\"PaleGreen\""
@@ -73,7 +74,7 @@ cat<<EOT
       <TD><B><CENTER>Date</CENTER></B></TD>
       <TD><B><CENTER>Heure</CENTER></B></TD>
       <TD><B><CENTER>Dur&eacute;e</CENTER></B></TD>
-      <TD><B>Action</B></TD>
+      <TD><B><CENTER>Action</CENTER></B></TD>
     </TR>
     <TR${onair}>
       <TD>${form_object}</TD>
@@ -86,15 +87,15 @@ cat<<EOT
       <TD><CENTER>${form_date}</CENTER></TD>
       <TD><CENTER>${form_time}</CENTER></TD>
       <TD><CENTER>${form_duration}</CENTER></TD>
-      <TD>${form_action}</TD>
+      <TD><CENTER>${form_action}</CENTER></TD>
     </TR>
    </TABLE>
   <P></P>
   <TABLE>
     <TR bgcolor="DarkGray">
       <TD><B>Participant</B></TD>
-      <TD><B>R&ocirc;le</B></TD>
-      <TD><B>Invitation</B></TD>
+      <TD><B><CENTER>R&ocirc;le</CENTER></B></TD>
+      <TD><B><CENTER>Invitation</CENTER></B></TD>
       <TD>
         <DIV title="Nombre de clics sur le lien de connexion">
           <B><CENTER>C</CENTER></B>
@@ -149,14 +150,14 @@ sqlite3 -list ${JMB_DB} "\
 			bgcolor=""
 		;;
 	esac
-	
+
 	cnxs=${r[3]}
 
 	cat<<EOT
     <TR${bgcolor}>
       <TD>${mail}</TD>
-      <TD>${role}</TD>
-      <TD>${partstat}</TD>
+      <TD><CENTER>${role}</CENTER></TD>
+      <TD><CENTER>${partstat}</CENTER></TD>
       <TD><CENTER>${cnxs}</CENTER></TD>
     </TR>
 EOT

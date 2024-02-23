@@ -53,7 +53,7 @@ cat<<EOT
       <TD><B><CENTER>Dur&eacute;e</CENTER></B></TD>
       <TD><B><CENTER>Participants</CENTER></B></TD>
       <TD><B><CENTER>Invitation</CENTER></B></TD>
-      <TD><B>Action</B></TD>
+      <TD><B><CENTER>Action</CENTER></B></TD>
     </TR>
 EOT
 
@@ -210,8 +210,8 @@ for f in $(sqlite3 ${JMB_DB} "${req_list}") ; do
 
 	if [ ${now} -gt ${end} ] ; then
 		# C'est une réunion "archivée"
-		form_action="<CENTER>-</CENTER>"
 		onair=" bgcolor=\"LightSalmon\""
+		form_action="<CENTER>-</CENTER>"
 	fi
 
 	cat<<EOT
@@ -222,7 +222,7 @@ for f in $(sqlite3 ${JMB_DB} "${req_list}") ; do
       <TD><CENTER>${form_time}</CENTER></TD>
       <TD><CENTER>${form_duration}</CENTER></TD>
       <TD><CENTER>
-        <DIV title="Invitations accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}, sans r&eacute;ponse: ${r[1]}, ">
+        <DIV title="Invitations accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}, sans r&eacute;ponse: ${r[1]}">
 EOT
 
 	if [ "${is_owner}" = "1" ] ; then
@@ -239,7 +239,7 @@ EOT
         </DIV>
       </CENTER></TD>
       <TD><CENTER>${partstat}</CENTER></TD>
-      <TD>${form_action}</TD>
+      <TD><CENTER>${form_action}</CENTER></TD>
     </TR>
 EOT
 
