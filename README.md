@@ -35,8 +35,6 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 ## Fonctionnement:
 * Le GCI **booking.cgi**:
   * est **protégé par un module d'authentification Apache** (par défaut: *auth_cas*),
-    * peut être protégé par n'importe quel module d'autentification d'Apache (mellon, shib2, openid, sasl, pam, ...),
-    * fichiers à adapter: *etc/jmb_local.cf*, *etc/jmb-apache-auth_cas.conf*, *modules/identity-cas.sh*, *modules/ldap-filter.sh*,
   * permet à un utilisateur authentifié de planifier des réunions et de modifier celles qu'il a créé,
   * affiche la liste des réunions planifiées (réunions créés par l'utilisateur et celles auxquelles il est invité en tant que participant ou modérateur),
   * permet d'accéder aux réunions planifiées
