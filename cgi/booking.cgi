@@ -55,10 +55,6 @@ case ${query} in
 		source ${JMB_PATH}/lib/attendees.sh
 	;;
 
-	archives)
-		source ${JMB_PATH}/lib/archives.sh
-	;;
-
 	register_new)
 		source ${JMB_PATH}/lib/register_new.sh
 	;;

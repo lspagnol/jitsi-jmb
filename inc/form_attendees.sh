@@ -16,10 +16,11 @@ if [ $(( ${now} + ${JMB_LIST_HIGHLIGHT_OWNER} )) -ge ${begin} ] && [ ${now} -le 
 	form_action="<A href=/token.cgi?room=${name}>Rejoindre</A>"
 fi
 
-# Si l'heure est dépassé -> orange
+# Si l'heure est dépassé
 if [ ${now} -ge ${begin} ] ; then
-	onair=" bgcolor=\"orange\""
+	onair=" bgcolor=\"Green\""
 else
+	onair=" bgcolor=\"PaleGreen\""
 	form_action="${form_action}<A> </A><A href=/booking.cgi?edit&id=${id}>Editer</A>"
 fi
 
@@ -60,7 +61,7 @@ cat<<EOT
       border-collapse: collapse;
       }
     </STYLE>
-    <TR bgcolor="LightGray">
+    <TR bgcolor="DarkGray">
       <TD><B>Objet</B></TD>
       <TD><B>Organisateur</B></TD>
       <TD><B>Participants</B></TD>
@@ -85,7 +86,7 @@ cat<<EOT
    </TABLE>
   <P></P>
   <TABLE>
-    <TR bgcolor="LightGray">
+    <TR bgcolor="DarkGray">
       <TD><B>Participant</B></TD>
       <TD><B>R&ocirc;le</B></TD>
       <TD><B>Invitation</B></TD>
@@ -107,9 +108,9 @@ sqlite3 -list ${JMB_DB} "\
 	IFS="|"
 	r=(${r})
 	IFS="${old_ifs}"
-	
+
 	mail=${r[0]}
-	
+
 	case ${r[1]} in
 		owner)
 			role="Propri&eacute;taire"
@@ -136,7 +137,7 @@ sqlite3 -list ${JMB_DB} "\
 		;;
 		2)
 			partstat="D&eacute;clin&eacute;e"
-			bgcolor=" bgcolor=\"Red\""
+			bgcolor=" bgcolor=\"LightSalmon\""
 		;;
 		*)
 			partstat="Inconnu"
@@ -161,9 +162,7 @@ cat<<EOT
   </TABLE>
   <P></P>
   <FORM method="POST">
-    <INPUT type="submit" value="R&eacute;unions en attente" onclick="javascript: form.action='?list';"> 
-    <P></P>
-    <INPUT type="submit" value="R&eacute;unions archiv&eacute;es" onclick="javascript: form.action='?archives';"> 
+    <INPUT type="submit" value="Retourner &agrave; la liste" onclick="javascript: form.action='?list';"> 
     <P></P>
     <INPUT type="submit" value="Rafraichir la page" onclick="javascript: form.action='?attendees&id=${id}';">
   </FORM>

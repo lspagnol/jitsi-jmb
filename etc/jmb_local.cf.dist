@@ -54,7 +54,7 @@ JMB_MODULE_CHECK_EDITOR="editor_role-ldap.sh"
 JMB_MODULE_CHECK_EDITOR_LDAP_FILTER="|(eduPersonAffiliation=student)(eduPersonAffiliation=employee)(eduPersonAffiliation=faculty)(eduPersonAffiliation=affiliate)"
 
 #-----------------------------------------------------------------------
-# Divers / mail
+# Divers
 
 # Remplacer les adresses secondaires par les adresses principales
 # Ne fonctionne que pour les adresses connues du référentiel LDAP
@@ -73,4 +73,5 @@ JMB_FIX_MAIL_ALIASES="1"
 # ...
 #JMB_LISTS_SUBSCRIBERS="/var/lib/tsync-get/listes.lists_subscribers_mails.txt"
 
-
+# Affichage des réunions archivées (en jours, 0 ou vide pour désactiver)
+JMB_SHOW_ARCHIVES="30"

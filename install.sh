@@ -119,6 +119,7 @@ ln -fs ${JMB_PATH}/bin/jitsi-jmb_send-xmpp /usr/local/sbin
 ln -fs ${JMB_PATH}/bin/jitsi-jmb_show-rooms /usr/local/sbin
 ln -fs ${JMB_PATH}/bin/jitsi-jmb_show /usr/local/bin
 ln -fs ${JMB_PATH}/bin/jitsi-restart /usr/local/sbin
+[ -f ${JMB_PATH}/lib/archives.sh ] && rm ${JMB_PATH}/lib/archives.sh
 
 # Conf JMB:
 # Réglage du FQDN et domaine à partir des valeur présentes dans
@@ -153,7 +154,7 @@ if [ ! -f ${JMB_DATA}/data/jitsi-jmb.db ] ; then
 	# Importation des donnés présentes (fichiers plats) dans la base SQLite
 	if [ -d ${JMB_DATA}/booking ] ; then
 		bash migrate2sqlite.sh
-		rm -rf ${JMB_DATA}/booking/ ${JMB_DATA}/booking_archive/ ${JMB_DATA}/ical/ ${JMB_DATA}/mail_reminder/ ${JMB_DATA}/xmpp_reminder/
+		#rm -rf ${JMB_DATA}/booking/ ${JMB_DATA}/booking_archive/ ${JMB_DATA}/ical/ ${JMB_DATA}/mail_reminder/ ${JMB_DATA}/xmpp_reminder/
 	fi
 
 fi

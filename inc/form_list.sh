@@ -16,25 +16,15 @@ if [ -f ${JMB_PATH}/etc/logo.png ] ; then
 EOT
 fi
 
-if [ "${archives}" = "1" ] ; then
-	# Mode "archives" -> pas d'affichage du lien de réunion privée
-	cat<<EOT
-  <H2>Mes r&eacute;unions (ARCHIVES)</H2>
-  <P></P>
-EOT
-
-else
-
-	cat<<EOT
+cat<<EOT
   <H2>Mes r&eacute;unions</H2>
   <P></P>
 EOT
 
-	# Salle de conférence privée
-	if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_editor}" = "1" ] ; then
-	
-		self=$(grep "^${auth_uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
-		cat<<EOT
+# Salle de conférence privée
+if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_editor}" = "1" ] ; then
+	self=$(grep "^${auth_uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
+	cat<<EOT
 <DIV title="Cliquez sur ce lien pour ouvrir votre salle de r&eacute;union priv&eacute;e">
  <I><A href=/token.cgi?room=${self}>Ma r&eacute;union priv&eacute;e</A>, disponible &agrave; tout moment:</I>
 </DIV>
@@ -43,8 +33,6 @@ EOT
 </DIV>
 <P></P>
 EOT
-	fi
-
 fi
 
 # Liste des réunions planifiées
@@ -57,7 +45,7 @@ cat<<EOT
       border-collapse: collapse;
       }
     </STYLE>
-    <TR bgcolor="LightGray">
+    <TR bgcolor="DarkGray">
       <TD><B>Objet</B></TD>
       <TD><B>Organisateur</B></TD>
       <TD><B><CENTER>Date</CENTER></B></TD>
@@ -69,8 +57,28 @@ cat<<EOT
     </TR>
 EOT
 
+#req_list="
+#SELECT DISTINCT meetings.meeting_id FROM meetings
+#INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
+#WHERE attendees.attendee_email='${auth_mail}' AND meetings.meeting_end > '$(( ${now} - 31536000))' ORDER BY meetings.meeting_begin DESC;
+#"
+
+req_list="
+SELECT DISTINCT meetings.meeting_id FROM meetings
+INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
+WHERE attendees.attendee_email='${auth_mail}' AND meetings.meeting_end > '${now}' ORDER BY meetings.meeting_begin ASC;
+"
+if [ ! -z "${JMB_SHOW_ARCHIVES}" ] ; then
+	ret=$(( ${JMB_SHOW_ARCHIVES} * 3600 * 24 ))
+	req_list="
+${req_list}
+SELECT DISTINCT meetings.meeting_id FROM meetings
+INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
+WHERE attendees.attendee_email='${auth_mail}' AND meetings.meeting_end < '${now}' AND meetings.meeting_end > '$(( ${now} - ${ret} ))' ORDER BY meetings.meeting_begin DESC;
+"
+fi
+
 # Boucle principale (pour chaque réunion planifiée)
-# La requête SQL est déclarée dans "lib/list.sh" OU "lib/archives.sh"
 for f in $(sqlite3 ${JMB_DB} "${req_list}") ; do
 
 	# RAZ des variables utilisées dans le tableau
@@ -201,14 +209,15 @@ for f in $(sqlite3 ${JMB_DB} "${req_list}") ; do
 
 		# Si l'heure est dépassé -> orange
 		if [ ${now} -ge ${begin} ] ; then
-			onair=" bgcolor=\"orange\""
+			onair=" bgcolor=\"Green\""
 		fi
 
 	fi
 
-if [ "${archives}" = "1" ] ; then
-	# Pas d'action possible sur les réunions archivées, on repasse en fond blanc
-	unset form_action onair
+if [ ${now} -gt ${end} ] ; then
+	# C'est une réunion "archivée"
+	unset form_action
+	onair=" bgcolor=\"LightSalmon\""
 fi
 
 	cat<<EOT
@@ -245,22 +254,6 @@ done
 cat<<EOT
   </TABLE>
   <P></P>
-EOT
-
-if [ "${archives}" = "1" ] ; then
-	# Mode "archives" -> pas d'affichage du lien de création
-
-	cat<<EOT
-  <FORM method="POST">
-    <INPUT type="submit" value="R&eacute;unions en attente" onclick="javascript: form.action='?list';">
-    <P></P>
-    <INPUT type="submit" value="Rafraichir la page" onclick="javascript: form.action='?archives';"> 
-  </FORM>
-EOT
-
-else
-
-	cat<<EOT
   <DIV title="Ce lien permet de synchroniser vos agendas (Thunderbird, smartphones, Nextcloud, ... )">
     <A><I>Mon flux iCal: </I></A><BR>
     <A href=/ical.cgi?${ical_hash}>https://${JMB_SERVER_NAME}/ical.cgi?${ical_hash}</A>
@@ -269,23 +262,16 @@ else
   <FORM method="POST">
 EOT
 
-	if [ "${is_editor}" = "1" ] ; then
-		cat<<EOT
+if [ "${is_editor}" = "1" ] ; then
+	cat<<EOT
     <INPUT type="submit" value="Nouvelle r&eacute;union" onclick="javascript: form.action='?new';"> 
     <P></P>
 EOT
-	fi
-
-	cat<<EOT
-    <INPUT type="submit" value="R&eacute;unions archiv&eacute;es" onclick="javascript: form.action='?archives';">
-    <P></P>
-    <INPUT type="submit" value="Rafraichir la page" onclick="javascript: form.action='?list';"> 
-  </FORM>
-EOT
-
 fi
 
 cat<<EOT
+    <INPUT type="submit" value="Rafraichir la page" onclick="javascript: form.action='?list';"> 
+  </FORM>
   <BR>
   <BR>
   <A>

@@ -161,6 +161,9 @@ JMB_MAX_MODERATORS=2
 # Nombre maximum d'invités
 JMB_MAX_GUESTS=50
 
+# Affichage des réunions archivées (en jours, 0 ou vide pour désactiver)
+JMB_SHOW_ARCHIVES=365
+
 #-----------------------------------------------------------------------
 # Liste des réunions dans l'interface principale
 # -> booking.cgi?list

@@ -42,8 +42,8 @@ function import_tsn {
 
 # Table "meetings"
 cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
-INSERT INTO meetings (meeting_id,meeting_name,meeting_object,meeting_begin,meeting_duration,meeting_end,meeting_create) 
-VALUES ('${tsn}','${name}','${object}','${begin}','${duration}','${end}','$(( ${begin} - 86400))';
+INSERT INTO meetings (meeting_id,meeting_name,meeting_object,meeting_begin,meeting_duration,meeting_end,meeting_create)
+ VALUES ('${tsn}','${name}','${object}','${begin}','${duration}','${end}','$(( ${begin} - 86400))');
 EOT
 
 # Table attendees (owner)
@@ -51,7 +51,7 @@ EOT
 gen_meeting_hash
 cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)
-VALUES ('${tsn}','${hash}','owner','${mail_owner}');
+ VALUES ('${tsn}','${hash}','owner','${mail_owner}');
 EOT
 
 # Table attendees (guest)
@@ -60,10 +60,9 @@ EOT
 for guest in ${guests} ; do
 
 	gen_meeting_hash
-
 	cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)
-VALUES ('${tsn}','${hash}','guest','${guest}');
+ VALUES ('${tsn}','${hash}','guest','${guest}');
 EOT
 
 done
@@ -88,28 +87,38 @@ hash=$(pwgen -s 16 1)
 # Import des données iCal
 
 for user in $(ls -1 ${JMB_ICAL_DATA}/by-user/) ; do
+	echo -n "${user} "
 	hash=$(<${JMB_ICAL_DATA}/by-user/${user})
-	sqlite3 ${JMB_DB} "INSERT INTO ical (ical_owner,ical_hash) values ('${user}','${hash}');"
+	echo "${hash}"
+	sqlite3 ${JMB_DB} "INSERT INTO ical (ical_owner,ical_hash) VALUES ('${user}','${hash}');"
 done
 
 #-----------------------------------------------------------------------
 
 # Import des réunions
 
-for tsn in $(ls -1 ${JMB_BOOKING_DATA}) ; do
-
-	unset name mail_owner begin duration end object guests
-
-	source ${JMB_BOOKING_DATA}/${tsn}
-	import_tsn
-
-done
-
 for tsn in $(ls -1 ${JMB_BOOKING_ARCHIVE}) ; do
 
+	echo "JMB_BOOKING_ARCHIVE: ${tsn}"
 	unset name mail_owner begin duration end object guests
 
 	source ${JMB_BOOKING_ARCHIVE}/${tsn}
+	mail_owner=(${mail_owner}) ; mail_owner=${mail_owner[0]}
+	guests=(${guests}) ; guests=${guests[@]}
 	import_tsn
 
 done
+
+for tsn in $(ls -1 ${JMB_BOOKING_DATA}) ; do
+
+	echo "JMB_BOOKING_DATA: ${tsn}"
+	unset name mail_owner begin duration end object guests
+
+	source ${JMB_BOOKING_DATA}/${tsn}
+	mail_owner=(${mail_owner}) ; mail_owner=${mail_owner[0]}
+	guests=(${guests}) ; guests=${guests[@]}
+	import_tsn
+
+done
+
+
