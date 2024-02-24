@@ -2,77 +2,9 @@
 # Formulaire de la liste des réunions + archives réunions
 ########################################################################
 
-# Récupérer le hash iCal de l'utilisateur
-ical_hash=$(get_ical_hash ${auth_uid})
+function meeting_list {
+# Liste des réunions -> requête dans variable "req_list"
 
-cat<<EOT
-<CENTER>
-EOT
-
-# Afficher le logo si disponible
-if [ -f ${JMB_PATH}/etc/logo.png ] ; then
-	cat<<EOT
-  <IMG src=logo.png>
-EOT
-fi
-
-cat<<EOT
-  <H2>Mes r&eacute;unions</H2>
-  <P></P>
-EOT
-
-# Salle de conférence privée
-if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_editor}" = "1" ] ; then
-	self=$(grep "^${auth_uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
-	cat<<EOT
-<DIV title="Cliquez sur ce lien pour ouvrir votre salle de r&eacute;union priv&eacute;e">
- <I><A href=/token.cgi?room=${self}>Ma r&eacute;union priv&eacute;e</A>, disponible &agrave; tout moment:</I>
-</DIV>
-<DIV title="Donnez ce lien &agrave; votre/vos correspondant(s)">
- <A href=/${self}>https://${JMB_SERVER_NAME}/${self}</A>
-</DIV>
-<P></P>
-EOT
-fi
-
-# Liste des réunions planifiées
-cat<<EOT
-  <TABLE>
-    <STYLE>
-      table, th, td {
-      padding: 10px;
-      border: 2px solid black;
-      border-collapse: collapse;
-      }
-    </STYLE>
-    <TR bgcolor="DarkGray">
-      <TD><B>Objet</B></TD>
-      <TD><B>Organisateur</B></TD>
-      <TD><B><CENTER>Date</CENTER></B></TD>
-      <TD><B><CENTER>Heure</CENTER></B></TD>
-      <TD><B><CENTER>Dur&eacute;e</CENTER></B></TD>
-      <TD><B><CENTER>Participants</CENTER></B></TD>
-      <TD><B><CENTER>Invitation</CENTER></B></TD>
-      <TD><B><CENTER>Action</CENTER></B></TD>
-    </TR>
-EOT
-
-req_list="
-SELECT DISTINCT meetings.meeting_id FROM meetings
-INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
-WHERE attendees.attendee_email='${auth_mail}' AND meetings.meeting_end > '${now}' ORDER BY meetings.meeting_begin ASC;
-"
-if [ ! -z "${JMB_SHOW_ARCHIVES}" ] ; then
-	ret=$(( ${JMB_SHOW_ARCHIVES} * 3600 * 24 ))
-	req_list="
-${req_list}
-SELECT DISTINCT meetings.meeting_id FROM meetings
-INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
-WHERE attendees.attendee_email='${auth_mail}' AND meetings.meeting_end < '${now}' AND meetings.meeting_end > '$(( ${now} - ${ret} ))' ORDER BY meetings.meeting_begin DESC;
-"
-fi
-
-# Boucle principale (pour chaque réunion planifiée)
 for f in $(sqlite3 ${JMB_DB} "${req_list}") ; do
 
 	# RAZ des variables utilisées dans le tableau
@@ -98,6 +30,9 @@ for f in $(sqlite3 ${JMB_DB} "${req_list}") ; do
 	# ${r[3]} -> déclinés
 	# ${r[4]} -> partstat utilisateur
 	r=(${r})
+
+	# Couleur du fond par défaut -> réunion planifiée pas encore disponible
+	onair=" bgcolor=\"LightBlue\""
 
 	if [ "${owner}" = "${auth_mail}" ] ; then
 		# Proprio
@@ -245,6 +180,101 @@ EOT
 
 done
 
+}
+
+########################################################################
+
+# Récupérer le hash iCal de l'utilisateur
+ical_hash=$(get_ical_hash ${auth_uid})
+
+cat<<EOT
+<CENTER>
+EOT
+
+# Afficher le logo si disponible
+if [ -f ${JMB_PATH}/etc/logo.png ] ; then
+	cat<<EOT
+  <IMG src=logo.png>
+EOT
+fi
+
+cat<<EOT
+  <H2>Mes r&eacute;unions</H2>
+  <P></P>
+EOT
+
+# Salle de conférence privée
+if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_editor}" = "1" ] ; then
+	self=$(grep "^${auth_uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
+	cat<<EOT
+<DIV title="Cliquez sur ce lien pour ouvrir votre salle de r&eacute;union priv&eacute;e">
+ <I><A href=/token.cgi?room=${self}>Ma r&eacute;union priv&eacute;e</A>, disponible &agrave; tout moment:</I>
+</DIV>
+<DIV title="Donnez ce lien &agrave; votre/vos correspondant(s)">
+ <A href=/${self}>https://${JMB_SERVER_NAME}/${self}</A>
+</DIV>
+<P></P>
+EOT
+fi
+
+# Entête du tableau
+cat<<EOT
+  <TABLE>
+    <STYLE>
+      table, th, td {
+      padding: 10px;
+      border: 2px solid white;
+      border-collapse: collapse;
+      }
+    </STYLE>
+    <TR bgcolor="DarkGray">
+      <TD><B>Objet</B></TD>
+      <TD><B>Organisateur</B></TD>
+      <TD><B><CENTER>Date</CENTER></B></TD>
+      <TD><B><CENTER>Heure</CENTER></B></TD>
+      <TD><B><CENTER>Dur&eacute;e</CENTER></B></TD>
+      <TD><B><CENTER>Participants</CENTER></B></TD>
+      <TD><B><CENTER>Invitation</CENTER></B></TD>
+      <TD><B><CENTER>Action</CENTER></B></TD>
+    </TR>
+EOT
+
+# Liste des réunions en attente
+req_list="
+SELECT DISTINCT meetings.meeting_id FROM meetings
+INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
+WHERE attendees.attendee_email='${auth_mail}' AND meetings.meeting_end > '${now}' ORDER BY meetings.meeting_begin ASC;
+"
+meeting_list
+
+# Liste des réunions terminées
+if [ ! -z "${JMB_SHOW_ARCHIVES}" ] ; then
+	ret=$(( ${JMB_SHOW_ARCHIVES} * 3600 * 24 ))
+	req_list="
+SELECT DISTINCT meetings.meeting_id FROM meetings
+INNER JOIN attendees ON meetings.meeting_id=attendees.attendee_meeting_id
+WHERE attendees.attendee_email='${auth_mail}' AND meetings.meeting_end < '${now}' AND meetings.meeting_end > '$(( ${now} - ${ret} ))' ORDER BY meetings.meeting_begin DESC;
+"
+	if [ "${f}" != "" ] ; then
+		# Le résultat de la requête précédente (liste des réunions en attente)
+		# n'était pas vide -> on ajoute un bloc de séparation
+		cat<<EOT
+    <TR>
+      <TD></TD>
+      <TD></TD>
+      <TD></TD>
+      <TD></TD>
+      <TD></TD>
+      <TD></TD>
+      <TD></TD>
+      <TD></TD>
+    </TR>
+EOT
+	fi
+	meeting_list
+fi
+
+# Fin du tableau
 cat<<EOT
   </TABLE>
   <P></P>

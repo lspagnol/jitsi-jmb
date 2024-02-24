@@ -63,7 +63,7 @@ cat<<EOT
     <STYLE>
       table, th, td {
       padding: 10px;
-      border: 2px solid black;
+      border: 2px solid white;
       border-collapse: collapse;
       }
     </STYLE>
@@ -135,7 +135,7 @@ sqlite3 -list ${JMB_DB} "\
 	case ${r[2]} in
 		0)
 			partstat="Sans r&eacute;ponse"
-			bgcolor=""
+			bgcolor=" bgcolor=\"LightBlue\""
 		;;
 		1)
 			partstat="Accept&eacute;e"
@@ -144,10 +144,6 @@ sqlite3 -list ${JMB_DB} "\
 		2)
 			partstat="D&eacute;clin&eacute;e"
 			bgcolor=" bgcolor=\"LightSalmon\""
-		;;
-		*)
-			partstat="Inconnu"
-			bgcolor=""
 		;;
 	esac
 
