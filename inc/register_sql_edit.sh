@@ -2,6 +2,18 @@
 # Modification réunion / SQLite
 ########################################################################
 
+# Sélection du template "annulation d'une réunion"
+mail_tpl="${JMB_PATH}/inc/mail_tpl_del.sh"
+
+# Si l'adresse de l'organisateur ne correspond pas au domaine du serveur
+# Jitsi, on remplace l'adresse d'enveloppe pour passer les contrôles SPF
+echo "${auth_mail}" |egrep -q "${JMB_MAIL_DOMAIN//\./\\.}$"
+if [ $? -eq 0 ] ; then
+	envelope_from="${auth_mail}"
+else
+	envelope_from="${JMB_MAIL_FROM_NOTIFICATION}"
+fi
+
 # Table "meetings"
 cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 UPDATE meetings SET
@@ -21,7 +33,7 @@ diff ${JMB_CGI_TMP}/${tsn}_guests.old ${JMB_CGI_TMP}/${tsn}_guests.new |egrep '^
 
 	case ${L[0]} in
 		">")
-			# Ajout
+			# Ajout / DB
 			hash=$(gen_meeting_hash)
 			cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)
@@ -30,11 +42,22 @@ EOT
 		;;
 
 		"<")
-			# Suppression
+			# Suppression / DB
 			cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 DELETE FROM attendees
 WHERE attendee_meeting_id='${tsn}' AND attendee_role='guest' AND attendee_email='${L[1]}';
 EOT
+			# Mail de notification
+			role=guest
+			subject="$(utf8_to_mime ${JMB_SUBJECT_DEL_GUEST})"
+			source ${mail_tpl} |mail\
+			 -r "${envelope_from}"\
+			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+			 -a "Content-Transfer-Encoding: 8bit"\
+			 -a "Content-Language: fr"\
+			 -a "from: ${auth_mail}"\
+			 -a "subject: ${subject}"\
+			 ${L[1]}
 		;;
 
 	esac
@@ -54,7 +77,7 @@ diff ${JMB_CGI_TMP}/${tsn}_moderators.old ${JMB_CGI_TMP}/${tsn}_moderators.new |
 	case ${L[0]} in
 
 		">")
-			# Ajout
+			# Ajout / DB
 			hash=$(gen_meeting_hash)
 			cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)
@@ -63,11 +86,22 @@ EOT
 		;;
 
 		"<")
-			# Suppression
+			# Suppression /DB
 			cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 DELETE FROM attendees
 WHERE attendee_meeting_id='${tsn}' AND attendee_role='moderator' AND attendee_email='${L[1]}';
 EOT
+			# Mail de notification
+			role=guest
+			subject="$(utf8_to_mime ${JMB_SUBJECT_DEL_GUEST})"
+			source ${mail_tpl} |mail\
+			 -r "${envelope_from}"\
+			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
+			 -a "Content-Transfer-Encoding: 8bit"\
+			 -a "Content-Language: fr"\
+			 -a "from: ${auth_mail}"\
+			 -a "subject: ${subject}"\
+			 ${L[1]}
 		;;
 
 	esac

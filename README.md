@@ -92,7 +92,7 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 * Adapter *jitsi-jmb_show* au stockage SQLite
 * Préciser le status "accepté" / "décliné" des invitations dans le mail de rappel à l'organisateur
 * Générer un hash iCal (si nécéssaire) pour les utilisateurs qui peuvent s'identifier lors de l'envoi des notifications, ajouter le lien vers le flux iCal dans les mails
-* **Correction**: les participants supprimés d'une réunion ne sont pas notifiés par mail
+* ~~**Correction**: les participants supprimés d'une réunion ne sont pas notifiés par mail~~
 * Générer et ajouter un contenu ICS aux notifications envoyés par mail
 * ~~Ajout de l'accès aux réunions archivées~~
 * ~~Corriger les rappels *xmpp*~~
