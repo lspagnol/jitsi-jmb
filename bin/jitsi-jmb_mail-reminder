@@ -50,6 +50,7 @@ for f in $(\
 	mailto="${owner}"
 	role="owner"
 	source ${mail_tpl} |mail\
+		-r "${JMB_MAIL_FROM_NOTIFICATION}"\
 		-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 		-a "Content-Transfer-Encoding: 8bit"\
 		-a "Content-Language: fr"\

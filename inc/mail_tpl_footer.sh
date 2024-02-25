@@ -15,12 +15,6 @@
 
 unset hash
 
-## Destinataire membre de "${JMB_MAIL_DOMAIN}" ?
-#echo "${mailto}" | grep -q "${JMB_MAIL_DOMAIN//./\\.}$"
-#if [ ${?} -eq 0 ] ; then
-	#is_editor=1
-#fi
-
 # Adresse mail connue dans l'annuaire LDAP ? -> on récupère l'uid correspondant
 r=$($JMB_LDAPSEARCH "(|(mail=${mailto})(mailAlternateAddress=${mailto}))" uid |grep '^uid: ')
 r=(${r}) ; r=${r[1]}
