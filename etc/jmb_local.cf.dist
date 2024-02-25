@@ -17,7 +17,7 @@ JMB_SERVER_NAME="##_JITSI_FQDN_##"
 JMB_MAIL_DOMAIN="##_DOMAIN_##"
 
 # Adresse mail d'expéditeur pour les notifications
-JMB_MAIL_FROM_NOTIFICATION="${JMB_NAME} <noreply@${JMB_MAIL_DOMAIN}>"
+JMB_MAIL_FROM_NOTIFICATION="noreply@${JMB_MAIL_DOMAIN}"
 
 # Flux iCal
 JMB_ICAL_NAME="Visio ${JMB_NAME}"

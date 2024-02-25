@@ -6,26 +6,27 @@
 role="owner"
 mailto="${auth_mail}"
 source ${mail_tpl} |mail\
+	-r "${JMB_MAIL_FROM_NOTIFICATION}"\
 	-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 	-a "Content-Transfer-Encoding: 8bit"\
 	-a "Content-Language: fr"\
-	-a "From: ${JMB_MAIL_FROM_NOTIFICATION}"\
+	-a "From: ${JMB_NAME} <${JMB_MAIL_FROM_NOTIFICATION}>"\
 	-a "Subject: ${subject}"\
 	${mailto}
-
-# Si l'adresse de l'organisateur ne correspond pas au domaine du serveur
-# Jitsi, on remplace l'adresse d'enveloppe pour passer les contrôles SPF
-echo "${auth_mail}" |egrep -q "${JMB_MAIL_DOMAIN//\./\\.}$"
-if [ $? -eq 0 ] ; then
-	envelope_from="${auth_mail}"
-else
-	envelope_from="${JMB_MAIL_FROM_NOTIFICATION}"
-fi
 
 # Mail d'invitation aux invités & modérateurs
 if [ "${conf_date}" != "${old_conf_date}" ] || [ "${conf_time}" != "${old_conf_time}" ] ; then
 
 	# Modification date|heure -> notifier les invités et les modérateurs
+
+	# Si l'adresse de l'organisateur ne correspond pas au domaine du serveur
+	# Jitsi, on remplace l'adresse d'enveloppe pour passer les contrôles SPF
+	echo "${auth_mail}" |egrep -q "${JMB_MAIL_DOMAIN//\./\\.}$"
+	if [ $? -eq 0 ] ; then
+		envelope_from="${auth_mail}"
+	else
+		envelope_from="${JMB_MAIL_FROM_NOTIFICATION}"
+	fi
 
 	role="guest"
 	for mailto in ${conf_guests} ; do

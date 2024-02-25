@@ -27,15 +27,25 @@ source ${JMB_PATH}/inc/register_sql_del.sh
 # Sélection du template "annulation d'une réunion"
 mail_tpl="${JMB_PATH}/inc/mail_tpl_del.sh"
 
+# Si l'adresse de l'organisateur ne correspond pas au domaine du serveur
+# Jitsi, on remplace l'adresse d'enveloppe pour passer les contrôles SPF
+echo "${auth_mail}" |egrep -q "${JMB_MAIL_DOMAIN//\./\\.}$"
+if [ $? -eq 0 ] ; then
+	envelope_from="${auth_mail}"
+else
+	envelope_from="${JMB_MAIL_FROM_NOTIFICATION}"
+fi
+
 # Mail de notification au demandeur
 role="owner"
 mailto="${auth_mail}"
 subject="$(utf8_to_mime ${JMB_SUBJECT_DEL_OWNER})"
 source ${mail_tpl} |mail\
+ -r "${JMB_MAIL_FROM_NOTIFICATION}"\
  -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
  -a "Content-Transfer-Encoding: 8bit"\
  -a "Content-Language: fr"\
- -a "from: ${JMB_MAIL_FROM_NOTIFICATION}"\
+ -a "from: ${JMB_NAME} <${JMB_MAIL_FROM_NOTIFICATION}>"\
  -a "subject: ${subject}"\
   ${mailto}
 
@@ -44,6 +54,7 @@ role=guest
 subject="$(utf8_to_mime ${JMB_SUBJECT_DEL_GUEST})"
 for mailto in ${conf_guests} ; do
 	source ${mail_tpl} |mail\
+	 -r "${envelope_from}"\
 	 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 	 -a "Content-Transfer-Encoding: 8bit"\
 	 -a "Content-Language: fr"\
@@ -57,6 +68,7 @@ role=moderator
 subject="$(utf8_to_mime ${JMB_SUBJECT_DEL_MODERATOR})"
 for mailto in ${conf_moderators} ; do
 	source ${mail_tpl} |mail\
+	 -r "${envelope_from}"\
 	 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 	 -a "Content-Transfer-Encoding: 8bit"\
 	 -a "Content-Language: fr"\
