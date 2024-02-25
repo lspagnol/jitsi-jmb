@@ -32,10 +32,12 @@ fi
 
 # Récupérer les infos de la table "participants"
 r=$(sqlite3 ${JMB_DB} "\
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${id}';
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${id}' AND attendee_partstat='0';
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${id}' AND attendee_partstat='1';
-	SELECT count() attendee_partstat FROM attendees WHERE attendee_meeting_id='${id}' AND attendee_partstat='2'"
+	SELECT count() FROM attendees WHERE attendee_meeting_id='${id}';
+	SELECT count() FROM attendees WHERE attendee_meeting_id='${id}' AND attendee_partstat='0';
+	SELECT count() FROM attendees WHERE attendee_meeting_id='${id}' AND attendee_partstat='1';
+	SELECT count() FROM attendees WHERE attendee_meeting_id='${id}' AND attendee_partstat='2';
+	SELECT count() FROM attendees WHERE attendee_meeting_id='${id}' and attendee_count > '0';
+	SELECT sum(attendee_count) FROM attendees WHERE attendee_meeting_id='${id}';"
 )
 
 # On transforme le résulat en tableau
@@ -43,6 +45,8 @@ r=$(sqlite3 ${JMB_DB} "\
 # ${r[1]} -> pas de réponse
 # ${r[2]} -> acceptés
 # ${r[3]} -> déclinés
+# ${r[4]} -> nombre de participants qui se sont connectés
+# ${r[5]} -> nombre total de connexions
 r=(${r})
 
 cat<<EOT
@@ -69,8 +73,8 @@ cat<<EOT
     </STYLE>
     <TR bgcolor="DarkGray">
       <TD><B>Objet</B></TD>
-      <TD><B>Organisateur</B></TD>
       <TD><B>Participants</B></TD>
+      <TD><B>Connexions</B></TD>
       <TD><B><CENTER>Date</CENTER></B></TD>
       <TD><B><CENTER>Heure</CENTER></B></TD>
       <TD><B><CENTER>Dur&eacute;e</CENTER></B></TD>
@@ -78,10 +82,14 @@ cat<<EOT
     </TR>
     <TR${onair}>
       <TD>${form_object}</TD>
-      <TD>${form_owner}</TD>
       <TD><CENTER>
-        <DIV title="Invitations accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}, sans r&eacute;ponse: ${r[1]}, ">
+        <DIV title="Invitations accept&eacute;es: ${r[2]}, d&eacute;clin&eacute;es: ${r[3]}, sans r&eacute;ponse: ${r[1]}, total invitations: ${r[0]}">
           <A>${r[2]}/${r[0]}</A>
+        </DIV>
+      </CENTER></TD>
+      <TD><CENTER>
+        <DIV title="Participants connect&eacute;s: ${r[4]}, total connexions: ${r[5]}">
+          <A>${r[4]}</A>
         </DIV>
       </CENTER></TD>
       <TD><CENTER>${form_date}</CENTER></TD>
@@ -97,7 +105,7 @@ cat<<EOT
       <TD><B><CENTER>R&ocirc;le</CENTER></B></TD>
       <TD><B><CENTER>Invitation</CENTER></B></TD>
       <TD>
-        <DIV title="Nombre de clics sur le lien de connexion">
+        <DIV title="Nombre de connexions">
           <B><CENTER>C</CENTER></B>
         </DIV>
       </TD>
@@ -107,7 +115,9 @@ EOT
 # Tableau "liste des participants"
 sqlite3 -list ${JMB_DB} "\
  SELECT attendee_email,attendee_role,attendee_partstat,attendee_count FROM attendees
- WHERE attendee_meeting_id='${id}' AND attendee_role != 'owner';" |while read r ; do
+ WHERE attendee_meeting_id='${id}' AND attendee_role = 'owner';
+ SELECT attendee_email,attendee_role,attendee_partstat,attendee_count FROM attendees
+ WHERE attendee_meeting_id='${id}' AND attendee_role != 'owner' ORDER BY attendee_count DESC;" |while read r ; do
 
 	# On transforme le résulat en tableau
 	old_ifs="${IFS}"
