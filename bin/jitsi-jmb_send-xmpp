@@ -51,10 +51,11 @@ mcabber -f /tmp/${room}.mcabberrc & 2>/dev/null >/dev/null
 echo "/connect ${JMB_SERVER_NAME}" > /tmp/${room}.mcabber.fifo ; sleep 1
 echo "/room join ${room}@conference.${JMB_SERVER_NAME}" > /tmp/${room}.mcabber.fifo ; sleep 1
 echo "/say_to ${room}@conference.${JMB_SERVER_NAME} ${msg}" > /tmp/${room}.mcabber.fifo ; sleep 1
-echo "/quit" > /tmp/${room}.mcabber.fifo
+echo "/quit" > /tmp/${room}.mcabber.fifo ; sleep 1
 
 # Fin
 rm /tmp/${room}.mcabberrc
+rm /tmp/${room}.mcabber.fifo
 reset
 
 #root@host:~# prosodyctl shell "user:list('localhost')"
