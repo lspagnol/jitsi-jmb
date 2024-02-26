@@ -90,10 +90,11 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 ## TODO
 
 * Adapter *jitsi-jmb_show* au stockage SQLite
-* Préciser le status "accepté" / "décliné" des invitations dans le mail de rappel à l'organisateur
-* Générer un hash iCal (si nécéssaire) pour les utilisateurs qui peuvent s'identifier lors de l'envoi des notifications, ajouter le lien vers le flux iCal dans les mails
+* Générer et ajouter un contenu ICS aux notifications envoyés par mail (seulement pour les utilisateurs qui ne peuvent pas d'authentifier, les utilisateurs internes peuvent s'abonner à leur flux iCal)
+* ~~Suivi du nombre de connexions aux réunions depuis l'interface~~
+* ~~INUTILE: préciser le status "accepté" / "décliné" des invitations dans le mail de rappel à l'organisateur~~
+* ~~Générer un hash iCal (si nécéssaire) pour les utilisateurs qui peuvent s'identifier lors de l'envoi des notifications, ajouter le lien vers le flux iCal dans les mails~~
 * ~~**Correction**: les participants supprimés d'une réunion ne sont pas notifiés par mail~~
-* Générer et ajouter un contenu ICS aux notifications envoyés par mail
 * ~~Ajout de l'accès aux réunions archivées~~
 * ~~Corriger les rappels *xmpp*~~
 * ~~Ajout -r ${mailfrom} à la commande mail si l'organisateur n'est pas sur le domaine du serveur Jitsi (fixer l'expéditeur d'enveloppe pour passer les contrôles SPF)~~
@@ -102,7 +103,6 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 * ~~Les utilisateurs peuvent gérer les invitations dans l'interface~~
 * ~~*jitsi-jmb_mail-reminder* ne doit pas envoyer de rappel aux participants qui ont décliné l'invitation~~
 * ~~Formulaire de suivi des invitations ("accept" / "decline" des participants)~~
-
 
 ## Divers:
 
@@ -114,6 +114,9 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 * Paramètres Jicofo: https://github.com/jitsi/jicofo/blob/master/jicofo-selector/src/main/resources/reference.conf
 * Paramètres JVB: https://github.com/jitsi/jitsi-videobridge/blob/master/jvb/src/main/resources/reference.conf
 * Générateur d'URLs Jitsi: https://shawnchin.github.io/jitsi-url-generator/
+* Installation *Excalidraw*: (tableau blanc collaboratif):
+  * https://blog.semaphor.dk/20230504T1610
+  * https://community.jitsi.org/t/installing-excalidraw-backend-for-whiteboard-feature-on-self-hosted-jitsi-mee/118883
 
 ## Références **FIXME** (probablement obsolètes):
 
