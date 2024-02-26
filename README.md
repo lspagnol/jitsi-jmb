@@ -2,18 +2,19 @@
 
 ## Fonctionnalités:
 
-* **Authentification universelle** JWT / modules d'authentication Apache.
-  * CAS, Shibboleth, SAML, LDAP, SQL, ...
+* **Authentification universelle** JWT / modules d'authentication Apache:
+  * CAS, Shibboleth, SAML, LDAP, SQL, PAM, SASL, ...
 * **Réservation et planification** des réunions.
-* Gestion des **invités**.
-* Gestion des **modérateurs**.
-* Un **modérateur peut être un utilisateur externe** (ne pouvant pas s'authentifier).
-* Les invités et les modérateurs peuvent accepter/décliner les invitations.
-* Suivi des invitations (acceptées/déclinées) dans l'interface et le flux iCal.
-* Visualisation des réunions terminées (archives).
-* **Rappels par mail** (début des réunions).
-* **Rappels par XMPP** (fin des réunions).
+* **Gestion des invités et des modérateurs**:
+  * un **modérateur peut être un utilisateur externe** (ne pouvant pas s'authentifier),
+  * les invités et les modérateurs peuvent accepter/décliner les invitations,
+  * suivi des invitations (acceptées/déclinées) dans l'interface et le flux iCal,
+  * suivi des connexions aux réunions.
+* **Rappels automatiques**:
+  **par mail** (début des réunions),
+  * **par XMPP** (fin des réunions).
 * **Flux iCal** pour la synchronisation des agendas.
+* Visualisation des réunions terminées (archives).
 
 <img src="liste-reunions.png" alt="liste-reunions.png:Liste des réunions" width="250"/><img src="edition-reunion.png" alt="edition-reunion.png:Edition d'une réunion" width="250"/><img src="suivi-participants.png" alt="suivi-participants.png:Suivi des participants" width="250"/>
 
