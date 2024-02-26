@@ -6,12 +6,16 @@
   * CAS, Shibboleth, SAML, LDAP, SQL, PAM, SASL, ...
 * **Réservation et planification** des réunions.
 * **Gestion des invités et des modérateurs**:
-  * un **modérateur peut être un utilisateur externe** (ne pouvant pas s'authentifier),
+  * un invité peut être un utilisateur externe (ne pouvant pas s'authentifier),
+  * un **modérateur peut être un utilisateur externe**,
   * les invités et les modérateurs peuvent accepter/décliner les invitations,
   * suivi des invitations (acceptées/déclinées) dans l'interface et le flux iCal,
   * suivi des connexions aux réunions.
+* **Expédition automatique de mails d'invitation/notification**:
+  * lien d'accès à la réunion,
+  * liens permettant d'accepter ou décliner une invitation.
 * **Rappels automatiques**:
-  **par mail** (début des réunions),
+  * **par mail** (début des réunions),
   * **par XMPP** (fin des réunions).
 * **Flux iCal** pour la synchronisation des agendas.
 * Visualisation des réunions terminées (archives).
