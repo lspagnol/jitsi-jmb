@@ -14,6 +14,9 @@ fi
 # Timestamp
 now=$(date +%s)
 
+# On recule de 5 secondes -> tempos internes
+now=$(( ${now} - 5 ))
+
 ########################################################################
 
 # Charger la configuration
