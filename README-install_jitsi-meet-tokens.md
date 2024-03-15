@@ -9,7 +9,7 @@
 rsync -a --delete /etc/ /etc.orig/
 apt remove --purge $(dpkg -l |egrep "jitsi|jicofo|prosody|lua|nginx|apache|supervisor|nginx|turn|xmpp|openjdk|shibb" |awk '{print $2}')
 apt autoremove --purge
-rm -rf /etc/apache2 /etc/nginx /etc/jitsi /etc/prosody /usr/lib/nginx/ /usr/share/nginx/ /var/lib/apache2 /usr/local/lib/nginx/ /var/lib/prosody /etc/prosody
+rm -rf /etc/apache2 /etc/nginx /etc/jitsi /etc/prosody /usr/lib/nginx/ /usr/share/nginx/ /var/lib/apache2 /usr/local/lib/nginx/ /var/lib/prosody /etc/prosody /etc/shibboleth/
 apt update
 apt upgrade
 reboot
