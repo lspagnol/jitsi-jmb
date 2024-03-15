@@ -23,11 +23,14 @@ apt install postfix
   * L'installation de *jitsi-meet-tokens* **DOIT** être effectuée en même temps que les autres paquets pour que toutes les dépendances soient satisfaites:
 ```
 mkdir -p /etc/apt/keyrings/
+
 echo "deb [signed-by=/etc/apt/keyrings/prosody-debian-packages.key] http://packages.prosody.im/debian $(lsb_release -c -s) main" > /etc/apt/sources.list.d/prosody-debian-packages.list
 curl -fsSL https://prosody.im/files/prosody-debian-packages.key -o /etc/apt/keyrings/prosody-debian-packages.key
 
 echo "deb [signed-by=/etc/apt/keyrings/jitsi-key.gpg.key] https://download.jitsi.org stable/" > /etc/apt/sources.list.d/jitsi-stable.list
 curl -fsSL https://download.jitsi.org/jitsi-key.gpg.key -o /etc/apt/keyrings/jitsi-key.gpg.key
+
+apt update
 
 apt install lua5.2 liblua5.2-dev jitsi-meet jicofo jitsi-meet-prosody jitsi-meet-tokens jitsi-meet-turnserver jitsi-meet-web jitsi-meet-web-config ldap-utils
 reboot
