@@ -122,6 +122,7 @@ Malheureusement, les développeurs de Jitsi ont supprimé le support de Shibbole
 * Installation *Excalidraw*: (tableau blanc collaboratif):
   * https://blog.semaphor.dk/20230504T1610
   * https://community.jitsi.org/t/installing-excalidraw-backend-for-whiteboard-feature-on-self-hosted-jitsi-mee/118883
+* Plugins Prosody: https://github.com/jitsi-contrib/prosody-plugins/tree/main
 
 ## Références **FIXME** (probablement obsolètes):
 
