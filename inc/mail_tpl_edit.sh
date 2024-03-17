@@ -60,7 +60,7 @@ EOT
 cat<<EOT
 Bonjour,
 
-Vous avez réservé une visioconférence.
+Vous avez modifié une visioconférence.
 Cette notification annule et remplace la précédente.
 
 Objet.........: ${object}

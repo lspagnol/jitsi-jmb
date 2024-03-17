@@ -2,9 +2,6 @@
 # Modification réunion / SQLite
 ########################################################################
 
-# Sélection du template "modification d'une réunion"
-mail_tpl="${JMB_PATH}/inc/mail_tpl_edit.sh"
-
 # Table "meetings"
 cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 UPDATE meetings SET
@@ -41,7 +38,7 @@ EOT
 			# Mail de notification
 			role=guest
 			subject="$(utf8_to_mime ${JMB_SUBJECT_DEL_GUEST})"
-			source ${mail_tpl} |mail\
+			source ${JMB_PATH}/inc/mail_tpl_del.sh |mail\
 			 -r "${JMB_MAIL_FROM_NOTIFICATION}"\
 			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 			 -a "Content-Transfer-Encoding: 8bit"\
@@ -85,7 +82,7 @@ EOT
 			# Mail de notification
 			role=guest
 			subject="$(utf8_to_mime ${JMB_SUBJECT_DEL_GUEST})"
-			source ${mail_tpl} |mail\
+			source ${JMB_PATH}/inc/mail_tpl_del.sh |mail\
 			 -r "${JMB_MAIL_FROM_NOTIFICATION}"\
 			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 			 -a "Content-Transfer-Encoding: 8bit"\
