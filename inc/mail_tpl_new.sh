@@ -10,8 +10,9 @@ case ${role} in
 cat<<EOT
 Bonjour,
 
-Je vous invite à une visioconférence.
+Vous êtes invité à une visioconférence.
 
+Organisateur..: ${auth_name} / ${auth_mail}
 Objet.........: ${object}
 Date..........: $(date -d @${begin} +"%d/%m/%Y")
 Heure.........: $(date -d @${begin} +%H:%M)
@@ -32,8 +33,9 @@ EOT
 cat<<EOT
 Bonjour,
 
-Je vous invite à modérer/animer une visioconférence.
+Vous êtes invité à modérer/animer une visioconférence.
 
+Organisateur..: ${auth_name} / ${auth_mail}
 Objet.........: ${object}
 Date..........: $(date -d @${begin} +"%d/%m/%Y")
 Heure.........: $(date -d @${begin} +%H:%M)

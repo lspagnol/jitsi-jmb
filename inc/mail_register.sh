@@ -2,6 +2,10 @@
 # Notification par mail (nouvelle réunion ou modification réunion)
 ########################################################################
 
+# La substitution d'adresse d'enveloppe permet de passer les contrôles
+# SPF mais échoue si le domaine du proprio demande l'alignement DMARC
+# -> adresse d'expéditeur (enveloppe & entête) = $JMB_MAIL_FROM_NOTIFICATION
+
 # Mail de notification au demandeur
 role="owner"
 mailto="${auth_mail}"
@@ -18,15 +22,6 @@ source ${mail_tpl} |mail\
 if [ "${conf_date}" != "${old_conf_date}" ] || [ "${conf_time}" != "${old_conf_time}" ] ; then
 
 	# Modification date|heure -> notifier les invités et les modérateurs
-
-	# Si l'adresse de l'organisateur ne correspond pas au domaine du serveur
-	# Jitsi, on remplace l'adresse d'enveloppe pour passer les contrôles SPF
-	echo "${auth_mail}" |egrep -q "${JMB_MAIL_DOMAIN//\./\\.}$"
-	if [ $? -eq 0 ] ; then
-		envelope_from="${auth_mail}"
-	else
-		envelope_from="${JMB_MAIL_FROM_NOTIFICATION}"
-	fi
 
 	role="guest"
 	for mailto in ${conf_guests} ; do
@@ -45,11 +40,11 @@ if [ "${conf_date}" != "${old_conf_date}" ] || [ "${conf_time}" != "${old_conf_t
 		fi
 
 		source ${mail_tpl} |mail\
-			-r "${envelope_from}"\
+			-r "${JMB_MAIL_FROM_NOTIFICATION}"\
 			-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 			-a "Content-Transfer-Encoding: 8bit"\
 			-a "Content-Language: fr"\
-			-a "From: ${auth_mail}"\
+			-a "From: ${JMB_NAME} <${JMB_MAIL_FROM_NOTIFICATION}>"\
 			-a "Subject: ${subject}"\
 			${mailto}
 
@@ -72,11 +67,11 @@ if [ "${conf_date}" != "${old_conf_date}" ] || [ "${conf_time}" != "${old_conf_t
 		fi
 
 		source ${mail_tpl} |mail\
-			-r "${envelope_from}"\
+			-r "${JMB_MAIL_FROM_NOTIFICATION}"\
 			-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 			-a "Content-Transfer-Encoding: 8bit"\
 			-a "Content-Language: fr"\
-			-a "From: ${auth_mail}"\
+			-a "From: ${JMB_NAME} <${JMB_MAIL_FROM_NOTIFICATION}>"\
 			-a "Subject: ${subject}"\
 			${mailto}
 
@@ -100,11 +95,11 @@ else
 		if [ ${?} -ne 0 ] ; then
 
 			source ${mail_tpl} |mail\
-				-r "${envelope_from}"\
+				-r "${JMB_MAIL_FROM_NOTIFICATION}"\
 				-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 				-a "Content-Transfer-Encoding: 8bit"\
 				-a "Content-Language: fr"\
-				-a "From: ${auth_mail}"\
+				-a "From: ${JMB_NAME} <${JMB_MAIL_FROM_NOTIFICATION}>"\
 				-a "Subject: ${subject}"\
 				${mailto}
 
@@ -122,11 +117,11 @@ else
 		if [ ${?} -ne 0 ] ; then
 
 			source ${mail_tpl} |mail\
-				-r "${envelope_from}"\
+				-r "${JMB_MAIL_FROM_NOTIFICATION}"\
 				-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 				-a "Content-Transfer-Encoding: 8bit"\
 				-a "Content-Language: fr"\
-				-a "From: ${auth_mail}"\
+				-a "From: ${JMB_NAME} <${JMB_MAIL_FROM_NOTIFICATION}>"\
 				-a "Subject: ${subject}"\
 				${mailto}
 

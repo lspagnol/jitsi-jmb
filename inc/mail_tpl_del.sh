@@ -10,9 +10,10 @@ case ${role} in
 cat<<EOT
 Bonjour,
 
-J'ai annulé une visioconférence.
+Une visioconférence a été supprimée
 Cette notification annule et remplace la précédente.
 
+Organisateur..: ${auth_name} / ${auth_mail}
 Objet.........: ${object}
 Date..........: $(date -d @${begin} +"%d/%m/%Y")
 Heure.........: $(date -d @${begin} +%H:%M)
@@ -26,9 +27,10 @@ EOT
 cat<<EOT
 Bonjour,
 
-J'ai annulé une visioconférence.
+Une visioconférence a été supprimée
 Cette notification annule et remplace la précédente.
 
+Organisateur..: ${auth_name} / ${auth_mail}
 Objet.........: ${object}
 Date..........: $(date -d @${begin} +"%d/%m/%Y")
 Heure.........: $(date -d @${begin} +%H:%M)

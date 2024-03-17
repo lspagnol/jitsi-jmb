@@ -2,17 +2,8 @@
 # Modification réunion / SQLite
 ########################################################################
 
-# Sélection du template "annulation d'une réunion"
-mail_tpl="${JMB_PATH}/inc/mail_tpl_del.sh"
-
-# Si l'adresse de l'organisateur ne correspond pas au domaine du serveur
-# Jitsi, on remplace l'adresse d'enveloppe pour passer les contrôles SPF
-echo "${auth_mail}" |egrep -q "${JMB_MAIL_DOMAIN//\./\\.}$"
-if [ $? -eq 0 ] ; then
-	envelope_from="${auth_mail}"
-else
-	envelope_from="${JMB_MAIL_FROM_NOTIFICATION}"
-fi
+# Sélection du template "modification d'une réunion"
+mail_tpl="${JMB_PATH}/inc/mail_tpl_edit.sh"
 
 # Table "meetings"
 cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
@@ -51,11 +42,11 @@ EOT
 			role=guest
 			subject="$(utf8_to_mime ${JMB_SUBJECT_DEL_GUEST})"
 			source ${mail_tpl} |mail\
-			 -r "${envelope_from}"\
+			 -r "${JMB_MAIL_FROM_NOTIFICATION}"\
 			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 			 -a "Content-Transfer-Encoding: 8bit"\
 			 -a "Content-Language: fr"\
-			 -a "from: ${auth_mail}"\
+			 -a "From: ${JMB_NAME} <${JMB_MAIL_FROM_NOTIFICATION}>"\
 			 -a "subject: ${subject}"\
 			 ${L[1]}
 		;;
@@ -95,11 +86,11 @@ EOT
 			role=guest
 			subject="$(utf8_to_mime ${JMB_SUBJECT_DEL_GUEST})"
 			source ${mail_tpl} |mail\
-			 -r "${envelope_from}"\
+			 -r "${JMB_MAIL_FROM_NOTIFICATION}"\
 			 -a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 			 -a "Content-Transfer-Encoding: 8bit"\
 			 -a "Content-Language: fr"\
-			 -a "from: ${auth_mail}"\
+			 -a "From: ${JMB_NAME} <${JMB_MAIL_FROM_NOTIFICATION}>"\
 			 -a "subject: ${subject}"\
 			 ${L[1]}
 		;;

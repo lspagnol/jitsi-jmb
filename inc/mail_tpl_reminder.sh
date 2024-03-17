@@ -12,6 +12,7 @@ Bonjour,
 
 Vous participez à une visioconférence:
 
+Organisateur..: ${owner}
 Objet.........: ${object}
 Date..........: $(date -d @${begin} +"%d/%m/%Y")
 Heure.........: $(date -d @${begin} +%H:%M)
@@ -30,7 +31,7 @@ Bonjour,
 
 Vous modérez/animez une visioconférence:
 
-Objet.........: ${object}
+Organisateur..: ${owner}
 Date..........: $(date -d @${begin} +"%d/%m/%Y")
 Heure.........: $(date -d @${begin} +%H:%M)
 Durée.........: ${duration} minutes

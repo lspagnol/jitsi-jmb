@@ -79,11 +79,11 @@ for f in $(\
 			hash=$(get_meeting_hash ${f} ${mailto} ${role})
 			# Mail de notification
 			source ${mail_tpl} |mail\
-				-r "${envelope_from}"\
+				-r "${JMB_MAIL_FROM_NOTIFICATION}"\
 				-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 				-a "Content-Transfer-Encoding: 8bit"\
 				-a "Content-Language: fr"\
-				-a "from: ${owner}"\
+				-a "from: ${JMB_NAME} <${JMB_MAIL_FROM_NOTIFICATION}>"\
 				-a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_GUEST})"\
 				${mailto}
 		fi
@@ -107,11 +107,11 @@ for f in $(\
 			hash=$(get_meeting_hash ${f} ${mailto} ${role})
 			# Mail de notification
 			source ${mail_tpl} |mail\
-				-r "${envelope_from}"\
+				-r "${JMB_MAIL_FROM_NOTIFICATION}"\
 				-a "Content-Type: text/plain; charset=utf-8; format=flowed"\
 				-a "Content-Transfer-Encoding: 8bit"\
 				-a "Content-Language: fr"\
-				-a "from: ${owner}"\
+				-a "from: ${JMB_NAME} <${JMB_MAIL_FROM_NOTIFICATION}>"\
 				-a "subject: $(utf8_to_mime ${JMB_SUBJECT_MAIL_REMINDER_MODERATOR})"\
 				${mailto}
 		fi
