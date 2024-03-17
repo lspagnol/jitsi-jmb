@@ -351,7 +351,7 @@ cat<<EOT>/etc/cron.d/jitsi-jmb
 */5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_mail-reminder
 
 # Envoi des notification XMPP (fin réunion)
-*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_xmpp-reminder
+*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_xmpp-reminder 2>/dev/null >/dev/null
 
 #
 EOT
