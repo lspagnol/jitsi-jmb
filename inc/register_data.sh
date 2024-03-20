@@ -22,18 +22,31 @@ fi
 # Calcul timestam début
 begin=$(date -d "${conf_date} ${conf_time}" +%s)
 
-if [ ${begin} -lt ${now} ] ; then
-	http_403 "Données non enregistrées: la date de la réunion est antérieure à la date actuelle"
-fi
-
-# Calul durée
-duration=$(( ${conf_duration} * 60 ))
-
 # URL de redirection après l'enregistrement de la conférence
 if [ ${now} -ge ${begin} ] ; then
 	url_redirect="/${conf_name}"
 else
 	url_redirect="${JMB_DEFAULT_URL_REDIRECT}"
+fi
+
+if [ ${begin} -lt ${now} ] ; then
+	http_403 "Données non enregistrées: la date de la réunion est antérieure à la date actuelle"
+fi
+
+if [ "${conf_duration}" = "" ] ; then
+	http_403 "Données non enregistrées: vous n'avez pas indiqué la durée de la réunion"
+elif [ "${conf_duration}" = "0" ] ; then
+	http_403 "Données non enregistrées: la durée d'une réunion ne peut pas être nulle"
+elif [[ "${conf_duration}" =~ ^- ]] ; then
+	http_403 "Données non enregistrées: la durée d'une réunion ne peut pas être négative"
+fi
+
+# Calul durée
+duration=$(( ${conf_duration} * 60 ))
+
+if [ "${duration}" = "0" ] ; then
+	# Si la durée saisie n'est pas un nombre, le résultat de la multiplication est "0"
+	http_403 "Données non enregistrées: la durée de la réunion est incorrecte"
 fi
 
 ########################################################################
