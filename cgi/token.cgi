@@ -54,7 +54,7 @@ for check_module in ${JMB_MODULE_CHECK_MODERATOR} ; do
 	fi
 done
 
-log "token.cgi: meeting_name='${room}', meeting_hash='', email='${auth_mail}', role='owner', auth_uid='${auth_uid}': ALLOWED"
+log "token.cgi: meeting_name='${room}', meeting_hash='', email='${auth_mail}', auth_uid='${auth_uid}': ALLOWED"
 
 # Récupérer les infos de la réunion
 r=$(sqlite3 -list ${JMB_DB} "\

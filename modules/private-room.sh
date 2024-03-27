@@ -4,20 +4,31 @@
 # Salles de réunion "personnelles" (${JMB_DATA}/private_rooms)
 ########################################################################
 
-# Si une conférence correspond à un identifiant de connexion présent
-# dans l'annuaire LDAP, la demande d'activation n'est acceptée que pour
-# son propriétaite.
+if [ "${allow}" = "1" ] ; then
 
-# Le mapping uid <-> room est fait sur le fichier "${JMB_DATA}/private_rooms"
+	# Déjà validé -> rien à faire
+	log "token.cgi: meeting_name='${room}', meeting_hash='', email='${auth_mail}', auth_uid='${auth_uid}', check_module='private-room.sh': ok (already allowed)"
 
-# Rechercher l'identifiant qui correspond au nom de la réunion
-uid=$(grep " ${room}$" ${JMB_DATA}/private_rooms |awk '{print $1}')
+else
 
-if [ ! -z "${uid}" ] ; then
-	if [ "${uid}" != "${auth_uid}" ] ; then
-		log "token.cgi: meeting_name='${room}', meeting_hash='', email='${auth_mail}', role='owner', auth_uid='${auth_uid}', check_module='private-room.sh': DENIED (not owner)"
-		http_403 "Vous n'êtes pas le proprétaire de la réunion '${room}'"
+	# Si le nom de la réuion correspond à un identifiant de connexion
+	# présent dans la table "private_rooms", la demande d'activation
+	# n'est acceptée que pour son propriétaire.
+
+	if [ "${room}" = "${auth_uid}" ] ; then
+		log "token.cgi: meeting_name='${room}', meeting_hash='', email='${auth_mail}', auth_uid='${auth_uid}', check_module='private-room.sh': allow"
+		# MAJ compteur et date
+		count=$(sqlite3 ${JMB_DB} "SELECT private_count FROM private WHERE private_room='${room}';")
+		if [ -z "${count}" ] ; then
+			sqlite3 ${JMB_DB} "INSERT INTO private (private_room,private_count,private_date) VALUES ('${room}','1','${now}');"
+		else
+			((count++))
+			sqlite3 ${JMB_DB} "UPDATE private SET private_count='${count}',private_date='${now}' WHERE private_room='${room}';"
+		fi
+		allow=1
+	else
+		log "token.cgi: meeting_name='${room}', meeting_hash='', email='${auth_mail}', auth_uid='${auth_uid}', check_module='private-room.sh': DENIED (not owner)"
+		http_403 "Vous n'êtes pas proprétaire de la réunion privée '${room}'"
 	fi
-fi
 
-log "token.cgi: meeting_name='${room}', meeting_hash='', email='${auth_mail}', role='owner', auth_uid='${auth_uid}', check_module='private-room.sh': ok"
+fi

@@ -11,7 +11,7 @@ source ${JMB_PATH}/etc/jmb.cf
 echo "Current:"
 munin-run jitsi_videobridge_summary_conferences |sed 's/\.value//g'
 echo
-
+exit
 echo "Booking:"
 for res in $(ls -1 ${JMB_BOOKING_DATA}) ; do
 	source ${JMB_BOOKING_DATA}/${res}

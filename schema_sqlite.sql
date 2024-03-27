@@ -59,6 +59,15 @@ CREATE INDEX idx_ical_owner ON ical(ical_owner);
 CREATE INDEX idx_ical_hash ON ical(ical_hash);
 
 
+CREATE TABLE private (
+	private_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	private_room TEXT NOT NULL,
+	private_date INTEGER NOT NULL,
+	private_count INTEGER DEFAULT 0
+);
+CREATE INDEX idx_private_room ON private(private_room);
+
+
 CREATE TRIGGER delete_meeting AFTER DELETE ON meetings
 BEGIN
 	DELETE FROM attendees WHERE attendee_meeting_id = old.meeting_id;

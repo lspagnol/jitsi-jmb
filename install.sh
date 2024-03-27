@@ -114,12 +114,22 @@ done
 chown -R root:root ${JMB_PATH}
 chmod +x ${JMB_PATH}/cgi/*
 chmod +x ${JMB_PATH}/bin/*
+ln -fs ${JMB_PATH}/bin/jitsi-restart /usr/local/sbin
 ln -fs ${JMB_PATH}/bin/jitsi-jmb_send-xmpp /usr/local/bin
 ln -fs ${JMB_PATH}/bin/jitsi-jmb_send-xmpp /usr/local/sbin
-ln -fs ${JMB_PATH}/bin/jitsi-jmb_show-rooms /usr/local/sbin
-ln -fs ${JMB_PATH}/bin/jitsi-jmb_show /usr/local/bin
-ln -fs ${JMB_PATH}/bin/jitsi-restart /usr/local/sbin
+#ln -fs ${JMB_PATH}/bin/jitsi-jmb_show-rooms /usr/local/bin
+#ln -fs ${JMB_PATH}/bin/jitsi-jmb_show-rooms /usr/local/sbin
+#ln -fs ${JMB_PATH}/bin/jitsi-jmb_show /usr/local/bin
+
+# MAJ -> suppression fichiers obsolètes
 [ -f ${JMB_PATH}/lib/archives.sh ] && rm ${JMB_PATH}/lib/archives.sh
+[ -f ${JMB_PATH}/bin/jitsi-jmb_private-rooms ] && rm ${JMB_PATH}/bin/jitsi-jmb_private-rooms
+[ -f ${JMB_PATH}/bin/jitsi-jmb_prune ] && rm ${JMB_PATH}/bin/jitsi-jmb_prune
+[ -f ${JMB_DATA}/private_rooms ] && rm ${JMB_DATA}/private_rooms
+for f in jitsi-jmb_show jitsi-jmb_show-rooms ; do
+	[ -L /usr/local/bin/${f} ] && rm /usr/local/bin/${f}
+	[ -L /usr/local/sbin/${f} ] && rm /usr/local/sbin/${f}
+done
 
 # Conf JMB:
 # Réglage du FQDN et domaine à partir des valeur présentes dans
@@ -312,18 +322,18 @@ fi
 # Installation "jitsi_videobridge_" (plugin destiné aux noeuds JVB),
 # Le plugin "jitsi_videobridge_summary_" est destiné uniquement au noeud
 # principal d'un cluster Jitsi
-dpkg -l munin-node 2>/dev/null >/dev/null
-if [ $? -eq 0 ] ; then
-	mkdir -p /usr/local/share/munin/
-	cp munin/jitsi_videobridge_ /usr/local/share/munin/
-	chmod +x /usr/local/share/munin/jitsi_videobridge_
-	for m in network conferences participants reservations system ; do
-		ln -fs /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_${m}
-	done
-	echo -e "[jitsi_videobridge_*]\nuser root" > /etc/munin/plugin-conf.d/jitsi-videobridge
-	echo "env.DB /var/www/jitsi-jmb/data/jitsi-jmb.db" >> /etc/munin/plugin-conf.d/jitsi-videobridge
-	service munin-node restart
-fi
+#dpkg -l munin-node 2>/dev/null >/dev/null
+#if [ $? -eq 0 ] ; then
+	#mkdir -p /usr/local/share/munin/
+	#cp munin/jitsi_videobridge_ /usr/local/share/munin/
+	#chmod +x /usr/local/share/munin/jitsi_videobridge_
+	#for m in network conferences participants reservations system ; do
+		#ln -fs /usr/local/share/munin/jitsi_videobridge_ /etc/munin/plugins/jitsi_videobridge_${m}
+	#done
+	#echo -e "[jitsi_videobridge_*]\nuser root" > /etc/munin/plugin-conf.d/jitsi-videobridge
+	#echo "env.DB /var/www/jitsi-jmb/data/jitsi-jmb.db" >> /etc/munin/plugin-conf.d/jitsi-videobridge
+	#service munin-node restart
+#fi
 
 # Configuration de sendxmpp -> **FIXME**
 #echo "username: anonymous" > /root/.sendxmpprc
@@ -340,12 +350,6 @@ cat<<EOT>/etc/cron.d/jitsi-jmb
 ########################################################################
 # Planification Jitsi JMB
 ########################################################################
-
-# Purge des réunions planifiées et expirées -> **FIXME** (obsolète -> DB / SQLite)
-#*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_prune
-
-# Mise à jour de la liste des salons privés
-*/5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_private-rooms
 
 # Envoi des rappels par mail (début réunion)
 */5 * * * * root /opt/jitsi-jmb/bin/jitsi-jmb_mail-reminder

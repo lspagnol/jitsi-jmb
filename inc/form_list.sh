@@ -204,14 +204,13 @@ cat<<EOT
 EOT
 
 # Salle de conférence privée
-if [ -f ${JMB_DATA}/private_rooms ] && [ "${is_editor}" = "1" ] ; then
-	self=$(grep "^${auth_uid} " ${JMB_DATA}/private_rooms |awk '{print $2}')
+if [ "${is_editor}" = "1" ] ; then
 	cat<<EOT
 <DIV title="Cliquez sur ce lien pour ouvrir votre salle de r&eacute;union priv&eacute;e">
- <I><A href=/token.cgi?room=${self}>Ma r&eacute;union priv&eacute;e</A>, disponible &agrave; tout moment:</I>
+ <I><A href=/token.cgi?room=${auth_uid}>Ma r&eacute;union priv&eacute;e</A>, disponible &agrave; tout moment:</I>
 </DIV>
 <DIV title="Donnez ce lien &agrave; votre/vos correspondant(s)">
- <A href=/${self}>https://${JMB_SERVER_NAME}/${self}</A>
+ <A href=/${auth_uid}>https://${JMB_SERVER_NAME}/${auth_uid}</A>
 </DIV>
 <P></P>
 EOT

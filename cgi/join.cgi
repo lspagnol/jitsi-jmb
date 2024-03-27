@@ -39,11 +39,11 @@ email=${r[3]}
 count=${r[4]}
 
 if [ -z "${room}" ] ; then
-	log "join.cgi: meeting_name='${room}', meeting_hash='${id}', email='${email}', role='${role}', auth_uid='': DENIED (meeting unavailable)"
+	log "join.cgi: meeting_name='${room}', meeting_hash='${id}', email='${email}', role='${role}': DENIED (meeting unavailable)"
 	http_403 "La réunion '${room}' n'est pas/plus disponible"
 fi
 
-log "join.cgi: meeting_name='${room}', meeting_hash='${id}', email='${email}', role='${role}', auth_uid='': ALLOWED"
+log "join.cgi: meeting_name='${room}', meeting_hash='${id}', email='${email}', role='${role}': ALLOWED"
 
 # Incrémentation et MAJ du compteur de connexion
 count=${count:-0} ; ((count++))
