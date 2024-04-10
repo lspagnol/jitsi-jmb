@@ -62,6 +62,24 @@ if [ ${n} -gt ${JMB_MAX_MODERATORS} ] ; then
 	http_403 "Données non enregistrées: vous avez indiqué ${n} modérateurs (le maximum est ${JMB_MAX_MODERATORS})"
 fi
 
+# Vérification des adresses mail
+#for addr in ${conf_guests} ${conf_moderators} ; do
+
+	## Conversion minuscules
+	#addr=${addr,,}
+
+	## L'adresse mail ne peut contenir que des caractères alpha (0-9, a-z) et "-_.@+"
+	#addr2=${addr//[+-_\.@0-9a-z]/}
+	#[ "${addr}" = "${addr2}" ] || http_403 "L'adresse mail '${addr}' contient des caractères invalides"
+
+	## L'adresse mail doit contenir au moins un "@" suivi d'une chaine, au moins un point et 2 caractères pour le tld
+	#[[ "${addr}" =~ @.*\.[a-z]{2,} ]] || http_403 "Données non enregistrées: l'adresse '${addr}' est incorrecte"
+
+	## L'adresse mail ne peut contenir qu'un seul "@"
+	#[[ "${addr}" =~ @.*@ ]] && http_403 "Données non enregistrées: l'adresse '${addr}' est incorrecte"
+
+#done
+
 # Remplacer 'adresse mail secondaire des invités par leur adresse principale
 conf_guests=$(fix_mailAliases ${conf_guests})
 

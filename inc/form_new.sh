@@ -36,7 +36,7 @@ cat<<EOT
     <LABEL>Objet</LABEL>
     <INPUT type="text" name="conf_object" value="${JMB_DEFAULT_OBJECT}">
   </DIV>
-  <DIV title="Adresse(s) mail, un mod&eacute;rateur peut &ecirc;tre un utilisateur externe">
+  <DIV title="Adresse(s) mail, un mod&eacute;rateur peut &ecirc;tre un utilisateur externe, le cr&eacute;ateur est implicitement mod&eacute;rateur">
     <LABEL>Mod&eacute;rateurs <I>max:${JMB_MAX_MODERATORS}</I></LABEL>
     <TEXTAREA id="moderators" name="conf_moderators"></TEXTAREA>
   </DIV>
