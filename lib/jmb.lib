@@ -411,8 +411,8 @@ fi
 list=(${list})
 list=${list[@]}
 
-# On affiche la liste modifiée
-echo ${list}
+# On affiche la liste modifiée (conversion LOWCASE)
+echo ${list,,}
 
 }
 

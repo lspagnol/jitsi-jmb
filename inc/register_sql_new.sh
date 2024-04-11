@@ -21,24 +21,28 @@ EOT
 # Un modérateur peut être un utilisateur externe
 # -> Accès via "join.cgi" / hash propre à chaque participant
 for moderator in ${conf_moderators} ; do
-	hash=$(gen_meeting_hash)
-	cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
+	# Le créateur est implicitement modérateur
+	if [ "${auth_mail}" != "${moderator}" ] ; then
+		hash=$(gen_meeting_hash)
+		cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)
 VALUES ('${tsn}','${hash}','moderator','${moderator}');
 EOT
-
+	fi
 done
 
 # Table attendees (guest)
 # Un invité ne doit pas s'authentifier même si c'est un utilisateur interne
 # -> Accès via "join.cgi" / hash propre à chaque participant
 for guest in ${conf_guests} ; do
-	hash=$(gen_meeting_hash)
-	cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
+	# Le créateur est implicitement participant
+	if [ "${auth_mail}" != "${moderator}" ] ; then
+		hash=$(gen_meeting_hash)
+		cat<<EOT >> ${JMB_CGI_TMP}/${tsn}.sql
 INSERT INTO attendees (attendee_meeting_id,attendee_meeting_hash,attendee_role,attendee_email)
 VALUES ('${tsn}','${hash}','guest','${guest}');
 EOT
-
+	fi
 done
 
 # Enregistrement des données
